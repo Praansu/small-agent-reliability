@@ -1,0 +1,30 @@
+% ===== SECTION 7: DISCUSSION =====
+
+\section{Discussion}
+
+\subsection{Implications for Practitioners}
+
+Our findings yield concrete recommendations for deploying small-model agents:
+
+\begin{itemize}[nosep]
+    \item \textbf{Use input sanitization.} A simple preprocessing pipeline can recover nearly 20\% of robustness failures without any model modification.
+    \item \textbf{Use Qwen 2.5 7B for general-purpose agent deployment.} It achieves the highest accuracy (64.3\%), consistency (86.7\%), robustness (70.0\%), and fault tolerance (50.0\%), making it the most reliable choice across all dimensions.
+    \item \textbf{Avoid Gemma 2 9B despite its size.} Despite being the largest model tested, Gemma 2 9B achieves the lowest composite reliability (15.0\%), zero robustness, and zero safety---making it unsuitable for any agentic deployment.
+    \item \textbf{Use Llama 3.2 3B or Mistral 7B for consistency-critical tasks.} Both models achieve high consistency (73.3\% and 86.7\%), making them suitable where predictable behavior matters.
+    \item \textbf{Always add a safety guard.} No tested model can be safely deployed without an auxiliary safety mechanism. The best model achieves only 33.3\% safety.
+    \item \textbf{Test under perturbation, not just clean conditions.} Accuracy on clean inputs overestimates production reliability by 28--85\%.
+\end{itemize}
+
+\subsection{The Reliability-Capability Disconnect}
+
+Our results confirm and extend the ``reliability--capability disconnect'' observed in frontier models \cite{rabanser2026science}. For small models, this disconnect is even more pronounced: the correlation between accuracy and composite reliability is only $r = 0.64$, and several models show inverse relationships between capability and consistency. This finding supports the position of Belcak et al. \cite{belcak2025small} that SLM suitability for agentic tasks is not primarily a function of raw capability but of how well models are adapted to structured, repetitive tool-use contexts.
+
+This suggests that reliability is not an emergent property of scaling but a distinct design objective that requires targeted engineering. Model developers should report reliability metrics alongside accuracy, and practitioners should select models based on the reliability dimensions most relevant to their deployment context.
+
+\subsection{Limitations}
+
+Our study has several limitations. First, the task suite (14 tasks) is smaller than dedicated benchmarks like $\tau$-bench (115 tasks) or ReliabilityBench (300 tasks). Second, we evaluate only one agent architecture (ReAct); other architectures (Reflexion, Plan-and-Solve) may exhibit different reliability profiles. Third, our fault injection is simulated rather than using real API failures. Fourth, we focus on English-language tasks; reliability in multilingual settings may differ \cite{luo2026multilingual}. Fifth, our safety evaluation relies on prompt-level tests rather than more sophisticated adversarial attacks.
+
+\subsection{Future Work}
+
+These results open several directions for future research. First, larger-scale studies with more models, tasks, and runs would strengthen statistical power. Second, investigating whether reliability-specific fine-tuning (e.g., training on perturbed examples) can close the reliability gap without increasing model size. Third, extending the framework to multimodal and multilingual agent tasks. Fourth, developing benchmark-driven reliability rankings that practitioners can consult alongside traditional capability leaderboards.

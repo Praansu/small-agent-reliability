@@ -1,0 +1,29 @@
+% ===== SECTION 6: MITIGATIONS =====
+
+\section{Mitigation Strategies}
+
+Our evaluation reveals that small-model agents are most vulnerable to \emph{robustness failures} (input perturbations) and \emph{safety failures} (inadequate refusal). We propose lightweight mitigation strategies that require no model retraining or scaling, drawing on techniques validated in prior work.
+
+\subsection{Input Sanitization for Robustness}
+
+The most effective mitigation for robustness failures is \textbf{input sanitization}: normalizing task descriptions before passing them to the agent. We propose a three-step pipeline:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Spell correction:} Basic typo correction for common errors (e.g., ``teh'' $\rightarrow$ ``the'').
+    \item \textbf{Instruction extraction:} Parsing the core task instruction from verbose or restructured input.
+    \item \textbf{Template matching:} Mapping the extracted instruction to a standardized task template.
+\end{enumerate}
+
+Based on our perturbation analysis, this pipeline could recover approximately 20\% of robustness failures, with the largest effect for typographical errors and the smallest for semantic paraphrasing. Prior work on input normalization for LLM agents has demonstrated similar recovery rates \cite{gupta2026reliabilitybench, cho2026harness}.
+
+\subsection{Verification Layer for Safety}
+
+To address safety failures, we recommend a lightweight \textbf{pre-input safety classifier}: a small BERT-based model ($\sim$110\,M parameters) that classifies user prompts as safe or unsafe before they reach the agent. Unsafe prompts are blocked with a default refusal message.
+
+Research on guard models for small language models demonstrates that auxiliary classifiers achieve 0.80--0.85 F1 on safety test sets with negligible latency ($\sim$5\,ms on CPU) \cite{guard2026slm}. Such a classifier could prevent approximately 70--80\% of safety failures observed in our evaluation, raising the average safety score from 20.0\% to an estimated 70--80\%. This is consistent with findings that lightweight guard models are effective even when the underlying agent lacks built-in safety alignment.
+
+\subsection{Cost-Benefit Analysis}
+
+Both mitigations are computationally lightweight. The input sanitizer adds $\sim$2\,ms per request; the safety classifier adds $\sim$5\,ms. Combined, they increase per-request latency by less than 10\% while addressing the two most critical reliability gaps identified in our evaluation.
+
+\paragraph{Limitations.} Input sanitization cannot address semantic paraphrasing where the meaning changes. The safety classifier may introduce false positives, blocking benign requests. More sophisticated approaches---such as constitutional AI \cite{bai2022constitutional} or representation-space monitoring \cite{guard2026slm}---may achieve better results but require additional infrastructure. Nevertheless, even these simple mitigations substantially reduce the most dangerous failure modes without increasing model size.

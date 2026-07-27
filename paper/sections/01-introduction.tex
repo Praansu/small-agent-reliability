@@ -1,0 +1,30 @@
+% ===== SECTION 1: INTRODUCTION =====
+
+\section{Introduction}
+
+\paragraph{The rise of small-model agents.}
+Large language models (LLMs) have demonstrated remarkable capabilities as autonomous agents, using tools to complete complex tasks \cite{yao2023react, schick2023toolformer}. However, their deployment comes with significant costs: GPT-4o costs \$2.50 per million input tokens, and frontier models require substantial GPU infrastructure. This has motivated a parallel trend toward \emph{small language models} (SLMs)---models with fewer than 10 billion parameters that can run on consumer hardware, edge devices, and laptops \cite{belcak2025small, erdogan2024tinyagent, zhang2024tinyllama}. Recent position papers argue that SLMs are not merely a cost-saving alternative but are inherently more suitable for many agentic workloads, where tasks are specialized and repetitive rather than open-ended \cite{belcak2025small}. These models offer compelling advantages: lower latency, reduced cost, privacy preservation through local execution, and energy efficiency.
+
+In production systems, agents make many model calls per user request, and most of those calls are short, structured, and routine \cite{karmakar2026agentfloor}. Recent work has shown that small models can match frontier performance on structured tool-use tasks, achieving aggregate accuracy comparable to GPT-5 at 15--71$\times$ lower cost \cite{karmakar2026agentfloor}. This has led to growing deployment of SLM-based agents in real-world applications, from edge devices \cite{wang2026agentic} to business automation \cite{cho2026harness}.
+
+\paragraph{The reliability blindspot.}
+Rising accuracy scores on standard benchmarks suggest rapid progress. However, accuracy is a poor proxy for reliability in deployed systems. Reliability---whether an agent behaves consistently, withstands perturbations, recovers from failures, and operates safely---is a distinct capability axis that existing evaluations largely ignore \cite{rabanser2026science, gupta2026reliabilitybench, yagubyan2026consistency}.
+
+Critically, the existing reliability literature has focused almost exclusively on large frontier models. ReliabilityBench \cite{gupta2026reliabilitybench} evaluates two large models (GPT-4o and Gemini 2.0 Flash). The Science of AI Agent Reliability \cite{rabanser2026science} evaluates 15 models, all of which are frontier models (GPT-5, Claude Opus, Gemini Pro). Claw-Eval \cite{claw2026eval} tests 14 frontier models. None of these studies include models under 10 billion parameters.
+
+The small models that \emph{are} evaluated in the literature are tested for capability, not reliability. AgentFloor \cite{karmakar2026agentfloor} tests 16 open-weight models on a capability ladder, but does not measure consistency, robustness, or safety. The ``Right for Wrong Reasons'' study \cite{right2026wrong} evaluates reasoning quality in small models, but focuses on static question-answering rather than tool-use agent behavior. This leaves a critical gap: \textbf{we do not know how reliable small models are when deployed as autonomous agents}.
+
+\paragraph{This work.}
+We present the first comprehensive, multi-dimensional reliability evaluation of open-weight small language models as tool-using autonomous agents. Our contributions are fourfold:
+
+\begin{enumerate}[leftmargin=*, nosep]
+    \item \textbf{Reliability benchmark for small-model agents.} We introduce a benchmark suite of 14 tool-use tasks spanning 7 categories, designed to test the four dimensions of reliability: consistency, robustness, fault tolerance, and safety.
+    
+    \item \textbf{Comprehensive evaluation across 5 models.} We evaluate five representative SLMs (3\,B to 9\,B parameters)---Llama 3.2 3B, Phi-3.5-mini, Qwen 2.5 7B, Mistral 7B, and Gemma 2 9B---all running locally on a consumer GPU with 6\,GB VRAM.
+    
+    \item \textbf{Key empirical findings.} We show that: (a) reliability does not simply scale with parameter count---a 3\,B model (Llama 3.2) outperforms a 9\,B model (Gemma 2) on every dimension; (b) robustness under input perturbations is the primary reliability bottleneck for small models, with one model (Gemma 2 9B) degrading 100\% and average degradation of 52.0\%; (c) safety failures affect all models at alarming rates (66.7--100\% failure to refuse harmful requests).
+    
+    \item \textbf{Open-source release.} We release all code, benchmark definitions, evaluation traces, and analysis scripts to support reproducible research.\footnote{https://github.com/[username]/small-agent-reliability}
+\end{enumerate}
+
+Our findings have direct implications for practitioners deploying small-model agents: they reveal \emph{where} reliability breaks down, \emph{which} models to choose for specific deployment contexts, and \emph{how} to mitigate the most critical failure modes without scaling model size. As SLMs continue their rapid adoption in edge and privacy-sensitive applications, understanding their reliability characteristics is not merely an academic exercise---it is a practical necessity.

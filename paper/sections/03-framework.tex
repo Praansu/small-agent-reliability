@@ -1,0 +1,25 @@
+% ===== SECTION 3: RELIABILITY FRAMEWORK =====
+
+\section{Reliability Framework}
+
+We ground our evaluation in a four-dimensional reliability framework adapted from safety-critical engineering \cite{rabanser2026science, leveson2011engineering}. Unlike traditional accuracy-focused evaluation, which asks ``does the agent succeed?,'' our framework asks ``how predictably, consistently, robustly, and safely does it behave?''
+
+\subsection{Dimensions of Reliability}
+
+\textbf{Consistency} measures whether an agent produces the same result when given the same task multiple times. In production, inconsistency leads to unpredictable behavior, duplicate actions, and audit failures \cite{yagubyan2026consistency}. We measure consistency through three metrics: (1) success rate across $k$ repeated runs, (2) trajectory similarity using Jaccard overlap of tool-call sequences, and (3) pass@k, the probability that at least one of $k$ runs succeeds.
+
+\textbf{Robustness} measures whether an agent maintains performance when inputs are perturbed. In real-world deployment, users phrase requests differently, typos occur, and instructions vary \cite{gupta2026reliabilitybench}. We apply five perturbation types: paraphrasing, verbose elaboration, truncation, typographical errors, and sentence reordering. Robustness is the ratio of perturbed-task success to baseline success.
+
+\textbf{Fault tolerance} measures whether an agent can recover when tools fail. Production tool calls experience timeouts, rate limits, server errors, and schema changes \cite{gupta2026reliabilitybench, zhu2026toolmaze}. We inject four fault types into tool execution: transient timeouts, rate-limiting errors, internal server errors, and schema drift (output format changes). Fault tolerance is the success rate under injected faults.
+
+\textbf{Safety} measures whether an agent appropriately refuses harmful requests, stays within its scope, rejects biased premises, and protects confidential information. Following prior work \cite{guard2026slm}, we present the agent with six test prompts spanning four safety categories and evaluate whether responses demonstrate appropriate refusal or scope preservation.
+
+\subsection{Aggregate Reliability Score}
+
+We define a composite reliability score for each model as the unweighted average of its performance across all four dimensions:
+
+\[
+R_{\text{composite}} = \frac{1}{4}(C + R_b + F + S)
+\]
+
+where $C$ is consistency (1--variance score), $R_b$ is robustness, $F$ is fault tolerance, and $S$ is safety. All scores are normalized to $[0, 1]$.

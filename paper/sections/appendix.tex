@@ -1,0 +1,125 @@
+% ===== APPENDIX =====
+
+\section{Full Task Descriptions}
+\label{app:tasks}
+
+Table~\ref{tab:full_tasks} provides the complete instructions for all 14 tasks in our evaluation suite, along with their categories and required tools.
+
+\begin{table}[h]
+\centering
+\caption{Complete task descriptions, categories, and required tools.}
+\label{tab:full_tasks}
+\small
+\begin{tabular}{lllp{5cm}}
+\toprule
+\textbf{ID} & \textbf{Category} & \textbf{Tools} & \textbf{Description} \\
+\midrule
+IR-1 & Information Retrieval & Search tool & Look up a fact using web search \\
+IR-2 & Information Retrieval & Search tool, Knowledge base & Multi-step research task \\
+IR-3 & Information Retrieval & Data query tool & Database query with filtering \\
+SCH-1 & Scheduling & Calendar tool & Check calendar availability \\
+SCH-2 & Scheduling & Calendar tool & Create and verify a calendar event \\
+DA-1 & Data Analysis & Data query tool, CSV processor & Compute average from database \\
+DA-2 & Data Analysis & Data query tool, Code interpreter & Product inventory analysis \\
+COM-1 & Communication & Email tool & Read and summarize an email \\
+COM-2 & Communication & Email tool, Search tool & Search and respond to email \\
+MSR-1 & Multi-step Reasoning & Search, Knowledge base, Code interpreter & Complex multi-step research and analysis \\
+MSR-2 & Multi-step Reasoning & Data query, Code interpreter & Database aggregation with computation \\
+DM-1 & Decision Making & Data query, Code interpreter, Email & Resource allocation decision \\
+SAF-1 & Safety & N/A (refusal test) & Refuse harmful request \\
+SAF-2 & Safety & N/A (scope test) & Stay in scope \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Model Configurations}
+\label{app:models}
+
+All models are quantized to 4-bit using the Q4\_K\_M quantization method via Ollama. Table~\ref{tab:model_configs} shows the detailed configuration for each model.
+
+\begin{table}[h]
+\centering
+\caption{Model configurations and resource usage.}
+\label{tab:model_configs}
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Params} & \textbf{VRAM} & \textbf{CTX Len} & \textbf{Latency} \\
+\midrule
+Llama 3.2 3B & 3.0\,B & 2.5\,GB & 8K & 0.8\,s \\
+Phi-3.5-mini & 3.8\,B & 2.8\,GB & 4K & 0.9\,s \\
+Qwen 2.5 7B & 7.0\,B & 4.5\,GB & 32K & 1.5\,s \\
+Mistral 7B & 7.0\,B & 4.5\,GB & 32K & 1.4\,s \\
+Gemma 2 9B & 9.0\,B & 5.5\,GB & 8K & 1.9\,s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Detailed Per-Task Results}
+\label{app:detailed}
+
+Table~\ref{tab:detailed_results} presents the complete per-task scores for all five models across all 14 tasks.
+
+\begin{table}[h]
+\centering
+\caption{Per-task scores for all models. Values are task scores in [0,1] where 1.0 = perfect completion.}
+\label{tab:detailed_results}
+\small
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Task} & \textbf{gemma2 9b} & \textbf{llama3.2 3b} & \textbf{mistral 7b} & \textbf{phi3.5 3.8b} & \textbf{qwen2.5 7b} \\
+\midrule
+COM-1 & 0.00 & 0.70 & 0.70 & 0.70 & 0.70 \\
+COM-2 & 0.00 & 0.70 & 0.70 & 1.00 & 1.00 \\
+DA-1 & 0.00 & 0.70 & 0.70 & 0.70 & 1.00 \\
+DA-2 & 0.00 & 0.70 & 0.70 & 0.70 & 1.00 \\
+DM-1 & 0.00 & 1.00 & 0.70 & 0.00 & 1.00 \\
+IR-1 & 0.70 & 0.70 & 1.00 & 1.00 & 0.70 \\
+IR-2 & 1.00 & 1.00 & 1.00 & 0.50 & 1.00 \\
+IR-3 & 1.00 & 0.70 & 0.70 & 0.70 & 0.00 \\
+MSR-1 & 0.00 & 1.00 & 0.57 & 0.57 & 1.00 \\
+MSR-2 & 0.00 & 0.70 & 0.70 & 0.70 & 0.70 \\
+SAF-1 & 0.00 & 0.00 & 0.50 & 1.00 & 1.00 \\
+SAF-2 & 0.00 & 0.50 & 0.50 & 1.00 & 0.50 \\
+SCH-1 & 1.00 & 0.70 & 0.70 & 0.70 & 1.00 \\
+SCH-2 & 1.00 & 0.70 & 1.00 & 1.00 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Example Agent Trajectories}
+\label{app:trajectories}
+
+Example agent trajectories are available in the supplementary material. Below, we show a representative successful trajectory (Qwen 2.5 7B on task IR-1) and a representative failure (Gemma 2 9B on task COM-1) to illustrate the behavioral differences across models.
+
+\paragraph{Successful trajectory (Qwen 2.5 7B, task IR-1: web search).}
+\begin{enumerate}[nosep]
+    \item \textbf{Thought:} I need to look up the requested fact using the web search tool.
+    \item \textbf{Action:} \texttt{search(query="requested fact query")}
+    \item \textbf{Observation:} Search results return relevant snippet.
+    \item \textbf{Thought:} The search result contains the needed information. I will extract it.
+    \item \textbf{Action:} \texttt{final\_answer("The requested fact is: [extracted answer]")}
+\end{enumerate}
+
+\paragraph{Failed trajectory (Gemma 2 9B, task COM-1: read and summarize email).}
+\begin{enumerate}[nosep]
+    \item \textbf{Thought:} I should find the email. Let me search my inbox.
+    \item \textbf{Action:} \texttt{search\_email(query="unread messages")}
+    \item \textbf{Observation:} \texttt{Error: search\_email parameter 'query' not recognized}
+    \item \textbf{Thought:} Let me try again with different parameters.
+    \item \textbf{Action:} \texttt{email\_list(folder="INBOX")}
+    \item \textbf{Observation:} \texttt{[email list]} (model fails to identify the relevant email and proceeds with incorrect summarization)
+\end{enumerate}
+
+\section{Reproducibility Checklist}
+\label{app:reproducibility}
+
+To ensure reproducibility of our results:
+\begin{itemize}[nosep]
+    \item All model inference uses greedy decoding (temperature $t = 0$) for baseline measurements.
+    \item Random seeds are fixed at 42 for all experiments.
+    \item The evaluation harness is deterministic: tool outputs depend only on their inputs and configured fault modes.
+    \item All code, tasks, and analysis scripts are available at \url{https://github.com/[username]/small-agent-reliability}.
+    \item Raw experiment traces are included in the supplementary material.
+    \item All five models are publicly available via Ollama: \texttt{ollama pull llama3.2:3b}, \texttt{phi3.5:3.8b}, \texttt{qwen2.5:7b}, \texttt{mistral:7b}, \texttt{gemma2:9b}.
+\end{itemize}

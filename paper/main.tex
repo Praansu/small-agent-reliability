@@ -1,0 +1,92 @@
+\documentclass[11pt, twocolumn]{article}
+
+% ===== PACKAGES =====
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{times}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage{balance}
+
+% ===== NEURIPS-STYLE FORMATTING =====
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\columnsep}{0.25in}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+
+% ===== TITLE =====
+\title{Small Models, Big Failures?\\ 
+       A Comprehensive Reliability Evaluation of\\
+       Small Language Models as Autonomous Agents}
+
+\author{
+  \textbf{Praansu Paudyal} \\
+  Independent Researcher \\
+  \texttt{praansu@example.com} \\
+}
+
+\begin{document}
+
+\maketitle
+
+% ===== ABSTRACT =====
+\begin{abstract}
+Small language models (SLMs) with fewer than 10 billion parameters are increasingly deployed as autonomous agents for tool-use tasks, driven by their cost efficiency, privacy advantages, and low latency. However, while substantial research has evaluated the \emph{capability} of large frontier models as agents, the \emph{reliability} of small models in this role remains largely unmeasured. We present the first comprehensive, multi-dimensional reliability evaluation of open-weight small language models as tool-using autonomous agents. Across four reliability dimensions—\textbf{consistency} (run-to-run variance), \textbf{robustness} (stability under input perturbations), \textbf{fault tolerance} (recovery from tool failures), and \textbf{safety} (appropriate refusal behavior)—we evaluate five representative models spanning 3\,B to 9\,B parameters on a suite of 14 diverse agentic tasks. Our results reveal three key findings. First, overall reliability does not simply scale with parameter count: a 3\,B model can match a 9\,B model on specific dimensions. Second, small models exhibit a distinct failure pattern—they are disproportionately affected by input perturbations (average degradation of 52.0\% across models), and robustness ranges from 0\% to 70\%. Third, safety-critical failures (failure to refuse harmful requests) affect all tested models, with no model exceeding 33.3\% safety. We open-source our benchmark suite and evaluation framework to enable reproducible research on small-model agent reliability.
+\end{abstract}
+
+% ===== SECTION 1: INTRODUCTION =====
+\input{sections/01-introduction}
+
+% ===== SECTION 2: RELATED WORK =====
+\input{sections/02-related-work}
+
+% ===== SECTION 3: RELIABILITY FRAMEWORK =====
+\input{sections/03-framework}
+
+% ===== SECTION 4: EXPERIMENTAL SETUP =====
+\input{sections/04-experimental-setup}
+
+% ===== SECTION 5: RESULTS =====
+\input{sections/05-results}
+
+% ===== SECTION 6: MITIGATIONS =====
+\input{sections/06-mitigations}
+
+% ===== SECTION 7: DISCUSSION =====
+\input{sections/07-discussion}
+
+% ===== SECTION 8: CONCLUSION =====
+\input{sections/08-conclusion}
+
+% ===== ACKNOWLEDGMENTS =====
+\subsection*{Acknowledgments}
+This work was conducted using open-source models and locally deployed hardware. No external API credits were used. We thank the open-source community for developing and maintaining the models evaluated in this study.
+
+% ===== REFERENCES =====
+{
+\small
+\bibliographystyle{plain}
+\bibliography{references}
+}
+
+% ===== APPENDIX =====
+\appendix
+\input{sections/appendix}
+
+\end{document}

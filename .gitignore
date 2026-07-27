@@ -1,0 +1,43 @@
+# LaTeX artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.log
+paper/*.toc
+paper/*.lof
+paper/*.lot
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+paper/*.xdv
+paper/main.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Data (raw outputs tracked; processed tracked)
+logs/
+*.err.txt
+*.out.txt
+
+# Generated documents
+paper/small_agent_reliability.docx
+
+# OpenCode project config
+opencode.jsonc
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# OpenCode
+.opencode/

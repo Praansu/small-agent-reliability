@@ -20,14 +20,13 @@
 
 ---
 
-## Phase 2: Expansion 🔄 NEXT — 2-4 weeks
+## Phase 2: Expansion ✅ DONE
 
-### 2A: Models (add 3+ more)
-- [ ] **Llama 3.1 8B** — larger Llama, compare vs 3.2 3B
-- [ ] **Gemma 3 12B** — latest Google SLM
-- [ ] **DeepSeek-R1-Distill-Qwen-7B** — reasoning-distilled
-- [ ] **SmolLM2-1.7B** — extreme edge case
-- [ ] **Qwen 2.5 Coder 7B** — code-specialized variant
+### 2A: Models (added 4, total: 9)
+- [x] **Llama 3.2 1B** — extreme lower-bound baseline (56.1% composite)
+- [x] **Llama 3.1 8B** — larger Llama, compare vs 3.2 3B (24.2% — worse than 1B!)
+- [x] **DeepSeek-R1 7B** — reasoning-distilled (0% accuracy — conflicts with ReAct)
+- [x] **Qwen 2.5 Coder 7B** — code-specialized variant (85.0% — best overall)
 
 ### 2B: Tasks (add 15+ more)
 - [ ] Web navigation tasks (click, scroll, form fill)
@@ -126,13 +125,16 @@
 ## Current Metrics
 | Metric | Value | Target (Phase 4) |
 |--------|-------|-------------------|
-| Models evaluated | 5 | 15+ |
+| Models evaluated | 9 | 15+ |
 | Tasks | 14 | 50+ |
 | Reliability dimensions | 4 | 6+ |
-| Citations | 22 | 50+ |
+| Citations | 23 | 50+ |
 | Paper pages | 12 | 20+ |
-| Figures | 4 | 12+ |
-| Experiments run | 5 | 50+ |
+| Figures | 5 | 12+ |
+| Experiments run | 9 | 50+ |
+| Key finding | Code training → reliability transfer | -- |
+| Key finding | Reasoning models fail ReAct (0% acc) | -- |
+| Key finding | Size-reliability r = -0.179 | -- |
 
 ## How to Contribute
 1. Pick an item from any phase

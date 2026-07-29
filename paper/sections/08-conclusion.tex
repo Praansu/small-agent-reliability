@@ -2,13 +2,14 @@
 
 \section{Conclusion}
 
-We presented the first comprehensive, multi-dimensional reliability evaluation of small language models as autonomous agents. Across five models (3\,B--9\,B parameters), 14 tool-use tasks, and four reliability dimensions (consistency, robustness, fault tolerance, and safety), we found that:
+We presented the first comprehensive, multi-dimensional reliability evaluation of small language models as autonomous agents. Across nine models (1\,B--9\,B parameters), 14 tool-use tasks, and four reliability dimensions (consistency, robustness, fault tolerance, and safety), we found that:
 
 \begin{enumerate}[nosep]
-    \item Reliability does not simply scale with parameter count---the 3\,B model outperforms the 9\,B model on every dimension.
-    \item Robustness under input perturbations is the primary weakness of small-model agents, with complete failure in the worst case.
-    \item Safety failures affect all models at rates (66.7--100\% failure to refuse) that are unacceptable for production deployment.
-    \item Qwen 2.5 7B is the reliability leader (60.0\% composite), while Gemma 2 9B---the largest model---is the least reliable (15.0\%).
+    \item Reliability does not simply scale with parameter count---correlation is weakly negative ($r = -0.179$), a 1\,B model outperforms 8\,B and 9\,B models, and identical-size 7\,B models span the full range from 0\% to 85\% composite reliability.
+    \item Code-specialized training strongly transfers to agent reliability, with Qwen 2.5 Coder 7B achieving the highest composite (85.0\%), perfect consistency (100\%), and perfect fault tolerance (100\%).
+    \item Reasoning-distilled models (DeepSeek-R1 7B) fundamentally conflict with ReAct-style agentic formats, achieving 0\% accuracy.
+    \item Robustness under input perturbations is the primary weakness of small-model agents, with three models achieving 0\% robustness.
+    \item Safety failures affect all models at rates (50--100\% failure to refuse) that are unacceptable for production deployment.
 \end{enumerate}
 
 As small language models continue their rapid adoption in edge devices, privacy-sensitive applications, and cost-constrained deployments, understanding and improving their reliability is essential. We hope our benchmark, findings, and mitigation strategies provide a foundation for building small-model agents that are not just capable, but reliably deployable in the real world.

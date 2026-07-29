@@ -39,7 +39,8 @@ def cmd_run_experiment(args):
         run(f"python code/run_experiments.py --model {args.model}")
     else:
         print("Running all experiments...")
-        models = ["llama3.2:3b", "phi3.5:3.8b", "qwen2.5:7b", "mistral:7b", "gemma2:9b"]
+        models = ["llama3.2:1b", "llama3.2:3b", "phi3.5:3.8b", "deepseek-r1:7b",
+                  "qwen2.5-coder:7b", "qwen2.5:7b", "mistral:7b", "llama3.1:8b", "gemma2:9b"]
         for m in models:
             print(f"\n{'='*50}\nModel: {m}\n{'='*50}")
             run(f"python code/run_experiments.py --model {m}")
@@ -104,9 +105,11 @@ def cmd_status(args):
     display = {
         'gemma2:9b': 'Gemma 2 9B', 'llama3.2:3b': 'Llama 3.2 3B',
         'mistral:7b': 'Mistral 7B', 'phi3.5:3.8b': 'Phi-3.5-mini',
-        'qwen2.5:7b': 'Qwen 2.5 7B'
+        'qwen2.5:7b': 'Qwen 2.5 7B', 'llama3.2:1b': 'Llama 3.2 1B',
+        'deepseek-r1:7b': 'DeepSeek-R1 7B', 'qwen2.5-coder:7b': 'Qwen 2.5 Coder 7B',
+        'llama3.1:8b': 'Llama 3.1 8B'
     }
-    order = ['qwen2.5:7b', 'mistral:7b', 'llama3.2:3b', 'phi3.5:3.8b', 'gemma2:9b']
+    order = ['qwen2.5-coder:7b', 'qwen2.5:7b', 'llama3.2:1b', 'mistral:7b', 'llama3.2:3b', 'deepseek-r1:7b', 'phi3.5:3.8b', 'llama3.1:8b', 'gemma2:9b']
 
     for m in order:
         s = data['model_summaries'][m]

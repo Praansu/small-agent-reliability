@@ -1,7 +1,15 @@
 {
-  "num_models": 5,
+  "num_models": 9,
   "experiment_date": "2026-07-27T14:30:03.933561",
   "model_summaries": {
+    "deepseek-r1:7b": {
+      "accuracy": 0.0,
+      "consistency_score": 0.5777777777777777,
+      "robustness_score": 0.1,
+      "fault_tolerance_score": 0.5,
+      "safety_score": 0.3333333333333333,
+      "composite_reliability": 0.3777777777777777
+    },
     "gemma2:9b": {
       "accuracy": 0.2857142857142857,
       "consistency_score": 0.5999999999999999,
@@ -9,6 +17,22 @@
       "fault_tolerance_score": 0.0,
       "safety_score": 0.0,
       "composite_reliability": 0.14999999999999997
+    },
+    "llama3.1:8b": {
+      "accuracy": 0.14285714285714285,
+      "consistency_score": 0.6,
+      "robustness_score": 0.2,
+      "fault_tolerance_score": 0.0,
+      "safety_score": 0.167,
+      "composite_reliability": 0.24175000000000002
+    },
+    "llama3.2:1b": {
+      "accuracy": 0.21428571428571427,
+      "consistency_score": 0.711111111111111,
+      "robustness_score": 0.7,
+      "fault_tolerance_score": 0.5,
+      "safety_score": 0.3333333333333333,
+      "composite_reliability": 0.5611111111111111
     },
     "llama3.2:3b": {
       "accuracy": 0.21428571428571427,
@@ -33,6 +57,14 @@
       "fault_tolerance_score": 0.0,
       "safety_score": 0.3333333333333333,
       "composite_reliability": 0.30277777777777776
+    },
+    "qwen2.5-coder:7b": {
+      "accuracy": 0.7142857142857143,
+      "consistency_score": 1.0,
+      "robustness_score": 0.9,
+      "fault_tolerance_score": 1.0,
+      "safety_score": 0.5,
+      "composite_reliability": 0.85
     },
     "qwen2.5:7b": {
       "accuracy": 0.6428571428571429,

@@ -20,9 +20,9 @@ We present the first comprehensive, multi-dimensional reliability evaluation of 
 \begin{enumerate}[leftmargin=*, nosep]
     \item \textbf{Reliability benchmark for small-model agents.} We introduce a benchmark suite of 14 tool-use tasks spanning 7 categories, designed to test the four dimensions of reliability: consistency, robustness, fault tolerance, and safety.
     
-    \item \textbf{Comprehensive evaluation across 5 models.} We evaluate five representative SLMs (3\,B to 9\,B parameters)---Llama 3.2 3B, Phi-3.5-mini, Qwen 2.5 7B, Mistral 7B, and Gemma 2 9B---all running locally on a consumer GPU with 6\,GB VRAM.
+    \item \textbf{Comprehensive evaluation across 9 models.} We evaluate nine representative SLMs (1\,B to 9\,B parameters)---Llama 3.2 1B, Llama 3.2 3B, Phi-3.5-mini, DeepSeek-R1 7B, Qwen 2.5 7B, Qwen 2.5 Coder 7B, Mistral 7B, Llama 3.1 8B, and Gemma 2 9B---all running locally on a consumer GPU with 6\,GB VRAM.
     
-    \item \textbf{Key empirical findings.} We show that: (a) reliability does not simply scale with parameter count---a 3\,B model (Llama 3.2) outperforms a 9\,B model (Gemma 2) on every dimension; (b) robustness under input perturbations is the primary reliability bottleneck for small models, with one model (Gemma 2 9B) degrading 100\% and average degradation of 52.0\%; (c) safety failures affect all models at alarming rates (66.7--100\% failure to refuse harmful requests).
+    \item \textbf{Key empirical findings.} We show that: (a) reliability does not simply scale with parameter count---a 1\,B model (Llama 3.2 1B) outperforms 8\,B and 9\,B models, and the correlation between size and reliability is weakly negative ($r = -0.179$); (b) robustness under input perturbations is the primary reliability bottleneck for small models, with three models degrading 100\% and average degradation of 52.2\%; (c) safety failures affect all models at alarming rates (50--100\% failure to refuse harmful requests); (d) reasoning-distilled models (DeepSeek-R1 7B) completely fail at structured tool use (0\% accuracy), as chain-of-thought traces conflict with ReAct format requirements.
     
     \item \textbf{Open-source release.} We release all code, benchmark definitions, evaluation traces, and analysis scripts to support reproducible research.\footnote{https://github.com/[username]/small-agent-reliability}
 \end{enumerate}

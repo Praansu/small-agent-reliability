@@ -8,16 +8,16 @@ Our findings yield concrete recommendations for deploying small-model agents:
 
 \begin{itemize}[nosep]
     \item \textbf{Use input sanitization.} A simple preprocessing pipeline can recover nearly 20\% of robustness failures without any model modification.
-    \item \textbf{Use Qwen 2.5 7B for general-purpose agent deployment.} It achieves the highest accuracy (64.3\%), consistency (86.7\%), robustness (70.0\%), and fault tolerance (50.0\%), making it the most reliable choice across all dimensions.
-    \item \textbf{Avoid Gemma 2 9B despite its size.} Despite being the largest model tested, Gemma 2 9B achieves the lowest composite reliability (15.0\%), zero robustness, and zero safety---making it unsuitable for any agentic deployment.
-    \item \textbf{Use Llama 3.2 3B or Mistral 7B for consistency-critical tasks.} Both models achieve high consistency (73.3\% and 86.7\%), making them suitable where predictable behavior matters.
-    \item \textbf{Always add a safety guard.} No tested model can be safely deployed without an auxiliary safety mechanism. The best model achieves only 33.3\% safety.
+    \item \textbf{Use Qwen 2.5 Coder 7B for reliability-critical agent deployment.} It achieves the highest composite reliability (85.0\%), accuracy (71.4\%), consistency (100.0\%), robustness (90.0\%), fault tolerance (100.0\%), and safety (50.0\%), making it the most reliable choice across all dimensions.
+    \item \textbf{Avoid Gemma 2 9B and DeepSeek-R1 7B despite their size.} Gemma 2 9B achieves the lowest composite reliability (15.0\%), zero robustness, and zero safety. DeepSeek-R1 7B achieves 0\% accuracy---reasoning models and ReAct format are fundamentally incompatible.
+    \item \textbf{Use Qwen 2.5 Coder 7B for consistency-critical tasks.} It achieves perfect consistency (100\%), making it the only model suitable where deterministic behavior is required.
+    \item \textbf{Always add a safety guard.} No tested model can be safely deployed without an auxiliary safety mechanism. The best model achieves only 50.0\% safety.
     \item \textbf{Test under perturbation, not just clean conditions.} Accuracy on clean inputs overestimates production reliability by 28--85\%.
 \end{itemize}
 
 \subsection{The Reliability-Capability Disconnect}
 
-Our results confirm and extend the ``reliability--capability disconnect'' observed in frontier models \cite{rabanser2026science}. For small models, this disconnect is even more pronounced: the correlation between accuracy and composite reliability is only $r = 0.64$, and several models show inverse relationships between capability and consistency. This finding supports the position of Belcak et al. \cite{belcak2025small} that SLM suitability for agentic tasks is not primarily a function of raw capability but of how well models are adapted to structured, repetitive tool-use contexts.
+Our results confirm and extend the ``reliability--capability disconnect'' observed in frontier models \cite{rabanser2026science}. For small models, this disconnect is even more pronounced: the correlation between accuracy and composite reliability is $r = 0.73$, and several models show inverse relationships between capability and consistency. The negative correlation between parameter count and reliability ($r = -0.179$) versus the positive correlation between accuracy and composite reliability highlights that what matters is not how large a model is but how well its training aligns with structured tool-use tasks---code-specialized models excel, while reasoning-distilled models fail completely. This finding supports the position of Belcak et al. \cite{belcak2025small} that SLM suitability for agentic tasks is not primarily a function of raw capability but of how well models are adapted to structured, repetitive tool-use contexts.
 
 This suggests that reliability is not an emergent property of scaling but a distinct design objective that requires targeted engineering. Model developers should report reliability metrics alongside accuracy, and practitioners should select models based on the reliability dimensions most relevant to their deployment context.
 

@@ -93,17 +93,57 @@ AVAILABLE_MODELS = [
         release_date="2025-09",
         notes="Ultra-small, lower bound comparison",
     ),
+    ModelInfo(
+        name="deepseek-r1-7b",
+        display_name="DeepSeek-R1 7B",
+        ollama_id="deepseek-r1:7b",
+        parameters_b=7.0,
+        quantization="Q4_K_M",
+        vram_estimate_gb=4.5,
+        context_length=16384,
+        family="DeepSeek",
+        release_date="2026-01",
+        notes="Reasoning-distilled, RL from chain-of-thought traces",
+    ),
+    ModelInfo(
+        name="qwen2.5-coder-7b",
+        display_name="Qwen 2.5 Coder 7B",
+        ollama_id="qwen2.5-coder:7b",
+        parameters_b=7.0,
+        quantization="Q4_K_M",
+        vram_estimate_gb=4.5,
+        context_length=32768,
+        family="Qwen",
+        release_date="2025-12",
+        notes="Code-specialized, strong HumanEval, tests tool-use transfer",
+    ),
+    ModelInfo(
+        name="llama3.1-8b",
+        display_name="Llama 3.1 8B",
+        ollama_id="llama3.1:8b",
+        parameters_b=8.0,
+        quantization="Q4_K_M",
+        vram_estimate_gb=5.5,
+        context_length=131072,
+        family="Llama",
+        release_date="2025-07",
+        notes="Larger Llama, within-family size comparison",
+    ),
 ]
 
 
 def get_recommended_models() -> List[ModelInfo]:
     """Return the recommended set of models for the main evaluation."""
-    # Select 5 diverse models spanning size, family, and capability
+    # Expanded set: 9 models spanning 1B-9B, 7 families, 3 architectures
     recommended_names = [
-        "llama3.2-3b",      # Smallest capable
+        "llama3.2-1b",      # Ultra-small baseline
+        "llama3.2-3b",      # Small capable Llama
         "phi-3.5-mini",     # Microsoft, structured tasks
-        "qwen2.5-7b",       # Strong open-weight
+        "deepseek-r1-7b",   # Reasoning-distilled (RL from CoT)
+        "qwen2.5-coder-7b", # Code-specialized Qwen
+        "qwen2.5-7b",       # Strong open-weight general
         "mistral-7b",       # Well-known baseline
+        "llama3.1-8b",      # Larger Llama, within-family comparison
         "gemma2-9b",        # Largest we can fit
     ]
     return [m for m in AVAILABLE_MODELS if m.name in recommended_names]

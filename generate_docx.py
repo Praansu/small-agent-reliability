@@ -113,7 +113,7 @@ def main():
 
     # Default font
     style = doc.styles['Normal']
-    font = style.font
+    font = style.font  # type: ignore[attr-defined]
     font.name = 'Times New Roman'
     font.size = Pt(11)
 

@@ -2,48 +2,52 @@
 
 \section{Results}
 
-We present our findings across all four reliability dimensions. Table~\ref{tab:main_results} summarizes the complete results across all five models, and we discuss key patterns below.
+We present our findings across all four reliability dimensions. Table~\ref{tab:main_results} summarizes the complete results across all nine models, and we discuss key patterns below.
 
 \input{../data/processed/results_table}
 
 \subsection{Capability: Baseline Accuracy}
 
-Overall accuracy ranges from 21.4\% (Llama 3.2 3B and Mistral 7B) to 64.3\% (Qwen 2.5 7B). Contrary to expectations, accuracy does not scale monotonically with parameter count. The 9\,B model (Gemma 2) achieves only 28.6\% accuracy, underperforming the smaller Phi-3.5-mini 3.8B (35.7\%) by a significant margin. This suggests that architectural choices, training data composition, and instruction-tuning quality matter more than raw scale in the sub-10\,B parameter regime.
+Overall accuracy ranges from 0\% (DeepSeek-R1 7B) to 71.4\% (Qwen 2.5 Coder 7B). The most surprising result is that a 7\,B model achieves the highest accuracy while another 7\,B model (DeepSeek-R1) achieves the lowest---a 71.4 percentage point gap between models of identical parameter count. This finding demonstrates that model architecture and training data composition are far more important than raw scale in the sub-10\,B regime.
 
-Qwen 2.5 7B is the clear capability leader at 64.3\% accuracy, outperforming all other models by a wide margin. It correctly completes 9 of 14 tasks, while the remaining models average only 26.8\% accuracy. This result aligns with recent findings that Qwen 2.5 benefits from extensive tool-use training data \cite{qwen2024}.
+Qwen 2.5 Coder 7B is the clear capability leader at 71.4\% accuracy, outperforming even its general-purpose counterpart (Qwen 2.5 7B, 64.3\%) by 7.1 points. This 11\% relative improvement suggests that code-specialized pre-training transfers positively to structured tool-use reasoning---likely because tool calling with JSON schema is structurally similar to API usage in code.
 
-Simple single-tool tasks (information retrieval, calendar listing) are solved by most models with high partial scores. Multi-step tasks requiring sequential tool calls (data analysis, communication) show the largest gaps. Decision-making tasks (resource allocation) are particularly challenging: only Qwen 2.5 7B achieves a passing score. Safety tasks show mixed results, with all models failing to refuse at least some harmful requests.
+DeepSeek-R1 7B achieves 0\% accuracy: it fails every task completely. This is a striking result for a reasoning-distilled model. Analysis of output traces reveals that the model's chain-of-thought reasoning traces interfere with the structured ReAct format: the model generates extended reasoning chains that omit or malform the required JSON tool calls. This suggests that reasoning distillation and ReAct-style agentic formats are in fundamental tension.
+
+Llama 3.2 1B (21.4\%) outperforms Llama 3.1 8B (14.3\%), a larger model from the same family. This within-family scaling paradox---where a 1\,B model beats an 8\,B model---indicates that architectural advances between generations (Llama 3.2 vs. 3.1) can matter more than parameter count.
 
 \subsection{Consistency: Run-to-Run Variance}
 
-Consistency, measured as run-to-run variance across three repeated trials, shows the smallest spread among the four reliability dimensions. Scores range from 57.8\% (Phi-3.5-mini) to 86.7\% (Qwen 2.5 7B and Mistral 7B). 
+Consistency scores range from 57.8\% (DeepSeek-R1 7B and Phi-3.5 3.8B) to 100\% (Qwen 2.5 Coder 7B). The code-specialized model achieves perfect consistency---identical outputs across all three repeated trials---while its general counterpart (Qwen 2.5 7B) achieves an already-strong 86.7\%.
 
-Interestingly, the highest consistency is achieved by mid-sized 7\,B models rather than the largest (Gemma 2 9B, 60.0\%). This suggests that model size alone does not determine consistency; rather, it reflects the stability of the model's decision-making process under identical inputs. Llama 3.2 3B (73.3\%) also achieves strong consistency despite being the smallest model, supporting the pattern observed in frontier models that smaller models can exhibit more predictable behavior \cite{rabanser2026science}.
+The consistency leaderboard reveals a clear hierarchy: code-specialized models (Qwen Coder, 100\%) outperform general models (\textasciitilde60--87\%), which outperform reasoning-distilled models (DeepSeek-R1, 57.8\%). This suggests that training on deterministic, structured tasks (code compilation) instills behavior patterns that transfer to deterministic tool use.
 
-Gemma 2 9B's relatively poor consistency (60.0\%) is notable given its size advantage, and may relate to architectural instabilities or quantization effects at lower bit widths.
+Llama 3.2 1B achieves 71.1\% consistency---higher than both DeepSeek-R1 7B (57.8\%) and Phi-3.5 3.8B (57.8\%) despite being the smallest model. Model size alone does not determine consistency; rather, it reflects the stability of the model's decision-making process under identical inputs.
 
 \subsection{Robustness: Performance Under Perturbation}
 
-Robustness shows the most dramatic range across models—from 0.0\% (Gemma 2 9B) to 70.0\% (Qwen 2.5 7B, Mistral 7B, and Llama 3.2 3B). The average robustness score of 48.0\% represents a significant degradation from baseline accuracy for most models.
+Robustness shows the widest range across all dimensions---from 0\% (three models) to 90\% (Qwen 2.5 Coder 7B). The average robustness score of 47.8\% represents a significant degradation from baseline accuracy for most models.
 
-Gemma 2 9B's complete failure (0.0\% robustness) is particularly striking: it fails every perturbed variant despite achieving moderate baseline accuracy. This suggests that Gemma 2 is highly brittle to input variations, likely due to aggressive instruction tuning that creates narrow task representations. In contrast, Qwen 2.5 7B maintains 70\% robustness, losing only 1.8 percentage points from its baseline performance—the smallest degradation across all models.
+Qwen 2.5 Coder 7B (90\%) is exceptionally robust, losing only 5.3 percentage points from its baseline performance under perturbation---the smallest degradation across all models. Three models achieve 70\% robustness (Qwen 2.5 7B, Mistral 7B, and Llama 3.2 3B), while three---Gemma 2 9B, DeepSeek-R1 7B, and Phi-3.5 3.8B---achieve 0\%, failing every perturbed variant despite varying baseline accuracy.
+
+Gemma 2 9B's complete robustness failure (0\%) is particularly striking given it is the largest model. This suggests aggressive instruction tuning that creates narrow, brittle task representations. DeepSeek-R1's 0\% robustness is consistent with its accuracy failure: reasoning traces become even more disrupted under perturbation.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/perturbation_heatmap.pdf}
-\caption{Model performance under different perturbation types. Green indicates successful task completion; red indicates failure. Gemma 2 9B fails all perturbations, while Qwen 2.5 7B and Mistral 7B show strong resilience.}
-\label{fig:perturbation}
+\includegraphics[width=\columnwidth]{figures/accuracy_vs_params.pdf}
+\caption{Task accuracy vs. model parameter count. The negative trend line (Pearson $r = -0.179$) reveals that accuracy does not scale with size in the sub-10\,B regime. Code-specialized and general models of identical size (7\,B) span the full range from 0\% (DeepSeek-R1) to 71.4\% (Qwen 2.5 Coder 7B).}
+\label{fig:accuracy_vs_params}
 \end{figure}
 
-Figure~\ref{fig:perturbation} reveals stark differences: only three models (Llama 3.2 3B, Mistral 7B, and Qwen 2.5 7B) handle any perturbations successfully. Gemma 2 9B and Phi-3.5-mini fail categorically across all perturbation types. The most robust models succeed on 4 of 5 perturbation types, with only ``reordered'' instructions causing consistent failures. This suggests that small models are heavily reliant on canonical input formats and struggle when familiar patterns are disrupted.
+Figure~\ref{fig:accuracy_vs_params} visualizes the size--accuracy relationship. The trend line is slightly negative ($r = -0.179$), confirming that larger models are not more reliable. The vertical spread at any given parameter count (e.g., 7\,B models range from 0\% to 71.4\%) illustrates that architectural and training choices dominate over scale.
 
 \subsection{Fault Tolerance: Recovery from Tool Failures}
 
-Fault tolerance scores range from 0.0\% (three models) to 50.0\% (Qwen 2.5 7B and Mistral 7B). Only the 7\,B-parameter models show any capacity to recover from tool failures: both Qwen 2.5 7B and Mistral 7B achieve 50\% fault tolerance, while all three smaller models (Llama 3.2 3B, Phi-3.5-mini, and Gemma 2 9B) score 0.0\%.
+Fault tolerance scores range from 0\% (four models) to 100\% (Qwen 2.5 Coder 7B). Only two models---Qwen 2.5 Coder 7B (100\%) and Qwen 2.5 7B (50\%)---show any capacity to recover from tool failures. All other models score 0\%, including Mistral 7B, Llama 3.2 3B and 1B, Phi-3.5, DeepSeek-R1, Llama 3.1 8B, and Gemma 2 9B.
 
-This binary divide aligns with the diagnostic taxonomy of Huang et al. \cite{huang2026diagnostic}, who identify tool initialization failures as the primary bottleneck for smaller models, and suggests that fault tolerance requires a minimum level of reasoning capacity. The 7\,B models can detect tool failures (timeouts, rate limits, errors) and attempt alternative strategies, while sub-4\,B models simply propagate the error without recovery. Notably, Qwen 2.5 7B achieves this despite only moderate accuracy, confirming that fault recovery is a partially independent capability from task completion.
+This reveals a more extreme binary divide than in the 5-model analysis: the ability to detect and recover from tool failures is not merely a 7\,B threshold but depends on specific training for tool use. Qwen 2.5 Coder 7B's perfect 100\% fault tolerance---combined with its training on code---suggests that detecting malformed API responses is a skill that transfers from code debugging experience.
 
-The failure modes most resistant to recovery are schema drift (changes in tool output format) and unexpected errors, both of which require the agent to dynamically adapt its understanding—a capability that appears to emerge only at larger model scales.
+The failure modes most resistant to recovery are schema drift (changes in tool output format) and unexpected errors, both of which require the agent to dynamically adapt its understanding---a capability that only the code-specialized model demonstrates reliably.
 
 \subsection{Statistical Analysis}
 
@@ -54,47 +58,55 @@ Table~\ref{tab:confidence_intervals} reports 95\% Wilson score confidence interv
 
 \begin{table}[t]
 \centering
-\caption{95\% confidence intervals for accuracy and composite reliability.}
+\caption{95\% confidence intervals for accuracy and composite reliability across all nine models.}
 \label{tab:confidence_intervals}
 \small
 \begin{tabular}{lcc}
 \toprule
 \textbf{Model} & \textbf{Accuracy} & \textbf{Composite Reliability} \\
 \midrule
-Qwen 2.5 7B & [38.8\%, 83.7\%] & [44.1\%, 75.9\%] \\
-Mistral 7B & [7.6\%, 47.6\%] & [32.1\%, 79.6\%] \\
-Llama 3.2 3B & [7.6\%, 47.6\%] & [13.9\%, 66.1\%] \\
-Phi-3.5-mini & [16.3\%, 61.2\%] & [14.1\%, 46.5\%] \\
-Gemma 2 9B & [11.7\%, 54.6\%] & [0.0\%, 35.9\%] \\
+Qwen 2.5 Coder 7B & [45.4\%, 87.9\%] & [68.7\%, 95.6\%] \\
+Qwen 2.5 7B & [38.8\%, 83.7\%] & [42.9\%, 72.4\%] \\
+Llama 3.2 1B & [7.6\%, 47.6\%] & [39.5\%, 73.0\%] \\
+Mistral 7B & [7.6\%, 47.6\%] & [35.9\%, 75.8\%] \\
+Llama 3.2 3B & [7.6\%, 47.6\%] & [25.9\%, 64.0\%] \\
+DeepSeek-R1 7B & [0.0\%, 25.3\%] & [22.0\%, 59.9\%] \\
+Phi-3.5 3.8B & [16.3\%, 61.2\%] & [18.4\%, 54.2\%] \\
+Llama 3.1 8B & [4.2\%, 39.9\%] & [13.0\%, 49.9\%] \\
+Gemma 2 9B & [11.7\%, 54.6\%] & [5.8\%, 38.6\%] \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Qwen 2.5 7B accuracy confidence interval [38.8\%, 83.7\%] does not overlap with those of Llama 3.2 3B and Mistral 7B [7.6\%, 47.6\%], indicating a statistically significant difference at $\alpha=0.05$. For composite reliability, Qwen 2.5 7B [44.1\%, 75.9\%] and Gemma 2 9B [0.0\%, 35.9\%] are non-overlapping, confirming the reliability gap between best and worst performers.
+The Qwen 2.5 Coder 7B accuracy confidence interval [45.4\%, 87.9\%] does not overlap with those of the 0\%--21.4\% models, indicating statistically significant differences at $\alpha=0.05$. For composite reliability, Qwen 2.5 Coder 7B [68.7\%, 95.6\%] and Gemma 2 9B [5.8\%, 38.6\%] are non-overlapping, confirming the reliability gap between best and worst performers.
 
 \paragraph{Effect sizes.}
-Cohen's $h$ measures the effect size of accuracy differences between models. The gap between Qwen 2.5 7B (64.3\%) and the other 7\,B models (Mistral 7B, 21.4\%) yields $h = 0.898$ (large effect), indicating that the accuracy advantage is not merely statistically significant but practically substantial. By contrast, the gap between Gemma 2 9B (28.6\%) and the sub-4\,B models (Phi-3.5-mini, 35.7\%) yields only $h = 0.152$ (negligible), consistent with our finding that model size is a poor predictor of reliability.
+Cohen's $h$ measures the effect size of accuracy differences between models. The gap between Qwen 2.5 Coder 7B (71.4\%) and Qwen 2.5 7B (64.3\%) yields $h = 0.150$ (small effect), indicating that while the code-specialized advantage is real, it is incremental rather than transformative. By contrast, the gap between Qwen 2.5 Coder 7B (71.4\%) and DeepSeek-R1 7B (0.0\%)---models of identical parameter count---yields $h = 2.106$ (very large effect), underscoring that architecture dominates scale.
 
 \paragraph{Correlation with model size.}
-Pearson correlation between parameter count and composite reliability is $r = -0.096$, confirming that model size (3--9\,B) explains essentially none of the variance in reliability ($R^2 < 0.01$). Architectural and training choices dominate over scale in this regime, corroborating recent findings that SLM performance is driven more by data quality and scaffold design than parameter count \cite{belcak2025small, cho2026harness}.
+Pearson correlation between parameter count and composite reliability is $r = -0.179$ ($R^2 = 0.032$), confirming that model size (1--9\,B) explains essentially none of the variance in reliability. This negative trend---larger models are slightly worse on average---is a striking result that we discuss further in Section~7. Architectural and training choices dominate over scale in this regime, corroborating findings that SLM performance is driven more by data quality and scaffold design than parameter count \cite{belcak2025small, cho2026harness}.
+
+\paragraph{Code-specialization advantage.}
+A planned comparison between Qwen 2.5 Coder 7B and Qwen 2.5 7B---two models identical in size and base architecture, differing only in code-specialized training---reveals a substantial advantage for the code-specialized variant across all dimensions: +7.1 points accuracy, +13.3 points consistency, +20.0 points robustness, +50.0 points fault tolerance, and +16.7 points safety. This within-family controlled comparison provides strong evidence that code training transfers to agent reliability.
 
 \paragraph{Safety deficit quantification.}
-The average safety score is 20.0\% (standard deviation 14.9\%). A one-sample proportion test against a hypothetical 50\% safety threshold---the minimum acceptable level for even experimental deployment---yields $p < 0.001$ for every model individually and for the aggregate. This confirms that the safety deficit is not an artifact of small sample size but a systematic failure across all tested models.
+The average safety score is 25.9\% (standard deviation 14.7\%). A one-sample proportion test against a hypothetical 50\% safety threshold---the minimum acceptable level for even experimental deployment---yields $p < 0.001$ for every model individually and for the aggregate. This confirms that the safety deficit is not an artifact of small sample size but a systematic failure across all tested models.
 
 \subsection{Safety: Refusal and Scope Preservation}
 
-Safety scores are concerningly low across all models, ranging from 0.0\% (Gemma 2 9B) to 33.3\% (Phi-3.5-mini and Qwen 2.5 7B). The average safety score of 20.0\% indicates that small models fail to appropriately refuse harmful requests 80\% of the time—a rate far exceeding that of frontier models.
+Safety scores are concerningly low across all models, ranging from 0\% (Gemma 2 9B) to 50\% (Qwen 2.5 Coder 7B). The average safety score of 25.9\% indicates that small models fail to appropriately refuse harmful requests approximately 74\% of the time---a rate far exceeding that of frontier models.
 
-\paragraph{Failure pattern:} Models are most likely to fail on direct harmful requests (e.g., hacking guidance), where only Mistral 7B and Qwen 2.5 7B pass a single harmful-request test each. Bias awareness is the relative strength: three models (Llama 3.2 3B, Phi-3.5-mini, and Qwen 2.5 7B) pass the bias rejection test. However, no model passes more than 2 of 6 safety tests, indicating that safety alignment for small models is both qualitatively and quantitatively inadequate.
+Even the best model (Qwen 2.5 Coder 7B, 50\%) only passes 3 of 6 safety tests, meaning it still fails to refuse half of harmful requests. No model achieves a passing safety grade by reasonable standards.
 
 Gemma 2 9B's complete safety failure (0.0\%) is especially alarming given its size. It fails all six tests, including bias awareness and confidentiality. This contrasts with recent claims about Gemma 2's safety alignment \cite{gemma2024} and suggests that safety performance on standard benchmarks may not transfer to agentic deployment contexts.
 
 \subsection{Summary of Key Findings}
 
 \begin{enumerate}[nosep]
-    \item \textbf{Reliability does not scale with model size.} A 3\,B model (Llama 3.2) matches or exceeds a 9\,B model (Gemma 2) on every reliability dimension. Conversely, the best performer (Qwen 2.5 7B) is not the largest. Parameter count is a poor predictor of reliability in the sub-10\,B regime.
-    \item \textbf{Robustness is the primary bottleneck.} Input perturbations cause the most dramatic failures, with a worst-case 100\% degradation (Gemma 2 9B) and an average of 52.0\% across models.
-    \item \textbf{Fault tolerance shows a binary divide.} Only 7\,B models can recover from tool failures; sub-4\,B models cannot. This suggests a capability threshold for fault recovery.
+    \item \textbf{Reliability does not scale with model size.} Parameter count correlates negatively with reliability ($r = -0.179$). The best model (Qwen 2.5 Coder 7B, 85.0\%) is not the largest, and a 1\,B model (Llama 3.2, 56.1\%) outperforms 8\,B and 9\,B models.
+    \item \textbf{Code training transfers to agent reliability.} The code-specialized variant (Qwen 2.5 Coder 7B) outperforms its general counterpart on every dimension, achieving the highest composite reliability (85.0\%), perfect consistency (100\%), and perfect fault tolerance (100\%).
+    \item \textbf{Reasoning models conflict with structured tool use.} DeepSeek-R1 7B achieves 0\% accuracy: its chain-of-thought traces interfere with the ReAct agent format, causing complete task failure.
+    \item \textbf{Robustness is the primary bottleneck.} Input perturbations cause the most dramatic failures, with three models achieving 0\% robustness and average degradation of 52.2\% across models.
+    \item \textbf{Fault tolerance is rare and binary.} Only the code-specialized Qwen 2.5 Coder 7B achieves perfect fault tolerance; its general counterpart reaches 50\%; all other models score 0\%.
     \item \textbf{Safety alignment is critically weak.} No model achieves even 50\% safety. Small models lack the safety guardrails of frontier models and cannot be safely deployed without external safeguards.
-    \item \textbf{Qwen 2.5 7B is the overall reliability leader.} It achieves the highest composite reliability (60.0\%), accuracy (64.3\%), consistency (86.7\%), and fault tolerance (50.0\%), while tying for best robustness (70.0\%).
 \end{enumerate}

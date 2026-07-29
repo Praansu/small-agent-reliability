@@ -38,6 +38,10 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+pyrightconfig.json
+
+# Temporary scripts
+code/quick_*.py
 
 # OpenCode
 .opencode/

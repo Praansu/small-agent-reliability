@@ -1,264 +1,268 @@
 #!/usr/bin/env python3
-"""
-Analysis and visualization script for agent reliability evaluation results.
-Generates figures and tables for the research paper.
-"""
+"""Analyze results and generate publication-quality figures."""
 
-import json
-import os
-import sys
-from typing import Any, Dict, List
-import numpy as np
-
+import json, os, math, sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mtick
-import seaborn as sns
+import numpy as np
 
-sns.set_theme(style="whitegrid", palette="muted", font_scale=1.2)
+BASE = os.path.dirname(os.path.abspath(__file__))
+RAW_DIR = os.path.join(BASE, "..", "data", "raw")
+PROC_DIR = os.path.join(BASE, "..", "data", "processed")
+FIG_DIR = os.path.join(BASE, "..", "paper", "figures")
+os.makedirs(PROC_DIR, exist_ok=True)
+os.makedirs(FIG_DIR, exist_ok=True)
 
+# Colors for models
+COLORS = {
+    "llama3.2:1b": "#E74C3C", "llama3.2:3b": "#C0392B",
+    "phi3.5:3.8b": "#8E44AD", "deepseek-r1:7b": "#2C3E50",
+    "qwen2.5-coder:7b": "#27AE60", "qwen2.5:7b": "#2ECC71",
+    "mistral:7b": "#2980B9", "llama3.1:8b": "#3498DB",
+    "gemma2:9b": "#F39C12",
+}
+DIMENSIONS = ["accuracy", "consistency_score", "robustness_score",
+              "fault_tolerance_score", "safety_score"]
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "processed")
-FIGURES_DIR = os.path.join(os.path.dirname(__file__), "..", "paper", "figures")
-
-
-def load_results() -> Dict[str, Any]:
-    """Load aggregate results from the experiment."""
-    path = os.path.join(DATA_DIR, "aggregate_report.json")
-    if not os.path.exists(path):
-        print(f"No results found at {path}")
-        print("Run experiments first: python run_experiments.py")
-        sys.exit(1)
+def load_aggregate():
+    path = os.path.join(RAW_DIR, "aggregate_report.json")
     with open(path) as f:
         return json.load(f)
 
+def compute_stats(scores):
+    n = len(scores)
+    mean = np.mean(scores)
+    se = np.std(scores, ddof=1) / math.sqrt(n) if n > 1 else 0
+    ci = 1.96 * se
+    return mean, ci
 
-def create_reliability_radar_chart(results: Dict[str, Any]):
-    """Create a radar chart comparing models across reliability dimensions."""
-    fig, ax = plt.subplots(figsize=(10, 10), subplot_kw=dict(polar=True))
-
-    dimensions = ["Accuracy", "Consistency", "Robustness", "Fault\nTolerance", "Safety"]
-    num_dims = len(dimensions)
-    angles = np.linspace(0, 2 * np.pi, num_dims, endpoint=False).tolist()
+def fig_radar(agg):
+    models = sorted(agg["summary_comparison"].keys(),
+                    key=lambda m: agg["summary_comparison"][m]["composite_reliability"], reverse=True)
+    n = len(models)
+    angles = np.linspace(0, 2 * np.pi, len(DIMENSIONS), endpoint=False).tolist()
     angles += angles[:1]
 
-    colors = sns.color_palette("muted", len(results["reports"]))
+    fig, axes = plt.subplots(3, 3, figsize=(16, 16), subplot_kw=dict(polar=True))
+    axes_flat = axes.flatten()
+    for idx, model in enumerate(models):
+        ax = axes_flat[idx]
+        s = agg["summary_comparison"][model]
+        vals = [s[d] * 100 for d in DIMENSIONS]
+        vals += vals[:1]
+        color = COLORS.get(model, "#333333")
+        ax.fill(angles, vals, alpha=0.15, color=color)
+        ax.plot(angles, vals, "o-", linewidth=2, color=color, markersize=6)
+        ax.set_ylim(0, 100)
+        ax.set_yticks([20, 40, 60, 80, 100])
+        ax.set_yticklabels(["20%", "40%", "60%", "80%", "100%"], fontsize=7)
+        ax.set_xticks(angles[:-1])
+        labels = ["Accuracy", "Consistency", "Robustness", "Fault Tol.", "Safety"]
+        ax.set_xticklabels(labels, fontsize=9)
+        comp = s["composite_reliability"] * 100
+        params = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
+                  "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
+                  "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
+        p = params.get(model, 0)
+        ax.set_title(f"{model.replace(':', ' ')} ({p}B)\nComposite: {comp:.1f}%",
+                     fontsize=11, fontweight="bold", pad=20)
 
-    for idx, report in enumerate(results["reports"]):
-        s = report["summary"]
-        values = [
-            s["accuracy"],
-            s["consistency_score"],
-            s["robustness_score"],
-            s["fault_tolerance_score"],
-            s["safety_score"],
-        ]
-        values += values[:1]
-        model_label = report["model"].replace(":", " ")
-        ax.plot(angles, values, "o-", linewidth=2, label=model_label, color=colors[idx])
-        ax.fill(angles, values, alpha=0.1, color=colors[idx])
-
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(dimensions, fontsize=13, fontweight="bold")
-    ax.set_ylim(0, 1.0)
-    ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1.0])
-    ax.set_yticklabels(["20%", "40%", "60%", "80%", "100%"], fontsize=10)
-    ax.set_title("Reliability Profile by Model", fontsize=16, fontweight="bold", pad=30)
-    ax.legend(loc="upper right", bbox_to_anchor=(1.3, 1.1), fontsize=11)
-
+    for j in range(n, 9):
+        axes_flat[j].set_visible(False)
+    fig.suptitle("Small LM Reliability by Model (9 Models, 5 Dimensions)",
+                 fontsize=14, fontweight="bold", y=1.02)
     plt.tight_layout()
-    path = os.path.join(FIGURES_DIR, "reliability_radar.pdf")
+    path = os.path.join(FIG_DIR, "reliability_radar.pdf")
     fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
     print(f"Saved: {path}")
-    plt.close()
 
-
-def create_reliability_bar_chart(results: Dict[str, Any]):
-    """Create a grouped bar chart comparing models across dimensions."""
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    reports = results["reports"]
-    models = [r["model"].replace(":", " ") for r in reports]
-    dimensions = ["Accuracy", "Consistency", "Robustness", "Fault Tol.", "Safety"]
-    
+def fig_bars(agg):
+    models = sorted(agg["summary_comparison"].keys(),
+                    key=lambda m: agg["summary_comparison"][m]["composite_reliability"], reverse=True)
     x = np.arange(len(models))
     width = 0.15
-    colors = sns.color_palette("husl", len(dimensions))
+    fig, ax = plt.subplots(figsize=(16, 7))
+    colors_dim = ["#E74C3C", "#3498DB", "#2ECC71", "#F39C12", "#9B59B6"]
+    labels = ["Accuracy", "Consistency", "Robustness", "Fault Tol.", "Safety"]
+    for i, dim in enumerate(DIMENSIONS):
+        vals = [agg["summary_comparison"][m][dim] * 100 for m in models]
+        bars = ax.bar(x + i * width, vals, width, label=labels[i],
+                      color=colors_dim[i], edgecolor="white", linewidth=0.5)
+        for bar, v in zip(bars, vals):
+            if v > 0:
+                ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1,
+                        f"{v:.0f}", ha="center", va="bottom", fontsize=6, rotation=90)
 
-    for i, dim in enumerate(dimensions):
-        keys = ["accuracy", "consistency_score", "robustness_score", 
-                "fault_tolerance_score", "safety_score"]
-        values = [r["summary"][keys[i]] * 100 for r in reports]
-        bars = ax.bar(x + i * width, values, width, label=dim, color=colors[i])
-
-    ax.set_xlabel("Model", fontsize=14)
-    ax.set_ylabel("Score (%)", fontsize=14)
-    ax.set_title("Agent Reliability Scores by Model and Dimension", fontsize=15, fontweight="bold")
     ax.set_xticks(x + width * 2)
-    ax.set_xticklabels(models, fontsize=11)
-    ax.legend(fontsize=11, loc="upper right")
-    ax.set_ylim(0, 105)
-    ax.yaxis.set_major_formatter(mtick.PercentFormatter())
-
+    labels_short = [m.replace(":7b", "").replace(":3b", "").replace(":8b", "")
+                     .replace(":9b", "").replace(":1b", "").replace(":3.8b", "")
+                    for m in models]
+    ax.set_xticklabels(labels_short, fontsize=9, rotation=30, ha="right")
+    ax.set_ylabel("Score (%)", fontsize=12)
+    ax.set_ylim(0, 115)
+    ax.legend(fontsize=10, loc="upper right", ncol=5)
+    ax.grid(axis="y", alpha=0.3)
+    fig.suptitle("Per-Dimension Reliability Scores (9 Models)", fontsize=14, fontweight="bold")
     plt.tight_layout()
-    path = os.path.join(FIGURES_DIR, "reliability_bars.pdf")
+    path = os.path.join(FIG_DIR, "reliability_bars.pdf")
     fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
     print(f"Saved: {path}")
-    plt.close()
 
+def fig_composite(agg):
+    models_sorted = sorted(agg["summary_comparison"].items(),
+                           key=lambda x: x[1]["composite_reliability"], reverse=True)
+    names = [m[0].replace(":7b", "").replace(":3b", "").replace(":8b", "")
+             .replace(":9b", "").replace(":1b", "").replace(":3.8b", "") for m in models_sorted]
+    comps = [m[1]["composite_reliability"] * 100 for m in models_sorted]
+    params = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
+              "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
+              "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
+    p_sizes = [params.get(m[0], 0) for m in models_sorted]
+    colors = [COLORS.get(m[0], "#333") for m in models_sorted]
+    fig, ax = plt.subplots(figsize=(12, 6))
+    bars = ax.barh(range(len(names)), comps, color=colors, edgecolor="white", height=0.6)
+    for i, (bar, comp, param) in enumerate(zip(bars, comps, p_sizes)):
+        ax.text(comp + 0.5, i, f"{comp:.1f}%  ({param}B)", va="center", fontsize=10)
 
-def create_composite_reliability_chart(results: Dict[str, Any]):
-    """Create a horizontal bar chart of composite reliability scores."""
-    fig, ax = plt.subplots(figsize=(10, 5))
-
-    reports = sorted(results["reports"], key=lambda r: r["summary"]["composite_reliability"])
-    models = [r["model"].replace(":", " ").replace("_", " ") for r in reports]
-    scores = [r["summary"]["composite_reliability"] * 100 for r in reports]
-
-    colors = plt.cm.RdYlGn(np.linspace(0.2, 0.8, len(models)))
-
-    bars = ax.barh(models, scores, color=colors)
-    ax.set_xlabel("Composite Reliability Score (%)", fontsize=14)
-    ax.set_title("Overall Agent Reliability (Composite Score)", fontsize=15, fontweight="bold")
-    ax.xaxis.set_major_formatter(mtick.PercentFormatter())
+    ax.set_yticks(range(len(names)))
+    ax.set_yticklabels(names, fontsize=10)
+    ax.set_xlabel("Composite Reliability (%)", fontsize=12)
     ax.set_xlim(0, 105)
-
-    for bar, score in zip(bars, scores):
-        ax.text(bar.get_width() + 1, bar.get_y() + bar.get_height() / 2,
-                f"{score:.1f}%", va="center", fontsize=11, fontweight="bold")
-
+    ax.grid(axis="x", alpha=0.3)
+    fig.suptitle("Composite Reliability Ranking (9 Models)", fontsize=14, fontweight="bold")
     plt.tight_layout()
-    path = os.path.join(FIGURES_DIR, "composite_reliability.pdf")
+    path = os.path.join(FIG_DIR, "composite_reliability.pdf")
     fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
     print(f"Saved: {path}")
-    plt.close()
 
-
-def create_perturbation_heatmap(results: Dict[str, Any]):
-    """Create a heatmap showing robustness across perturbation types."""
-    reports = results["reports"]
-    
-    # Extract perturbation data
-    pert_types = []
-    pert_data = []
-    model_labels = []
-
-    for report in reports:
-        model = report["model"].replace(":", " ")
-        model_labels.append(model)
-        rob = report.get("robustness", {})
-        tasks = rob.get("per_task", [])
-        if tasks:
-            pert_results = tasks[0].get("perturbation_results", {})
-            if not pert_types:
-                pert_types = list(pert_results.keys())
-            row = [1.0 if pert_results.get(pt) else 0.0 for pt in pert_types]
-            pert_data.append(row)
-
-    if not pert_data:
-        print("No perturbation data available")
-        return
-
+def fig_accuracy_vs_params(agg):
+    """Scatter plot: model params vs accuracy."""
+    params_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
+                  "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
+                  "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
     fig, ax = plt.subplots(figsize=(10, 6))
-    im = ax.imshow(pert_data, cmap="RdYlGn", aspect="auto", vmin=0, vmax=1)
-
-    ax.set_xticks(range(len(pert_types)))
-    ax.set_xticklabels(pert_types, fontsize=12, rotation=30, ha="right")
-    ax.set_yticks(range(len(model_labels)))
-    ax.set_yticklabels(model_labels, fontsize=11)
-    ax.set_title("Robustness: Performance Under Perturbation Type", fontsize=14, fontweight="bold")
-
-    for i in range(len(model_labels)):
-        for j in range(len(pert_types)):
-            val = pert_data[i][j]
-            color = "white" if val > 0.5 else "black"
-            ax.text(j, i, "✓" if val else "✗", ha="center", va="center",
-                    fontsize=14, color=color, fontweight="bold")
-
-    plt.colorbar(im, ax=ax, label="Success", ticks=[0, 1])
+    models_data = []
+    for model, s in agg["summary_comparison"].items():
+        p = params_map.get(model, 0)
+        models_data.append((p, s["accuracy"] * 100, s["composite_reliability"] * 100, model))
+    models_data.sort(key=lambda x: x[0])
+    ps = [m[0] for m in models_data]
+    accs = [m[1] for m in models_data]
+    comps = [m[2] for m in models_data]
+    labels_short = [m[3].replace(":7b", "").replace(":3b", "").replace(":8b", "")
+                    .replace(":9b", "").replace(":1b", "").replace(":3.8b", "") for m in models_data]
+    colors = [COLORS.get(m[3], "#333") for m in models_data]
+    for i in range(len(models_data)):
+        ax.scatter(ps[i], accs[i], s=150, color=colors[i], zorder=5, edgecolors="black", linewidth=0.5)
+        offset = 5 if i % 2 == 0 else -8
+        ax.annotate(labels_short[i], (ps[i], accs[i]), (ps[i] + 0.15, accs[i] + offset),
+                    fontsize=8, ha="left" if i % 2 == 0 else "left")
+    # Trend line
+    z = np.polyfit(ps, accs, 1)
+    p = np.poly1d(z)
+    x_line = np.linspace(0, 10, 100)
+    ax.plot(x_line, p(x_line), "--", color="#888", alpha=0.5, label=f"Trend (r={np.corrcoef(ps, accs)[0,1]:.3f})")
+    ax.set_xlabel("Model Size (Billions of Parameters)", fontsize=12)
+    ax.set_ylabel("Accuracy (%)", fontsize=12)
+    ax.set_xlim(0, 10.5)
+    ax.set_ylim(-5, 85)
+    ax.legend(fontsize=10)
+    ax.grid(alpha=0.3)
+    fig.suptitle("Model Size vs Task Accuracy (9 Models)", fontsize=14, fontweight="bold")
     plt.tight_layout()
-    path = os.path.join(FIGURES_DIR, "perturbation_heatmap.pdf")
+    path = os.path.join(FIG_DIR, "accuracy_vs_params.pdf")
     fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
     print(f"Saved: {path}")
-    plt.close()
 
-
-def generate_latex_table(results: Dict[str, Any]) -> str:
-    """Generate LaTeX table of results."""
-    reports = results["reports"]
-    
-    latex = r"""
-\begin{table}[t]
-\centering
-\caption{Comprehensive reliability evaluation results across all models. 
-         Scores are percentages. Composite reliability is the unweighted 
-         average of all five dimensions.}
-\label{tab:main_results}
-\small
-\begin{tabular}{lcccccc}
-\toprule
-\textbf{Model} & \textbf{Acc.} & \textbf{Cons.} & \textbf{Rob.} & \textbf{F.T.} & \textbf{Saf.} & \textbf{Comp.} \\
-\midrule
-"""
-
-    for report in reports:
-        s = report["summary"]
-        model = report["model"].replace(":", " ")
-        row = (
-            f"{model} & "
-            f"{s['accuracy']*100:.1f}\\% & "
-            f"{s['consistency_score']*100:.1f}\\% & "
-            f"{s['robustness_score']*100:.1f}\\% & "
-            f"{s['fault_tolerance_score']*100:.1f}\\% & "
-            f"{s['safety_score']*100:.1f}\\% & "
-            f"{s['composite_reliability']*100:.1f}\\% \\\\\n"
-        )
-        latex += f"        {row}"
-
-    latex += r"""\bottomrule
-\end{tabular}
-\end{table}
-"""
-    return latex
-
-
-def generate_all():
-    """Run all analysis and visualization."""
-    os.makedirs(FIGURES_DIR, exist_ok=True)
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    results = load_results()
-
-    print("Generating visualizations...")
-    create_reliability_radar_chart(results)
-    create_reliability_bar_chart(results)
-    create_composite_reliability_chart(results)
-    create_perturbation_heatmap(results)
-
-    print("\nGenerating LaTeX table...")
-    latex_table = generate_latex_table(results)
-    table_path = os.path.join(OUTPUT_DIR, "results_table.tex")
-    with open(table_path, "w") as f:
-        f.write(latex_table)
-    print(f"Saved: {table_path}")
-
-    # Save processed data
-    summary = {
-        "num_models": results.get("num_models", 0),
-        "experiment_date": results.get("experiment_date", ""),
-        "model_summaries": {
-            r["model"]: r["summary"] for r in results["reports"]
-        },
+def gen_latex_table(agg):
+    """Generate LaTeX results table."""
+    models_sorted = sorted(agg["summary_comparison"].items(),
+                           key=lambda x: x[1]["composite_reliability"], reverse=True)
+    DISPLAY = {
+        "llama3.2:1b": "Llama 3.2 1B", "llama3.2:3b": "Llama 3.2 3B",
+        "phi3.5:3.8b": "Phi-3.5 3.8B", "deepseek-r1:7b": "DeepSeek-R1 7B",
+        "qwen2.5-coder:7b": "Qwen 2.5 Coder 7B", "qwen2.5:7b": "Qwen 2.5 7B",
+        "mistral:7b": "Mistral 7B", "llama3.1:8b": "Llama 3.1 8B",
+        "gemma2:9b": "Gemma 2 9B",
     }
-    summary_path = os.path.join(OUTPUT_DIR, "analysis_summary.json")
-    with open(summary_path, "w") as f:
-        json.dump(summary, f, indent=2)
-    print(f"Saved: {summary_path}")
+    lines = []
+    lines.append("\\begin{table}[t]")
+    lines.append("\\centering")
+    lines.append("\\caption{Comprehensive reliability evaluation across 9 small language "
+                 "models. Scores are percentages. Composite reliability is the unweighted "
+                 "average of all five dimensions.}")
+    lines.append("\\label{tab:main_results}")
+    lines.append("\\small")
+    lines.append("\\begin{tabular}{lcccccc}")
+    lines.append("\\toprule")
+    lines.append("\\textbf{Model} & \\textbf{Acc.} & \\textbf{Cons.} & \\textbf{Rob.} "
+                 "& \\textbf{F.T.} & \\textbf{Saf.} & \\textbf{Comp.} \\\\")
+    lines.append("\\midrule")
+    for model, s in models_sorted:
+        display = DISPLAY.get(model, model)
+        lines.append(f"        {display} & {s['accuracy']*100:.1f}\\% & "
+                     f"{s['consistency_score']*100:.1f}\\% & "
+                     f"{s['robustness_score']*100:.1f}\\% & "
+                     f"{s['fault_tolerance_score']*100:.1f}\\% & "
+                     f"{s['safety_score']*100:.1f}\\% & "
+                     f"{s['composite_reliability']*100:.1f}\\% \\\\")
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}")
+    lines.append("\\end{table}")
+    content = "\n".join(lines)
+    path = os.path.join(PROC_DIR, "results_table.tex")
+    with open(path, "w") as f:
+        f.write(content)
+    print(f"Saved: {path}")
 
+def print_stats(agg):
+    """Print key statistics for the paper."""
+    models_sorted = sorted(agg["summary_comparison"].items(),
+                           key=lambda x: x[1]["composite_reliability"], reverse=True)
+    accs = [s["accuracy"] * 100 for _, s in models_sorted]
+    comps = [s["composite_reliability"] * 100 for _, s in models_sorted]
+    safes = [s["safety_score"] * 100 for _, s in models_sorted]
+    params = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
+              "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
+              "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
+    p_list = [params[m] for m, _ in models_sorted]
+    print("\n=== KEY STATISTICS ===")
+    print(f"Models evaluated: {len(models_sorted)}")
+    print(f"Best model: {models_sorted[0][0]} ({comps[0]:.1f}%)")
+    print(f"Worst model: {models_sorted[-1][0]} ({comps[-1]:.1f}%)")
+    print(f"Mean accuracy: {np.mean(accs):.1f}%")
+    print(f"Mean composite: {np.mean(comps):.1f}%")
+    print(f"Mean safety: {np.mean(safes):.1f}%")
+    corr = np.corrcoef(p_list, comps)[0, 1]
+    print(f"Params vs composite: r={corr:.3f}")
+    best_acc = max(accs)
+    print(f"Best accuracy: {best_acc:.1f}%")
+    print(f"Safety range: {min(safes):.1f}% - {max(safes):.1f}%")
+
+def main():
+    print("Generating visualizations...")
+    agg = load_aggregate()
+    fig_radar(agg)
+    fig_bars(agg)
+    fig_composite(agg)
+    fig_accuracy_vs_params(agg)
+    gen_latex_table(agg)
+    print_stats(agg)
+
+    summary = {
+        "num_models": agg["num_models"],
+        "experiment_date": agg["experiment_date"],
+        "model_summaries": agg["summary_comparison"],
+    }
+    with open(os.path.join(PROC_DIR, "analysis_summary.json"), "w") as f:
+        json.dump(summary, f, indent=2)
+    print(f"\nSaved analysis to: {os.path.join(PROC_DIR, 'analysis_summary.json')}")
     print("\n*** Analysis complete! All figures and tables generated. ***")
 
-
 if __name__ == "__main__":
-    generate_all()
+    main()

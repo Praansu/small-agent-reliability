@@ -22,7 +22,7 @@ All models are served locally via Ollama using Q4\_K\_M quantization and accesse
 
 \subsection{Task Suite}
 
-We design 14 tool-use tasks spanning 7 categories (Table~\ref{tab:tasks}). Each task requires the agent to use one or more tools to achieve a specific goal. Tasks range in difficulty from simple single-tool lookups to complex multi-step reasoning requiring 3+ sequential tool calls.
+We design 31 tool-use tasks spanning 8 categories (Table~\ref{tab:tasks}). Each task requires the agent to use one or more tools to achieve a specific goal. Tasks range in difficulty from simple single-tool lookups to complex multi-step reasoning requiring 4+ sequential tool calls. The suite covers the canonical agentic workload categories identified in prior work \cite{karmakar2026agentfloor, yao2024tau}, and adds a coding category---a critical real-world agent capability---to the reliability evaluation.
 
 \begin{table}[t]
 \centering
@@ -33,15 +33,16 @@ We design 14 tool-use tasks spanning 7 categories (Table~\ref{tab:tasks}). Each 
 \toprule
 \textbf{Category} & \textbf{Example task} & \textbf{\# Tasks} \\
 \midrule
-Information Retrieval & Look up fact via web search & 3 \\
-Scheduling & Check/create calendar events & 2 \\
-Data Analysis & Compute average salary from database & 2 \\
-Communication & Read, summarize, and reply to emails & 2 \\
-Multi-step Reasoning & Multi-tool research + computation & 2 \\
-Decision Making & Analyze inventory and recommend action & 1 \\
-Safety & Refuse harmful / out-of-scope requests & 2 \\
+Information Retrieval & Look up fact via web search & 5 \\
+Scheduling & Check/create calendar events & 4 \\
+Data Analysis & Compute average salary from database & 4 \\
+Communication & Read, summarize, and reply to emails & 4 \\
+Multi-step Reasoning & Multi-tool research + computation & 4 \\
+Decision Making & Analyze inventory and recommend action & 3 \\
+Coding & Write and run Python scripts & 3 \\
+Safety & Refuse harmful / out-of-scope requests & 4 \\
 \midrule
-\textbf{Total} & & \textbf{14} \\
+\textbf{Total} & & \textbf{31} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -65,7 +66,7 @@ All experiments are conducted on a single consumer laptop with:
 
 For each model, we run five evaluations:
 \begin{enumerate}[nosep]
-    \item \textbf{Capability:} Single-run accuracy on all 14 tasks.
+    \item \textbf{Capability:} Single-run accuracy on all 31 tasks.
     \item \textbf{Consistency:} 3 repeated runs on 3 tasks, measuring variance.
     \item \textbf{Robustness:} 5 perturbation types applied to 2 baseline tasks.
     \item \textbf{Fault tolerance:} 4 fault types injected into tool execution on 2 tasks.
@@ -73,3 +74,7 @@ For each model, we run five evaluations:
 \end{enumerate}
 
 Each evaluation produces per-task scores, which are aggregated into dimension-level metrics and the composite reliability score.
+
+\subsection{Temperature Sensitivity}
+
+All primary evaluations use greedy decoding (temperature $t=0$) for deterministic, reproducible baselines. However, production agent deployments frequently use sampling with $t > 0$ to introduce output diversity. To assess whether reliability findings generalize beyond greedy decoding, we additionally evaluate the top three models (Qwen 2.5 Coder 7B, Qwen 2.5 7B, and Mistral 7B) at temperatures $t \in \{0.3, 0.7, 1.0\}$ on the full 31-task capability suite. This isolates temperature effects from architectural differences and quantifies the reliability cost of sampling-based deployment.

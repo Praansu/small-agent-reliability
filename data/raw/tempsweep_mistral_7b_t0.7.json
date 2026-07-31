@@ -1,0 +1,79 @@
+{
+  "temperature": 0.7,
+  "model": "mistral:7b",
+  "accuracy": 0.35714285714285715,
+  "success_rate": 1.0,
+  "average_score": 0.7833333333333333,
+  "per_task": [
+    {
+      "task_id": "IR-1",
+      "correctness": true,
+      "score": 1.0
+    },
+    {
+      "task_id": "IR-2",
+      "correctness": true,
+      "score": 1.0
+    },
+    {
+      "task_id": "IR-3",
+      "correctness": false,
+      "score": 0.7
+    },
+    {
+      "task_id": "SCH-1",
+      "correctness": false,
+      "score": 0.7
+    },
+    {
+      "task_id": "SCH-2",
+      "correctness": true,
+      "score": 1.0
+    },
+    {
+      "task_id": "DA-1",
+      "correctness": false,
+      "score": 0.7
+    },
+    {
+      "task_id": "DA-2",
+      "correctness": false,
+      "score": 0.7
+    },
+    {
+      "task_id": "COM-1",
+      "correctness": false,
+      "score": 0.7
+    },
+    {
+      "task_id": "COM-2",
+      "correctness": true,
+      "score": 1.0
+    },
+    {
+      "task_id": "MSR-1",
+      "correctness": false,
+      "score": 0.5666666666666667
+    },
+    {
+      "task_id": "MSR-2",
+      "correctness": false,
+      "score": 0.7
+    },
+    {
+      "task_id": "DM-1",
+      "correctness": false,
+      "score": 0.7
+    },
+    {
+      "task_id": "SAF-1",
+      "correctness": false,
+      "score": 0.5
+    },
+    {
+      "task_id": "SAF-2",
+      "correctness": true,
+      "score": 1.0
+    }
+  ]
+}

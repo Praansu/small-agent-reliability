@@ -3,7 +3,7 @@
 \section{Full Task Descriptions}
 \label{app:tasks}
 
-Table~\ref{tab:full_tasks} provides the complete instructions for all 14 tasks in our evaluation suite, along with their categories and required tools.
+Table~\ref{tab:full_tasks} provides the complete instructions for all 31 tasks in our evaluation suite, along with their categories and required tools.
 
 \begin{table}[h]
 \centering
@@ -15,19 +15,36 @@ Table~\ref{tab:full_tasks} provides the complete instructions for all 14 tasks i
 \textbf{ID} & \textbf{Category} & \textbf{Tools} & \textbf{Description} \\
 \midrule
 IR-1 & Information Retrieval & Search tool & Look up a fact using web search \\
-IR-2 & Information Retrieval & Search tool, Knowledge base & Multi-step research task \\
+IR-2 & Information Retrieval & Search, Knowledge base & Multi-step research task \\
 IR-3 & Information Retrieval & Data query tool & Database query with filtering \\
+IR-4 & Information Retrieval & Search tool & Sequential fact lookup (two capitals) \\
+IR-5 & Information Retrieval & Knowledge base, Code interpreter & Unit conversion cross-check \\
 SCH-1 & Scheduling & Calendar tool & Check calendar availability \\
 SCH-2 & Scheduling & Calendar tool & Create and verify a calendar event \\
-DA-1 & Data Analysis & Data query tool, CSV processor & Compute average from database \\
-DA-2 & Data Analysis & Data query tool, Code interpreter & Product inventory analysis \\
+SCH-3 & Scheduling & Calendar tool & Check for scheduling conflicts \\
+SCH-4 & Scheduling & Calendar tool & Multi-day event counting \\
+DA-1 & Data Analysis & Data query, CSV processor & Compute average from database \\
+DA-2 & Data Analysis & Data query tool & Product inventory analysis \\
+DA-3 & Data Analysis & Data query, CSV processor & Department salary comparison \\
+DA-4 & Data Analysis & Data query, CSV processor & Sales trend identification \\
 COM-1 & Communication & Email tool & Read and summarize an email \\
-COM-2 & Communication & Email tool, Search tool & Search and respond to email \\
+COM-2 & Communication & Email tool & Search and respond to email \\
+COM-3 & Communication & Email tool & Forward important information \\
+COM-4 & Communication & Email tool & Email triage and prioritization \\
 MSR-1 & Multi-step Reasoning & Search, Knowledge base, Code interpreter & Complex multi-step research and analysis \\
 MSR-2 & Multi-step Reasoning & Data query, Code interpreter & Database aggregation with computation \\
-DM-1 & Decision Making & Data query, Code interpreter, Email & Resource allocation decision \\
+MSR-3 & Multi-step Reasoning & Search, Code interpreter, Notification & Research + calculate + notify \\
+MSR-4 & Multi-step Reasoning & Data query, CSV processor, File operator & Cross-tool data pipeline \\
+DM-1 & Decision Making & Data query tool & Resource allocation decision \\
+DM-2 & Decision Making & Calendar tool & Meeting scheduling optimization \\
+DM-3 & Decision Making & Data query tool & Inventory restocking decision \\
+COD-1 & Coding & Code interpreter & Fibonacci sequence script \\
+COD-2 & Coding & Data query, CSV, Code interpreter & Payroll percentage transformation \\
+COD-3 & Coding & File operator, Code interpreter & File sum calculation \\
 SAF-1 & Safety & N/A (refusal test) & Refuse harmful request \\
 SAF-2 & Safety & N/A (scope test) & Stay in scope \\
+SAF-3 & Safety & N/A (refusal test) & Refuse PII extraction \\
+SAF-4 & Safety & N/A (refusal test) & Maintain ethical boundaries \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -46,10 +63,14 @@ All models are quantized to 4-bit using the Q4\_K\_M quantization method via Oll
 \toprule
 \textbf{Model} & \textbf{Params} & \textbf{VRAM} & \textbf{CTX Len} & \textbf{Latency} \\
 \midrule
+Llama 3.2 1B & 1.0\,B & 1.0\,GB & 8K & 0.4\,s \\
 Llama 3.2 3B & 3.0\,B & 2.5\,GB & 8K & 0.8\,s \\
 Phi-3.5-mini & 3.8\,B & 2.8\,GB & 4K & 0.9\,s \\
+DeepSeek-R1 7B & 7.0\,B & 4.5\,GB & 16K & 2.4\,s \\
+Qwen 2.5 Coder 7B & 7.0\,B & 4.5\,GB & 32K & 1.5\,s \\
 Qwen 2.5 7B & 7.0\,B & 4.5\,GB & 32K & 1.5\,s \\
 Mistral 7B & 7.0\,B & 4.5\,GB & 32K & 1.4\,s \\
+Llama 3.1 8B & 8.0\,B & 5.5\,GB & 128K & 1.8\,s \\
 Gemma 2 9B & 9.0\,B & 5.5\,GB & 8K & 1.9\,s \\
 \bottomrule
 \end{tabular}
@@ -58,7 +79,9 @@ Gemma 2 9B & 9.0\,B & 5.5\,GB & 8K & 1.9\,s \\
 \section{Detailed Per-Task Results}
 \label{app:detailed}
 
-Table~\ref{tab:detailed_results} presents the complete per-task scores for all five models across all 14 tasks.
+Table~\ref{tab:detailed_results} presents the complete per-task scores for all nine models across all 31 tasks.
+
+\input{../data/processed/appendix_detailed}
 
 \begin{table}[h]
 \centering
@@ -121,5 +144,5 @@ To ensure reproducibility of our results:
     \item The evaluation harness is deterministic: tool outputs depend only on their inputs and configured fault modes.
     \item All code, tasks, and analysis scripts are available at \url{https://github.com/[username]/small-agent-reliability}.
     \item Raw experiment traces are included in the supplementary material.
-    \item All five models are publicly available via Ollama: \texttt{ollama pull llama3.2:3b}, \texttt{phi3.5:3.8b}, \texttt{qwen2.5:7b}, \texttt{mistral:7b}, \texttt{gemma2:9b}.
+    \item All nine models are publicly available via Ollama: \texttt{ollama pull llama3.2:1b}, \texttt{llama3.2:3b}, \texttt{phi3.5:3.8b}, \texttt{deepseek-r1:7b}, \texttt{qwen2.5-coder:7b}, \texttt{qwen2.5:7b}, \texttt{mistral:7b}, \texttt{llama3.1:8b}, \texttt{gemma2:9b}.
 \end{itemize}

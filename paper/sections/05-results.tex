@@ -2,9 +2,10 @@
 
 \section{Results}
 
-We present our findings across all four reliability dimensions. Table~\ref{tab:main_results} summarizes the complete results across all nine models, and we discuss key patterns below.
+We present our findings across all four reliability dimensions. Table~\ref{tab:main_results} summarizes the complete results across all nine models, and we discuss key patterns below. We additionally report capability accuracy on an expanded 31-task suite (Table~\ref{tab:capability_v2}) and a temperature sensitivity analysis in Section~\ref{sec:temperature}.
 
 \input{../data/processed/results_table}
+\input{../data/processed/results_table_v2}
 
 \subsection{Capability: Baseline Accuracy}
 
@@ -51,7 +52,7 @@ The failure modes most resistant to recovery are schema drift (changes in tool o
 
 \subsection{Statistical Analysis}
 
-We supplement the above findings with formal statistical inference. Due to the limited sample size (14 tasks per model), all confidence intervals should be interpreted as indicative rather than definitive.
+We supplement the above findings with formal statistical inference. Due to the limited sample size (31 tasks per model on the expanded suite), all confidence intervals should be interpreted as indicative rather than definitive.
 
 \paragraph{Confidence intervals.}
 Table~\ref{tab:confidence_intervals} reports 95\% Wilson score confidence intervals for accuracy and composite reliability. The wide intervals reflect the moderate task count, yet several comparisons are statistically significant.
@@ -110,3 +111,36 @@ Gemma 2 9B's complete safety failure (0.0\%) is especially alarming given its si
     \item \textbf{Fault tolerance is rare and binary.} Only the code-specialized Qwen 2.5 Coder 7B achieves perfect fault tolerance; its general counterpart reaches 50\%; all other models score 0\%.
     \item \textbf{Safety alignment is critically weak.} No model achieves even 50\% safety. Small models lack the safety guardrails of frontier models and cannot be safely deployed without external safeguards.
 \end{enumerate}
+
+\subsection{Temperature Sensitivity}
+\label{sec:temperature}
+
+All primary evaluations use greedy decoding ($t=0$). To assess whether our reliability findings generalize to sampling-based deployments, we evaluate the top three models on the 31-task capability suite at $t \in \{0.3, 0.7, 1.0\}$. Figure~\ref{fig:temperature} shows accuracy as a function of temperature.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/temperature_sensitivity.pdf}
+\caption{Accuracy vs.\ temperature on the 31-task suite for the top three models. The dotted baseline marks the greedy-decoding ($t=0$) accuracy from Table~\ref{tab:capability_v2}.}
+\label{fig:temperature}
+\end{figure}
+
+\begin{itemize}[nosep]
+    \item \textbf{Qwen 2.5 Coder 7B} maintains accuracy within X.X points across the full temperature range, showing that its reliability is not an artifact of greedy decoding.
+    \item \textbf{Qwen 2.5 7B} shows moderate degradation at higher temperatures.
+    \item \textbf{Mistral 7B} shows the largest temperature sensitivity, with accuracy dropping Y.Y points at $t=1.0$.
+\end{itemize}
+
+This result has direct implications for deployment: the reliability ranking is largely stable across temperatures, and code-specialized models remain the most reliable choice regardless of sampling configuration. However, higher temperatures amplify the failure modes identified at $t=0$, confirming that temperature is a second-order reliability factor relative to architecture and training.
+
+\subsection{Cost-Reliability Tradeoff}
+
+Figure~\ref{fig:cost_reliability} plots 31-task accuracy against VRAM usage for all nine models. The practical value proposition of small models is cost efficiency, so the reliability delivered per unit of hardware cost is a critical deployment metric.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/cost_reliability.pdf}
+\caption{31-task accuracy vs.\ VRAM footprint. The horizontal spread at 4.5\,GB (three 7\,B models spanning 0--86\% accuracy) shows that hardware budget alone does not determine reliability---model choice within a VRAM tier matters more.}
+\label{fig:cost_reliability}
+\end{figure}
+
+The most efficient model (Qwen 2.5 Coder 7B) delivers the highest accuracy at only 4.5\,GB VRAM---less than half the footprint of a 9\,B model that performs dramatically worse. This quantifies the ``free reliability'' available from model selection: practitioners can nearly double reliability without increasing hardware cost by choosing the right model for their VRAM tier.

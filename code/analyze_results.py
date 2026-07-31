@@ -244,9 +244,193 @@ def print_stats(agg):
     print(f"Best accuracy: {best_acc:.1f}%")
     print(f"Safety range: {min(safes):.1f}% - {max(safes):.1f}%")
 
+def load_v2_capability():
+    """Load v2 capability results (31-task suite)."""
+    path = os.path.join(RAW_DIR, "v2", "aggregate_v2.json")
+    if not os.path.exists(path):
+        return None
+    with open(path) as f:
+        return json.load(f)
+
+def load_temperature_sweep():
+    """Load temperature sweep results."""
+    path = os.path.join(PROC_DIR, "temperature_sweep.json")
+    if not os.path.exists(path):
+        return None
+    with open(path) as f:
+        return json.load(f)
+
+def fig_temperature(ts):
+    """Plot accuracy vs temperature for top models."""
+    if not ts:
+        print("  (No temperature sweep data)")
+        return
+    models = ts["models"]
+    temps = [0.0] + ts["temperatures"]  # prepend t=0 baseline from v2
+    results = ts["results"]
+
+    # Build acc matrix: model x temp
+    acc_by_model = {m: {0.0: None} for m in models}
+    v2 = load_v2_capability()
+    if v2:
+        for m in models:
+            if m in v2["results"]:
+                acc_by_model[m][0.0] = v2["results"][m].get("accuracy", 0) * 100
+    for r in results:
+        m = r["model"]
+        if m in acc_by_model:
+            acc_by_model[m][r["temperature"]] = r.get("accuracy", 0) * 100
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    colors = ["#27AE60", "#2ECC71", "#2980B9"]
+    for i, m in enumerate(models):
+        xs = []
+        ys = []
+        for t in temps:
+            if acc_by_model[m].get(t) is not None:
+                xs.append(t)
+                ys.append(acc_by_model[m][t])
+        ax.plot(xs, ys, "o-", linewidth=2, markersize=7, color=colors[i],
+                label=m.replace(":7b", "").replace(":7b", ""))
+
+    ax.set_xlabel("Temperature", fontsize=12)
+    ax.set_ylabel("Accuracy (%)", fontsize=12)
+    ax.set_ylim(0, 100)
+    ax.set_xticks(temps)
+    ax.legend(fontsize=10)
+    ax.grid(alpha=0.3)
+    fig.suptitle("Accuracy vs Temperature (31-Task Suite)", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    path = os.path.join(FIG_DIR, "temperature_sensitivity.pdf")
+    fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved: {path}")
+
+def fig_cost_reliability(v2):
+    """Plot VRAM estimate vs composite reliability (cost-reliability tradeoff)."""
+    if not v2:
+        print("  (No v2 capability data for cost-reliability)")
+        return
+    params_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
+                  "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
+                  "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
+    vram_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 2.5, "phi3.5:3.8b": 2.8,
+                "deepseek-r1:7b": 4.5, "qwen2.5-coder:7b": 4.5, "qwen2.5:7b": 4.5,
+                "mistral:7b": 4.5, "llama3.1:8b": 5.5, "gemma2:9b": 5.5}
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for model, r in v2["results"].items():
+        acc = r.get("accuracy", 0) * 100
+        vram = vram_map.get(model, 3.0)
+        color = COLORS.get(model, "#333")
+        label = model.replace(":7b", "").replace(":3b", "").replace(":8b", "")
+        ax.scatter(vram, acc, s=180, color=color, zorder=5, edgecolors="black", linewidth=0.5)
+        ax.annotate(label, (vram, acc), (vram + 0.1, acc + 3), fontsize=8)
+
+    ax.set_xlabel("VRAM Usage (GB, Q4_K_M)", fontsize=12)
+    ax.set_ylabel("Accuracy on 31 Tasks (%)", fontsize=12)
+    ax.set_xlim(0, 7)
+    ax.set_ylim(0, 100)
+    ax.grid(alpha=0.3)
+    fig.suptitle("Cost (VRAM) vs Reliability (31-Task Accuracy)", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    path = os.path.join(FIG_DIR, "cost_reliability.pdf")
+    fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved: {path}")
+
+def gen_v2_latex_table(v2):
+    """Generate LaTeX results table from v2 31-task capability."""
+    if not v2:
+        return
+    DISPLAY = {
+        "llama3.2:1b": "Llama 3.2 1B", "llama3.2:3b": "Llama 3.2 3B",
+        "phi3.5:3.8b": "Phi-3.5 3.8B", "deepseek-r1:7b": "DeepSeek-R1 7B",
+        "qwen2.5-coder:7b": "Qwen 2.5 Coder 7B", "qwen2.5:7b": "Qwen 2.5 7B",
+        "mistral:7b": "Mistral 7B", "llama3.1:8b": "Llama 3.1 8B",
+        "gemma2:9b": "Gemma 2 9B",
+    }
+    models_sorted = sorted(v2["results"].items(),
+                           key=lambda x: x[1].get("accuracy", 0), reverse=True)
+    lines = []
+    lines.append("\\begin{table}[t]")
+    lines.append("\\centering")
+    lines.append("\\caption{Capability accuracy on the expanded 31-task suite "
+                 "(8 categories). Accuracy is the fraction of tasks completed correctly "
+                 "with greedy decoding (t=0).}")
+    lines.append("\\label{tab:capability_v2}")
+    lines.append("\\small")
+    lines.append("\\begin{tabular}{lccc}")
+    lines.append("\\toprule")
+    lines.append("\\textbf{Model} & \\textbf{Accuracy} & \\textbf{Success} "
+                 "& \\textbf{Avg Time} \\\\")
+    lines.append("\\midrule")
+    for model, r in models_sorted:
+        display = DISPLAY.get(model, model)
+        lines.append(f"        {display} & {r['accuracy']*100:.1f}\\% & "
+                     f"{r['success_rate']*100:.1f}\\% & "
+                     f"{r['avg_duration_s']:.1f}s \\\\")
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}")
+    lines.append("\\end{table}")
+    with open(os.path.join(PROC_DIR, "results_table_v2.tex"), "w") as f:
+        f.write("\n".join(lines))
+    print(f"Saved: {os.path.join(PROC_DIR, 'results_table_v2.tex')}")
+
+def gen_appendix_detailed(v2):
+    """Generate per-task scores appendix table from v2 results."""
+    if not v2:
+        return
+    DISPLAY = {
+        "llama3.2:1b": "Llama 3.2 1B", "llama3.2:3b": "Llama 3.2 3B",
+        "phi3.5:3.8b": "Phi-3.5 3.8B", "deepseek-r1:7b": "DeepSeek-R1 7B",
+        "qwen2.5-coder:7b": "Qwen 2.5 Coder 7B", "qwen2.5:7b": "Qwen 2.5 7B",
+        "mistral:7b": "Mistral 7B", "llama3.1:8b": "Llama 3.1 8B",
+        "gemma2:9b": "Gemma 2 9B",
+    }
+    # Order by accuracy desc
+    models_sorted = sorted(v2["results"].items(),
+                           key=lambda x: x[1].get("accuracy", 0), reverse=True)
+    # Gather all task ids in order from first model
+    first = v2["results"][models_sorted[0][0]]
+    task_ids = [t["task_id"] for t in first.get("per_task", [])]
+
+    lines = []
+    lines.append("\\begin{table}[h]")
+    lines.append("\\centering")
+    lines.append("\\caption{Per-task scores (31-task suite, t=0). Values in [0,1], 1.0 = perfect.}")
+    lines.append("\\label{tab:detailed_results}")
+    lines.append("\\tiny")
+    cols = "l" + "c" * len(models_sorted)
+    lines.append(f"\\begin{{tabular}}{{{cols}}}")
+    lines.append("\\toprule")
+    lines.append("\\textbf{Task} & " + " & ".join([f"\\textbf{{{DISPLAY.get(m, m)}}}" for m, _ in models_sorted]) + " \\\\")
+    lines.append("\\midrule")
+
+    for tid in task_ids:
+        row_vals = []
+        for model, r in models_sorted:
+            per = {t["task_id"]: t for t in r.get("per_task", [])}
+            t = per.get(tid)
+            row_vals.append(f"{t['score']:.2f}" if t else "--")
+        lines.append(f"{tid} & " + " & ".join(row_vals) + " \\\\")
+
+    lines.append("\\bottomrule")
+    lines.append("\\end{tabular}")
+    lines.append("\\end{table}")
+
+    # Header row for the appendix
+    path = os.path.join(PROC_DIR, "appendix_detailed.tex")
+    with open(path, "w") as f:
+        f.write("\n".join(lines))
+    print(f"Saved: {path}")
+
 def main():
     print("Generating visualizations...")
     agg = load_aggregate()
+    v2 = load_v2_capability()
+    ts = load_temperature_sweep()
+
     fig_radar(agg)
     fig_bars(agg)
     fig_composite(agg)
@@ -254,11 +438,25 @@ def main():
     gen_latex_table(agg)
     print_stats(agg)
 
+    # New v2 analyses
+    fig_temperature(ts)
+    fig_cost_reliability(v2)
+    gen_v2_latex_table(v2)
+    gen_appendix_detailed(v2)
+
     summary = {
         "num_models": agg["num_models"],
         "experiment_date": agg["experiment_date"],
         "model_summaries": agg["summary_comparison"],
     }
+    if v2:
+        summary["v2_num_tasks"] = v2["num_tasks"]
+        summary["v2_capability"] = {m: {"accuracy": r["accuracy"],
+                                        "success_rate": r["success_rate"],
+                                        "avg_duration_s": r["avg_duration_s"]}
+                                    for m, r in v2["results"].items()}
+    if ts:
+        summary["temperature_sweep"] = ts
     with open(os.path.join(PROC_DIR, "analysis_summary.json"), "w") as f:
         json.dump(summary, f, indent=2)
     print(f"\nSaved analysis to: {os.path.join(PROC_DIR, 'analysis_summary.json')}")

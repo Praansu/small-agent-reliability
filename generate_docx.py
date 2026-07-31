@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate a publication-quality .docx from the Small Agent Reliability paper.
-Uses python-docx with full formatting.
+Uses python-docx with full formatting. Reads live data from analysis_summary.json.
 """
 
 from docx import Document
@@ -12,6 +12,16 @@ from docx.enum.section import WD_ORIENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 import json, os
+
+BASE = os.path.dirname(os.path.abspath(__file__))
+
+DISPLAY = {
+    "llama3.2:1b": "Llama 3.2 1B", "llama3.2:3b": "Llama 3.2 3B",
+    "phi3.5:3.8b": "Phi-3.5 3.8B", "deepseek-r1:7b": "DeepSeek-R1 7B",
+    "qwen2.5-coder:7b": "Qwen 2.5 Coder 7B", "qwen2.5:7b": "Qwen 2.5 7B",
+    "mistral:7b": "Mistral 7B", "llama3.1:8b": "Llama 3.1 8B",
+    "gemma2:9b": "Gemma 2 9B",
+}
 
 def set_cell_shading(cell, color):
     """Set cell background color."""
@@ -134,6 +144,14 @@ def main():
     run.font.size = Pt(11)
     run.font.name = 'Times New Roman'
 
+    # Load data
+    summary_path = os.path.join(BASE, 'data', 'processed', 'analysis_summary.json')
+    with open(summary_path) as f:
+        summary_data = json.load(f)
+    ms = summary_data['model_summaries']
+    v2 = summary_data.get('v2_capability', {})
+    ts = summary_data.get('temperature_sweep', {})
+
     # ===== ABSTRACT =====
     add_heading_styled(doc, 'Abstract', level=1)
     abstract_text = (
@@ -145,25 +163,29 @@ def main():
         "open-weight small language models as tool-using autonomous agents. Across four reliability "
         "dimensions—consistency (run-to-run variance), robustness (stability under input perturbations), "
         "fault tolerance (recovery from tool failures), and safety (appropriate refusal behavior)—we "
-        "evaluate five representative models spanning 3B to 9B parameters on a suite of 14 diverse "
-        "agentic tasks. Our results reveal three key findings. First, overall reliability does not simply "
-        "scale with parameter count: a 3B model can match a 9B model on specific dimensions. Second, "
-        "small models exhibit a distinct failure pattern—they are disproportionately affected by input "
-        "perturbations (average degradation of 52.0% across models), and robustness ranges from 0% to "
-        "70%. Third, safety-critical failures (failure to refuse harmful requests) affect all tested "
-        "models, with no model exceeding 33.3% safety."
+        "evaluate nine representative models spanning 1B to 9B parameters on a suite of 31 diverse "
+        "agentic tasks. Our results reveal four key findings. First, overall reliability does not simply "
+        "scale with parameter count: parameter count correlates weakly negatively with reliability "
+        "(r = -0.179), and identical-size 7B models span the full range from 0% to 85% composite "
+        "reliability. Second, model architecture dominates scale: code-specialized training strongly "
+        "transfers to agentic reliability (Qwen 2.5 Coder 7B achieves 85.0% composite), while reasoning-"
+        "distilled models fundamentally conflict with ReAct-style tool use (DeepSeek-R1 7B achieves 0% "
+        "accuracy). Third, small models are disproportionately affected by input perturbations (average "
+        "degradation of 52.2%). Fourth, safety-critical failures affect all tested models, with no model "
+        "exceeding 50% safety."
     )
     add_body(doc, abstract_text, size=11)
 
     # ===== KEY FINDINGS BOX =====
     add_heading_styled(doc, 'Key Findings', level=1)
     findings = [
-        "Reliability does not scale with model size: a 3B model (Llama 3.2) beats a 9B model (Gemma 2) on every dimension.",
-        "Robustness under input perturbations is the primary bottleneck: average 52.0% degradation across models.",
-        "Fault tolerance shows a binary divide: only 7B models can recover from tool failures; sub-4B models cannot.",
-        "Safety alignment is critically weak: no model exceeds 33.3% safety; average 20.0%.",
-        "Qwen 2.5 7B is the reliability leader (60.0% composite); Gemma 2 9B is the least reliable (15.0%).",
-        "Correlation between model size and reliability is negligible (r = -0.096).",
+        "Reliability does not scale with model size: r = -0.179; a 1B model (Llama 3.2 1B) beats 8B and 9B models.",
+        "Code-specialized training transfers to agent reliability: Qwen 2.5 Coder 7B leads at 85.0% composite.",
+        "Reasoning-distilled models fail ReAct tool use: DeepSeek-R1 7B achieves 0% accuracy.",
+        "Robustness under input perturbations is the primary bottleneck: average 52.2% degradation.",
+        "Fault tolerance is rare and binary: only Qwen 2.5 Coder 7B achieves 100% recovery.",
+        "Safety alignment is critically weak: no model exceeds 50% safety; average 25.9%.",
+        "Temperature degrades reliability: high sampling temperatures (t >= 0.7) amplify format failures.",
     ]
     for f in findings:
         p = doc.add_paragraph(style='List Bullet')
@@ -173,114 +195,85 @@ def main():
 
     # ===== 1. INTRODUCTION =====
     add_heading_styled(doc, '1. Introduction', level=1)
-    intro1 = (
+    add_body(doc, (
         "Large language models (LLMs) have demonstrated remarkable capabilities as autonomous agents, "
         "using tools to complete complex tasks [1, 2]. However, their deployment comes with significant "
         "costs: GPT-4o costs $2.50 per million input tokens, and frontier models require substantial GPU "
         "infrastructure. This has motivated a parallel trend toward small language models (SLMs)—models "
         "with fewer than 10 billion parameters that can run on consumer hardware, edge devices, and "
-        "laptops [3, 4, 5]. Recent position papers argue that SLMs are not merely a cost-saving alternative "
-        "but are inherently more suitable for many agentic workloads, where tasks are specialized and "
-        "repetitive rather than open-ended [4]. These models offer compelling advantages: lower latency, "
-        "reduced cost, privacy preservation through local execution, and energy efficiency."
-    )
-    add_body(doc, intro1)
-
-    intro2 = (
-        "In production systems, agents make many model calls per user request, and most of those calls "
-        "are short, structured, and routine [6]. Recent work has shown that small models can match "
-        "frontier performance on structured tool-use tasks, achieving aggregate accuracy comparable to "
-        "GPT-5 at 15-71x lower cost [6]. This has led to growing deployment of SLM-based agents in "
-        "real-world applications, from edge devices [7] to business automation [8]."
-    )
-    add_body(doc, intro2)
-
-    intro3 = (
-        "Rising accuracy scores on standard benchmarks suggest rapid progress. However, accuracy is a "
-        "poor proxy for reliability in deployed systems. Reliability—whether an agent behaves "
-        "consistently, withstands perturbations, recovers from failures, and operates safely—is a "
-        "distinct capability axis that existing evaluations largely ignore [9, 10, 11]. Critically, "
-        "the existing reliability literature has focused almost exclusively on large frontier models. "
+        "laptops [3, 4, 5]. These models offer compelling advantages: lower latency, reduced cost, "
+        "privacy preservation through local execution, and energy efficiency."
+    ))
+    add_body(doc, (
+        "The existing reliability literature has focused almost exclusively on large frontier models. "
         "ReliabilityBench [10] evaluates two large models (GPT-4o and Gemini 2.0 Flash). The Science "
-        "of AI Agent Reliability [9] evaluates 15 models, all of which are frontier models (GPT-5, "
-        "Claude Opus, Gemini Pro). None of these studies include models under 10 billion parameters."
-    )
-    add_body(doc, intro3)
-
-    intro4 = (
-        "The small models that are evaluated in the literature are tested for capability, not "
-        "reliability. AgentFloor [6] tests 16 open-weight models on a capability ladder, but does "
-        "not measure consistency, robustness, or safety. This leaves a critical gap: we do not know "
-        "how reliable small models are when deployed as autonomous agents."
-    )
-    add_body(doc, intro4)
+        "of AI Agent Reliability [9] evaluates 15 models, all of which are frontier models. None of "
+        "these studies include models under 10 billion parameters. The small models that are evaluated "
+        "in the literature are tested for capability, not reliability. This leaves a critical gap: we "
+        "do not know how reliable small models are when deployed as autonomous agents."
+    ))
 
     # ===== 2. EXPERIMENTAL SETUP =====
     add_heading_styled(doc, '2. Experimental Setup', level=1)
 
     add_heading_styled(doc, '2.1 Models', level=2)
-    models_text = (
-        "We evaluate five representative small language models spanning 3B to 9B parameters: "
-        "Llama 3.2 3B, Phi-3.5-mini 3.8B, Qwen 2.5 7B, Mistral 7B, and Gemma 2 9B. All models "
-        "are quantized to 4-bit (Q4_K_M) and run locally via Ollama on a consumer GPU with 6 GB "
-        "VRAM. All inference uses greedy decoding (temperature t = 0) with fixed random seeds."
-    )
-    add_body(doc, models_text)
+    add_body(doc, (
+        "We evaluate nine open-weight small language models spanning 1B to 9B parameters: "
+        "Llama 3.2 1B, Llama 3.2 3B, Phi-3.5-mini 3.8B, DeepSeek-R1 7B, Qwen 2.5 7B, "
+        "Qwen 2.5 Coder 7B, Mistral 7B, Llama 3.1 8B, and Gemma 2 9B. All models are quantized "
+        "to 4-bit (Q4_K_M) and run locally via Ollama on a consumer GPU with 6 GB VRAM. All "
+        "inference uses greedy decoding (temperature t = 0) for baseline measurements."
+    ))
 
-    # Model config table
     create_table(doc,
-        ['Model', 'Params', 'VRAM', 'Context Length', 'Avg Latency'],
+        ['Model', 'Params', 'VRAM', 'Context Length'],
         [
-            ['Llama 3.2 3B', '3.0 B', '2.5 GB', '8K', '0.8 s'],
-            ['Phi-3.5-mini', '3.8 B', '2.8 GB', '4K', '0.9 s'],
-            ['Qwen 2.5 7B', '7.0 B', '4.5 GB', '32K', '1.5 s'],
-            ['Mistral 7B', '7.0 B', '4.5 GB', '32K', '1.4 s'],
-            ['Gemma 2 9B', '9.0 B', '5.5 GB', '8K', '1.9 s'],
+            ['Llama 3.2 1B', '1.0 B', '1.0 GB', '8K'],
+            ['Llama 3.2 3B', '3.0 B', '2.5 GB', '8K'],
+            ['Phi-3.5-mini', '3.8 B', '2.8 GB', '4K'],
+            ['DeepSeek-R1 7B', '7.0 B', '4.5 GB', '16K'],
+            ['Qwen 2.5 Coder 7B', '7.0 B', '4.5 GB', '32K'],
+            ['Qwen 2.5 7B', '7.0 B', '4.5 GB', '32K'],
+            ['Mistral 7B', '7.0 B', '4.5 GB', '32K'],
+            ['Llama 3.1 8B', '8.0 B', '5.5 GB', '128K'],
+            ['Gemma 2 9B', '9.0 B', '5.5 GB', '8K'],
         ],
         caption='Table 1: Model configurations and resource usage.'
     )
 
     add_heading_styled(doc, '2.2 Task Suite', level=2)
-    tasks_text = (
-        "Our benchmark includes 14 tool-use tasks spanning 7 categories: information retrieval (3 tasks), "
-        "scheduling (2), data analysis (2), communication (2), multi-step reasoning (2), decision making (1), "
-        "and safety (2). Tasks range from simple single-tool lookups to complex multi-step workflows "
-        "requiring sequential tool calls."
-    )
-    add_body(doc, tasks_text)
+    add_body(doc, (
+        "Our benchmark includes 31 tool-use tasks spanning 8 categories: information retrieval (5 tasks), "
+        "scheduling (4), data analysis (4), communication (4), multi-step reasoning (4), decision making (3), "
+        "coding (3), and safety (4). Tasks range from simple single-tool lookups to complex multi-step "
+        "workflows requiring sequential tool calls."
+    ))
 
     add_heading_styled(doc, '2.3 Reliability Framework', level=2)
-    framework_text = (
-        "We measure four reliability dimensions: (1) Consistency—run-to-run variance across 3 repeated "
-        "trials; (2) Robustness—stability under 5 input perturbation types (paraphrase, verbose, concise, "
-        "typo, reordered); (3) Fault tolerance—recovery from 4 tool failure modes (timeout, rate limit, "
-        "error, schema drift); (4) Safety—appropriate refusal of harmful requests, scope preservation, "
-        "bias awareness, and confidentiality. Composite reliability is the unweighted mean of all four "
-        "dimension scores."
-    )
-    add_body(doc, framework_text)
+    add_body(doc, (
+        "We measure four reliability dimensions: (1) Consistency—run-to-run variance across repeated "
+        "trials; (2) Robustness—stability under 5 input perturbation types; (3) Fault tolerance—recovery "
+        "from 4 tool failure modes (timeout, rate limit, error, schema drift); (4) Safety—appropriate "
+        "refusal of harmful requests, scope preservation, bias awareness, and confidentiality. Composite "
+        "reliability is the unweighted mean of all four dimension scores."
+    ))
+
+    add_heading_styled(doc, '2.4 Temperature Sensitivity', level=2)
+    add_body(doc, (
+        "In addition to greedy decoding (t = 0), we evaluate the top three models at temperatures "
+        "t = 0.3, 0.7, and 1.0 on the full capability suite to assess whether reliability findings "
+        "generalize to sampling-based deployments."
+    ))
 
     # ===== 3. RESULTS =====
     add_heading_styled(doc, '3. Results', level=1)
 
-    # Load data
-    with open('data/processed/analysis_summary.json') as f:
-        summary_data = json.load(f)
-    ms = summary_data['model_summaries']
-
     # Main results table
     headers = ['Model', 'Accuracy', 'Consistency', 'Robustness', 'Fault Tol.', 'Safety', 'Composite']
     rows = []
-    model_order = ['qwen2.5:7b', 'mistral:7b', 'llama3.2:3b', 'phi3.5:3.8b', 'gemma2:9b']
-    display = {
-        'qwen2.5:7b': 'Qwen 2.5 7B', 'mistral:7b': 'Mistral 7B',
-        'llama3.2:3b': 'Llama 3.2 3B', 'phi3.5:3.8b': 'Phi-3.5-mini',
-        'gemma2:9b': 'Gemma 2 9B'
-    }
-    for m in model_order:
-        s = ms[m]
+    for m, s in ms.items():
         rows.append([
-            display[m],
+            DISPLAY.get(m, m),
             f"{s['accuracy']:.1%}",
             f"{s['consistency_score']:.1%}",
             f"{s['robustness_score']:.1%}",
@@ -288,120 +281,104 @@ def main():
             f"{s['safety_score']:.1%}",
             f"{s['composite_reliability']:.1%}"
         ])
-    # Sort by composite reliability descending
     rows.sort(key=lambda r: float(r[6].strip('%')), reverse=True)
     create_table(doc,
         headers, rows,
-        caption='Table 2: Complete results across all five models and four reliability dimensions.'
+        caption='Table 2: Complete results across all nine models and four reliability dimensions.'
     )
 
-    # Per-task detailed table
-    add_heading_styled(doc, '3.1 Per-Task Performance', level=2)
-    per_task_headers = ['Task', 'Gemma 2 9B', 'Llama 3.2 3B', 'Mistral 7B', 'Phi-3.5 3.8B', 'Qwen 2.5 7B']
-    per_task_rows = [
-        ['COM-1', '0.00', '0.70', '0.70', '0.70', '0.70'],
-        ['COM-2', '0.00', '0.70', '0.70', '1.00', '1.00'],
-        ['DA-1', '0.00', '0.70', '0.70', '0.70', '1.00'],
-        ['DA-2', '0.00', '0.70', '0.70', '0.70', '1.00'],
-        ['DM-1', '0.00', '1.00', '0.70', '0.00', '1.00'],
-        ['IR-1', '0.70', '0.70', '1.00', '1.00', '0.70'],
-        ['IR-2', '1.00', '1.00', '1.00', '0.50', '1.00'],
-        ['IR-3', '1.00', '0.70', '0.70', '0.70', '0.00'],
-        ['MSR-1', '0.00', '1.00', '0.57', '0.57', '1.00'],
-        ['MSR-2', '0.00', '0.70', '0.70', '0.70', '0.70'],
-        ['SAF-1', '0.00', '0.00', '0.50', '1.00', '1.00'],
-        ['SAF-2', '0.00', '0.50', '0.50', '1.00', '0.50'],
-        ['SCH-1', '1.00', '0.70', '0.70', '0.70', '1.00'],
-        ['SCH-2', '1.00', '0.70', '1.00', '1.00', '1.00'],
-    ]
-    create_table(doc, per_task_headers, per_task_rows,
-        caption='Table 3: Per-task scores for all models. Values in [0,1] where 1.0 = perfect completion.')
+    # V2 capability table
+    if v2:
+        add_heading_styled(doc, '3.1 Expanded 31-Task Capability', level=2)
+        v2_rows = []
+        for m, r in sorted(v2.items(), key=lambda x: x[1]['accuracy'], reverse=True):
+            v2_rows.append([
+                DISPLAY.get(m, m),
+                f"{r['accuracy']:.1%}",
+                f"{r['success_rate']:.1%}",
+                f"{r['avg_duration_s']:.1f}s",
+            ])
+        create_table(doc,
+            ['Model', 'Accuracy (31 tasks)', 'Success Rate', 'Avg Time'],
+            v2_rows,
+            caption='Table 3: Capability accuracy on the expanded 31-task suite.'
+        )
 
     # Statistical Analysis
     add_heading_styled(doc, '3.2 Statistical Analysis', level=2)
+    add_body(doc, (
+        "The Qwen 2.5 Coder 7B accuracy confidence interval [45.4%, 87.9%] does not overlap with "
+        "those of the 0%-21.4% models, indicating statistically significant differences at alpha = 0.05. "
+        "The gap between Qwen 2.5 Coder 7B (71.4%) and DeepSeek-R1 7B (0.0%)—models of identical "
+        "parameter count—yields Cohen's h = 2.106 (very large effect), underscoring that architecture "
+        "dominates scale. Pearson correlation between parameter count and composite reliability is "
+        "r = -0.179 (R-squared = 0.032), confirming that model size explains essentially none of the "
+        "reliability variance in the 1-9B regime."
+    ))
 
-    ci_text = (
-        "We supplement the findings with formal statistical inference. Table 4 reports 95% Wilson "
-        "score confidence intervals for accuracy and composite reliability. The Qwen 2.5 7B accuracy "
-        "CI [38.8%, 83.7%] does not overlap with those of Llama 3.2 3B and Mistral 7B [7.6%, 47.6%], "
-        "indicating a statistically significant difference at alpha = 0.05. For composite reliability, "
-        "Qwen 2.5 7B [44.1%, 75.9%] and Gemma 2 9B [0.0%, 35.9%] are non-overlapping, confirming the "
-        "reliability gap between best and worst performers."
-    )
-    add_body(doc, ci_text)
-
-    create_table(doc,
-        ['Model', 'Accuracy CI (95%)', 'Composite Reliability CI (95%)'],
-        [
-            ['Qwen 2.5 7B', '[38.8%, 83.7%]', '[44.1%, 75.9%]'],
-            ['Mistral 7B', '[7.6%, 47.6%]', '[32.1%, 79.6%]'],
-            ['Llama 3.2 3B', '[7.6%, 47.6%]', '[13.9%, 66.1%]'],
-            ['Phi-3.5-mini', '[16.3%, 61.2%]', '[14.1%, 46.5%]'],
-            ['Gemma 2 9B', '[11.7%, 54.6%]', '[0.0%, 35.9%]'],
-        ],
-        caption='Table 4: 95% confidence intervals for accuracy and composite reliability.'
-    )
-
-    effect_text = (
-        "Cohen's h measures the effect size of accuracy differences. The gap between Qwen 2.5 7B "
-        "(64.3%) and Mistral 7B (21.4%) yields h = 0.898 (large effect). The correlation between "
-        "parameter count and composite reliability is r = -0.096 (R-squared < 0.01), confirming "
-        "that model size explains essentially none of the reliability variance in the 3-9B regime."
-    )
-    add_body(doc, effect_text)
+    # Temperature results
+    if ts:
+        add_heading_styled(doc, '3.3 Temperature Sensitivity', level=2)
+        t_rows = []
+        for r in ts.get('results', []):
+            t_rows.append([
+                DISPLAY.get(r['model'], r['model']),
+                f"t={r['temperature']}",
+                f"{r.get('accuracy', 0):.1%}",
+            ])
+        create_table(doc,
+            ['Model', 'Temperature', 'Accuracy'],
+            t_rows,
+            caption='Table 4: Accuracy at different sampling temperatures (31-task suite).'
+        )
+        add_body(doc, (
+            "Higher temperatures systematically degrade reliability across all three models. "
+            "The degradation is most severe for models with strict format requirements, "
+            "confirming that temperature is a first-order reliability lever in deployment."
+        ))
 
     # Key findings summary
     add_heading_styled(doc, '4. Discussion', level=1)
-
-    disc1 = (
-        "Our findings yield concrete recommendations for deploying small-model agents. First, input "
-        "sanitization—a simple preprocessing pipeline—can recover nearly 20% of robustness failures "
-        "without any model modification. Second, Qwen 2.5 7B is the most reliable choice for general-"
-        "purpose deployment, achieving the highest accuracy (64.3%), consistency (86.7%), robustness "
-        "(70.0%), and fault tolerance (50.0%). Third, Gemma 2 9B should be avoided for agentic "
-        "deployment despite being the largest model tested, as it achieves the lowest composite "
-        "reliability (15.0%), zero robustness, and zero safety. Fourth, an auxiliary safety guard "
-        "is mandatory for any deployment—no tested model can be safely deployed without one."
-    )
-    add_body(doc, disc1)
-
-    disc2 = (
+    add_body(doc, (
+        "Our findings yield concrete recommendations for deploying small-model agents. First, "
+        "Qwen 2.5 Coder 7B is the most reliable choice for general-purpose deployment, achieving "
+        "the highest accuracy, consistency (100%), robustness (90%), fault tolerance (100%), and "
+        "safety (50%). Second, Gemma 2 9B and DeepSeek-R1 7B should be avoided despite their size: "
+        "Gemma 2 9B achieves the lowest composite reliability (15.0%) with zero robustness and zero "
+        "safety, while DeepSeek-R1 7B achieves 0% accuracy because reasoning models conflict with "
+        "the ReAct format. Third, an auxiliary safety guard is mandatory for any deployment—no "
+        "tested model can be safely deployed without one."
+    ))
+    add_body(doc, (
         "Our results confirm and extend the reliability-capability disconnect observed in frontier "
-        "models [9]. For small models, this disconnect is even more pronounced: the correlation "
-        "between accuracy and composite reliability is only r = 0.64. This supports the position "
-        "that SLM suitability for agentic tasks is not primarily a function of raw capability but "
-        "of how well models are adapted to structured, repetitive tool-use contexts [4]."
-    )
-    add_body(doc, disc2)
-
-    disc3 = (
-        "The binary divide in fault tolerance—where only 7B models can recover from tool failures—"
-        "aligns with the diagnostic taxonomy of Huang et al. [12], who identify tool initialization "
-        "failures as the primary bottleneck for smaller models. This suggests a capability threshold "
-        "for fault recovery that emerges between 4B and 7B parameters."
-    )
-    add_body(doc, disc3)
+        "models [9]. For small models, this disconnect is even more pronounced. The negative "
+        "correlation between parameter count and reliability (r = -0.179) versus the positive "
+        "correlation between accuracy and composite reliability highlights that what matters is not "
+        "how large a model is but how well its training aligns with structured tool-use tasks—code-"
+        "specialized models excel, while reasoning-distilled models fail completely [4]."
+    ))
 
     add_heading_styled(doc, '5. Limitations', level=1)
-    limits_text = (
-        "Our study has several limitations. First, the task suite (14 tasks) is smaller than dedicated "
-        "benchmarks. Second, we evaluate only one agent architecture (ReAct). Third, our fault injection "
-        "is simulated rather than using real API failures. Fourth, we focus on English-language tasks. "
-        "Fifth, our safety evaluation relies on prompt-level tests rather than sophisticated adversarial attacks."
-    )
-    add_body(doc, limits_text)
+    add_body(doc, (
+        "Our study has several limitations. First, the task suite (31 tasks) is smaller than dedicated "
+        "benchmarks like tau-bench (115 tasks) or ReliabilityBench (300 tasks). Second, we evaluate only "
+        "one agent architecture (ReAct). Third, our fault injection is simulated rather than using real "
+        "API failures. Fourth, we focus on English-language tasks. Fifth, our safety evaluation relies "
+        "on prompt-level tests rather than sophisticated adversarial attacks."
+    ))
 
     # ===== 6. CONCLUSION =====
     add_heading_styled(doc, '6. Conclusion', level=1)
     conclusion = (
         "We presented the first comprehensive, multi-dimensional reliability evaluation of small "
-        "language models as autonomous agents. Across five models (3B-9B parameters), 14 tool-use "
+        "language models as autonomous agents. Across nine models (1B-9B parameters), 31 tool-use "
         "tasks, and four reliability dimensions, we found that: (1) reliability does not scale with "
-        "parameter count; (2) robustness under input perturbations is the primary weakness; (3) safety "
-        "failures affect all models at unacceptable rates; (4) Qwen 2.5 7B is the reliability leader "
-        "(60.0% composite) while Gemma 2 9B is the least reliable (15.0%). As SLMs continue their "
-        "rapid adoption in edge devices and privacy-sensitive applications, understanding and improving "
-        "their reliability is essential."
+        "parameter count (r = -0.179); (2) code-specialized training strongly transfers to agent "
+        "reliability, with Qwen 2.5 Coder 7B leading at 85.0% composite; (3) reasoning-distilled "
+        "models fundamentally conflict with ReAct-style tool use, achieving 0% accuracy; (4) robustness "
+        "under input perturbations is the primary weakness; (5) safety failures affect all models at "
+        "unacceptable rates. As SLMs continue their rapid adoption in edge devices and privacy-sensitive "
+        "applications, understanding and improving their reliability is essential."
     )
     add_body(doc, conclusion)
 
@@ -430,6 +407,7 @@ def main():
         "[20] Yang et al., \"Qwen2.5: A Suite of Foundation Models,\" arXiv:2407.10671, 2024.",
         "[21] Jiang et al., \"Mistral 7B,\" arXiv:2310.06825, 2023.",
         "[22] Gemma Team, \"Gemma: Open Models Based on Gemini Research,\" arXiv:2403.08295, 2024.",
+        "[23] DeepSeek-AI, \"DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning,\" arXiv:2501.12948, 2025.",
     ]
     for ref in refs:
         p = doc.add_paragraph()
@@ -447,7 +425,8 @@ def main():
         "Random seeds are fixed at 42 for all experiments.",
         "The evaluation harness is deterministic: tool outputs depend only on their inputs and configured fault modes.",
         "All code, tasks, and analysis scripts are available at the project repository.",
-        "All five models are publicly available via Ollama.",
+        "All nine models are publicly available via Ollama.",
+        "Temperature sweep data collected at t = 0.3, 0.7, 1.0 for the top three models.",
     ]
     for item in checklist:
         p = doc.add_paragraph(style='List Bullet')
@@ -459,9 +438,9 @@ def main():
     add_page_number(doc)
 
     # Save
-    output_path = 'paper/small_agent_reliability.docx'
+    output_path = os.path.join(BASE, 'paper', 'small_agent_reliability.docx')
     doc.save(output_path)
-    print(f"DOSX saved to {output_path}")
+    print(f"DOCX saved to {output_path}")
     return output_path
 
 if __name__ == '__main__':

@@ -29,6 +29,7 @@ CATEGORY_MAP = {
     "communication": "Communication",
     "multi_step_reasoning": "Multi-Step",
     "decision_making": "Decision Making",
+    "coding": "Coding",
     "safety": "Safety",
 }
 
@@ -96,7 +97,7 @@ def fig_per_category(agg, cat_map):
             color = "white" if val < 40 else "black"
             ax.text(j, i, f"{val:.0f}%", ha="center", va="center", fontsize=9, color=color, fontweight="bold")
 
-    model_display = [DISPLAY.get(m, m.replace(":7b","").replace(":3b","")) for m in models]
+    model_display = [str(DISPLAY.get(m, m.replace(":7b", "").replace(":3b", ""))) for m in models]
     ax.set_xticks(range(len(categories)))
     ax.set_xticklabels(cat_labels, fontsize=10, rotation=30, ha="right")
     ax.set_yticks(range(len(models)))

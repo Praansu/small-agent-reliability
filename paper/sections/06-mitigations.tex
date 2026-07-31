@@ -20,10 +20,23 @@ Based on our perturbation analysis, this pipeline could recover approximately 20
 
 To address safety failures, we recommend a lightweight \textbf{pre-input safety classifier}: a small BERT-based model ($\sim$110\,M parameters) that classifies user prompts as safe or unsafe before they reach the agent. Unsafe prompts are blocked with a default refusal message.
 
-Research on guard models for small language models demonstrates that auxiliary classifiers achieve 0.80--0.85 F1 on safety test sets with negligible latency ($\sim$5\,ms on CPU) \cite{guard2026slm}. Such a classifier could prevent approximately 70--80\% of safety failures observed in our evaluation, raising the average safety score from 20.0\% to an estimated 70--80\%. This is consistent with findings that lightweight guard models are effective even when the underlying agent lacks built-in safety alignment.
+Research on guard models for small language models demonstrates that auxiliary classifiers achieve 0.80--0.85 F1 on safety test sets with negligible latency ($\sim$5\,ms on CPU) \cite{guard2026slm}. Such a classifier could prevent approximately 70--80\% of safety failures observed in our evaluation, raising the average safety score from 25.9\% to an estimated 70--80\%. This is consistent with findings that lightweight guard models are effective even when the underlying agent lacks built-in safety alignment.
+
+\subsection{Temperature Control for Reliability}
+
+Our temperature sensitivity analysis (Section~\ref{sec:temperature}) shows that sampling temperature is a first-order reliability lever that practitioners control directly. We recommend the following deployment guidelines:
+
+\begin{itemize}[nosep]
+    \item \textbf{Use greedy decoding ($t=0$) for deterministic tasks.} Where output reproducibility matters (audits, financial actions, data modifications), greedy decoding minimizes variance and maximizes accuracy.
+    \item \textbf{Limit temperature to $t \le 0.3$ for general agent tasks.} Moderate sampling preserves most accuracy while enabling limited output diversity.
+    \item \textbf{Avoid $t \ge 0.7$ for tool-use agents.} Our results show that high temperatures increase malformed tool-call rates, compounding the format-fidelity failures documented in Section~\ref{sec:temperature}.
+    \item \textbf{Apply per-component temperatures.} Use low temperature for tool-call generation (where format fidelity is critical) and higher temperature for content generation (where diversity is valuable).
+\end{itemize}
+
+These findings complement prior work showing that temperature interacts with model architecture: models with strong format training (e.g., code-specialized models) tolerate higher temperatures better than reasoning-distilled models, which degrade rapidly under sampling \cite{deepseek2024r1, qwen2024}.
 
 \subsection{Cost-Benefit Analysis}
 
-Both mitigations are computationally lightweight. The input sanitizer adds $\sim$2\,ms per request; the safety classifier adds $\sim$5\,ms. Combined, they increase per-request latency by less than 10\% while addressing the two most critical reliability gaps identified in our evaluation.
+Both mitigations are computationally lightweight. The input sanitizer adds $\sim$2\,ms per request; the safety classifier adds $\sim$5\,ms. Combined, they increase per-request latency by less than 10\% while addressing the two most critical reliability gaps identified in our evaluation. Temperature control requires no additional compute and is available in every inference stack.
 
 \paragraph{Limitations.} Input sanitization cannot address semantic paraphrasing where the meaning changes. The safety classifier may introduce false positives, blocking benign requests. More sophisticated approaches---such as constitutional AI \cite{bai2022constitutional} or representation-space monitoring \cite{guard2026slm}---may achieve better results but require additional infrastructure. Nevertheless, even these simple mitigations substantially reduce the most dangerous failure modes without increasing model size.

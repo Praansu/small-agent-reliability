@@ -139,8 +139,8 @@ def fig_composite(agg):
     plt.close(fig)
     print(f"Saved: {path}")
 
-def fig_accuracy_vs_params(agg):
-    """Scatter plot: model params vs accuracy."""
+def fig_accuracy_vs_params(agg, v2=None):
+    """Scatter plot: model params vs accuracy (31-task v2 accuracy preferred)."""
     params_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
                   "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
                   "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
@@ -148,31 +148,34 @@ def fig_accuracy_vs_params(agg):
     models_data = []
     for model, s in agg["summary_comparison"].items():
         p = params_map.get(model, 0)
-        models_data.append((p, s["accuracy"] * 100, s["composite_reliability"] * 100, model))
+        if v2 and model in v2["results"]:
+            acc = v2["results"][model]["accuracy"] * 100
+        else:
+            acc = s["accuracy"] * 100
+        models_data.append((p, acc, s["composite_reliability"] * 100, model))
     models_data.sort(key=lambda x: x[0])
     ps = [m[0] for m in models_data]
     accs = [m[1] for m in models_data]
-    comps = [m[2] for m in models_data]
     labels_short = [m[3].replace(":7b", "").replace(":3b", "").replace(":8b", "")
                     .replace(":9b", "").replace(":1b", "").replace(":3.8b", "") for m in models_data]
     colors = [COLORS.get(m[3], "#333") for m in models_data]
     for i in range(len(models_data)):
         ax.scatter(ps[i], accs[i], s=150, color=colors[i], zorder=5, edgecolors="black", linewidth=0.5)
-        offset = 5 if i % 2 == 0 else -8
-        ax.annotate(labels_short[i], (ps[i], accs[i]), (ps[i] + 0.15, accs[i] + offset),
-                    fontsize=8, ha="left" if i % 2 == 0 else "left")
+        ax.annotate(labels_short[i], (ps[i], accs[i]), (ps[i] + 0.15, accs[i] + 4),
+                    fontsize=8, ha="left")
     # Trend line
     z = np.polyfit(ps, accs, 1)
     p = np.poly1d(z)
     x_line = np.linspace(0, 10, 100)
     ax.plot(x_line, p(x_line), "--", color="#888", alpha=0.5, label=f"Trend (r={np.corrcoef(ps, accs)[0,1]:.3f})")
     ax.set_xlabel("Model Size (Billions of Parameters)", fontsize=12)
-    ax.set_ylabel("Accuracy (%)", fontsize=12)
+    ax.set_ylabel("Accuracy on 31 Tasks (%)" if v2 else "Accuracy (%)", fontsize=12)
     ax.set_xlim(0, 10.5)
-    ax.set_ylim(-5, 85)
+    ax.set_ylim(0, 100)
     ax.legend(fontsize=10)
     ax.grid(alpha=0.3)
-    fig.suptitle("Model Size vs Task Accuracy (9 Models)", fontsize=14, fontweight="bold")
+    fig.suptitle("Model Size vs Task Accuracy (9 Models, 31-Task Suite)" if v2
+                 else "Model Size vs Task Accuracy (9 Models)", fontsize=14, fontweight="bold")
     plt.tight_layout()
     path = os.path.join(FIG_DIR, "accuracy_vs_params.pdf")
     fig.savefig(path, dpi=300, bbox_inches="tight")
@@ -227,22 +230,125 @@ def print_stats(agg):
     accs = [s["accuracy"] * 100 for _, s in models_sorted]
     comps = [s["composite_reliability"] * 100 for _, s in models_sorted]
     safes = [s["safety_score"] * 100 for _, s in models_sorted]
+    robs = [s["robustness_score"] * 100 for _, s in models_sorted]
+    fts = [s["fault_tolerance_score"] * 100 for _, s in models_sorted]
+    cons = [s["consistency_score"] * 100 for _, s in models_sorted]
     params = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
               "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
               "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
     p_list = [params[m] for m, _ in models_sorted]
-    print("\n=== KEY STATISTICS ===")
+    print("\n=== KEY STATISTICS (14-task reliability suite) ===")
     print(f"Models evaluated: {len(models_sorted)}")
     print(f"Best model: {models_sorted[0][0]} ({comps[0]:.1f}%)")
     print(f"Worst model: {models_sorted[-1][0]} ({comps[-1]:.1f}%)")
     print(f"Mean accuracy: {np.mean(accs):.1f}%")
     print(f"Mean composite: {np.mean(comps):.1f}%")
     print(f"Mean safety: {np.mean(safes):.1f}%")
+    print(f"Mean robustness: {np.mean(robs):.1f}%")
+    print(f"Mean consistency: {np.mean(cons):.1f}%")
+    print(f"Mean fault tolerance: {np.mean(fts):.1f}%")
     corr = np.corrcoef(p_list, comps)[0, 1]
     print(f"Params vs composite: r={corr:.3f}")
     best_acc = max(accs)
     print(f"Best accuracy: {best_acc:.1f}%")
     print(f"Safety range: {min(safes):.1f}% - {max(safes):.1f}%")
+
+def _wilson_ci(k, n, z=1.96):
+    """Wilson score 95% confidence interval for a proportion."""
+    phat = k / n
+    denom = 1 + z * z / n
+    center = (phat + z * z / (2 * n)) / denom
+    half = z * math.sqrt(phat * (1 - phat) / n + z * z / (4 * n * n)) / denom
+    return max(0.0, center - half), min(1.0, center + half)
+
+def _pearson_p(r, n):
+    """Two-sided p-value for Pearson correlation."""
+    import scipy.stats as st
+    if n <= 2:
+        return 1.0
+    t = r * math.sqrt((n - 2) / (1 - r * r)) if abs(r) < 1 else float("inf")
+    return 2 * (1 - st.t.cdf(abs(t), df=n - 2))
+
+def _cohens_h(p1, p2):
+    """Cohen's h effect size between two proportions."""
+    return 2 * math.asin(math.sqrt(p1)) - 2 * math.asin(math.sqrt(p2))
+
+def v2_stats(v2):
+    """Compute and persist v2 (31-task) statistics for the paper."""
+    if not v2:
+        return
+    import math
+    params_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
+                  "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
+                  "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
+    n = v2["num_tasks"]
+    stats = {"num_tasks": n}
+    accs = {}
+    for m, r in v2["results"].items():
+        k = round(r["accuracy"] * n)
+        lo, hi = _wilson_ci(k, n)
+        accs[m] = {"accuracy": r["accuracy"], "accuracy_pct": r["accuracy"] * 100,
+                   "success_rate": r["success_rate"], "avg_duration_s": r["avg_duration_s"],
+                   "wilson_ci": [round(lo * 100, 1), round(hi * 100, 1)]}
+    stats["models"] = accs
+    vals = [a["accuracy_pct"] for a in accs.values()]
+    stats["mean_accuracy"] = round(np.mean(vals), 1)
+    stats["min_accuracy"] = min(vals)
+    stats["max_accuracy"] = max(vals)
+    # Correlations
+    ps = [params_map[m] for m in accs]
+    vs = [accs[m]["accuracy_pct"] for m in accs]
+    r_acc = np.corrcoef(ps, vs)[0, 1]
+    stats["params_vs_acc_r"] = round(float(r_acc), 3)
+    stats["params_vs_acc_r2"] = round(float(r_acc ** 2), 3)
+    stats["params_vs_acc_p"] = round(float(_pearson_p(r_acc, len(ps))), 3)
+    # Composite reliability correlation (from aggregate)
+    agg = load_aggregate()
+    comps = [agg["summary_comparison"][m]["composite_reliability"] * 100 for m in accs]
+    r_comp = np.corrcoef(ps, comps)[0, 1]
+    stats["params_vs_composite_r"] = round(float(r_comp), 3)
+    stats["params_vs_composite_r2"] = round(float(r_comp ** 2), 3)
+    stats["params_vs_composite_p"] = round(float(_pearson_p(r_comp, len(ps))), 3)
+    # Cohen's h comparisons
+    stats["cohens_h"] = {
+        "coder_vs_deepseek": round(float(_cohens_h(accs["qwen2.5-coder:7b"]["accuracy"],
+                                                   accs["deepseek-r1:7b"]["accuracy"])), 3),
+        "coder_vs_qwen": round(float(_cohens_h(accs["qwen2.5-coder:7b"]["accuracy"],
+                                               accs["qwen2.5:7b"]["accuracy"])), 3),
+        "llama1b_vs_llama8b": round(float(_cohens_h(accs["llama3.2:1b"]["accuracy"],
+                                                    accs["llama3.1:8b"]["accuracy"])), 3),
+        "gemma_vs_llama8b": round(float(_cohens_h(accs["gemma2:9b"]["accuracy"],
+                                                  accs["llama3.1:8b"]["accuracy"])), 3),
+        "coder_vs_gemma": round(float(_cohens_h(accs["qwen2.5-coder:7b"]["accuracy"],
+                                                accs["gemma2:9b"]["accuracy"])), 3),
+    }
+    # Universal pass/fail tasks
+    first = v2["results"][next(iter(v2["results"]))]
+    task_ids = [t["task_id"] for t in first["per_task"]]
+    all_pass, all_fail = [], []
+    for tid in task_ids:
+        scores = []
+        for m, r in v2["results"].items():
+            per = {t["task_id"]: t for t in r.get("per_task", [])}
+            scores.append(per.get(tid, {}).get("score", 0))
+        if all(s >= 0.99 for s in scores):
+            all_pass.append(tid)
+        if all(s < 0.99 for s in scores):
+            all_fail.append(tid)
+    stats["tasks_all_pass"] = all_pass
+    stats["tasks_all_fail"] = all_fail
+    with open(os.path.join(PROC_DIR, "v2_stats.json"), "w") as f:
+        json.dump(stats, f, indent=2)
+    print("\n=== V2 STATISTICS (31-task capability) ===")
+    print(f"Mean accuracy: {stats['mean_accuracy']:.1f}%  "
+          f"Range: {stats['min_accuracy']:.1f}% - {stats['max_accuracy']:.1f}%")
+    print(f"Params vs 31-task acc: r={stats['params_vs_acc_r']} "
+          f"(p={stats['params_vs_acc_p']})")
+    print(f"Params vs composite: r={stats['params_vs_composite_r']} "
+          f"(p={stats['params_vs_composite_p']})")
+    print(f"Cohen's h coder-vs-deepseek: {stats['cohens_h']['coder_vs_deepseek']}")
+    print(f"Tasks all pass: {all_pass}   all fail: {all_fail}")
+    print(f"Saved: {os.path.join(PROC_DIR, 'v2_stats.json')}")
 
 def load_v2_capability():
     """Load v2 capability results (31-task suite)."""
@@ -291,7 +397,7 @@ def fig_temperature(ts):
                 xs.append(t)
                 ys.append(acc_by_model[m][t])
         ax.plot(xs, ys, "o-", linewidth=2, markersize=7, color=colors[i],
-                label=m.replace(":7b", "").replace(":7b", ""))
+                label=m.replace(":7b", "").replace(":3b", "").replace(":8b", ""))
 
     ax.set_xlabel("Temperature", fontsize=12)
     ax.set_ylabel("Accuracy (%)", fontsize=12)
@@ -434,7 +540,7 @@ def main():
     fig_radar(agg)
     fig_bars(agg)
     fig_composite(agg)
-    fig_accuracy_vs_params(agg)
+    fig_accuracy_vs_params(agg, v2)
     gen_latex_table(agg)
     print_stats(agg)
 
@@ -443,6 +549,7 @@ def main():
     fig_cost_reliability(v2)
     gen_v2_latex_table(v2)
     gen_appendix_detailed(v2)
+    v2_stats(v2)
 
     summary = {
         "num_models": agg["num_models"],

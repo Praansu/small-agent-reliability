@@ -1,0 +1,119 @@
+{
+  "num_tasks": 31,
+  "models": {
+    "deepseek-r1:7b": {
+      "accuracy": 0.25806451612903225,
+      "accuracy_pct": 25.806451612903224,
+      "success_rate": 0.5806451612903226,
+      "avg_duration_s": 114.68015741532848,
+      "wilson_ci": [
+        13.7,
+        43.2
+      ]
+    },
+    "gemma2:9b": {
+      "accuracy": 0.5806451612903226,
+      "accuracy_pct": 58.06451612903226,
+      "success_rate": 0.9354838709677419,
+      "avg_duration_s": 43.87322386618583,
+      "wilson_ci": [
+        40.8,
+        73.6
+      ]
+    },
+    "llama3.1:8b": {
+      "accuracy": 0.3225806451612903,
+      "accuracy_pct": 32.25806451612903,
+      "success_rate": 0.967741935483871,
+      "avg_duration_s": 24.17522418114447,
+      "wilson_ci": [
+        18.6,
+        49.9
+      ]
+    },
+    "llama3.2:1b": {
+      "accuracy": 0.3548387096774194,
+      "accuracy_pct": 35.483870967741936,
+      "success_rate": 0.8387096774193549,
+      "avg_duration_s": 11.589213102094588,
+      "wilson_ci": [
+        21.1,
+        53.1
+      ]
+    },
+    "llama3.2:3b": {
+      "accuracy": 0.41935483870967744,
+      "accuracy_pct": 41.935483870967744,
+      "success_rate": 0.9032258064516129,
+      "avg_duration_s": 15.176546373674947,
+      "wilson_ci": [
+        26.4,
+        59.2
+      ]
+    },
+    "mistral:7b": {
+      "accuracy": 0.45161290322580644,
+      "accuracy_pct": 45.16129032258064,
+      "success_rate": 1.0,
+      "avg_duration_s": 21.507362965614565,
+      "wilson_ci": [
+        29.2,
+        62.2
+      ]
+    },
+    "phi3.5:3.8b": {
+      "accuracy": 0.4838709677419355,
+      "accuracy_pct": 48.38709677419355,
+      "success_rate": 0.9032258064516129,
+      "avg_duration_s": 30.731673002243042,
+      "wilson_ci": [
+        32.0,
+        65.2
+      ]
+    },
+    "qwen2.5-coder:7b": {
+      "accuracy": 0.6774193548387096,
+      "accuracy_pct": 67.74193548387096,
+      "success_rate": 0.9354838709677419,
+      "avg_duration_s": 34.90031983775477,
+      "wilson_ci": [
+        50.1,
+        81.4
+      ]
+    },
+    "qwen2.5:7b": {
+      "accuracy": 0.6774193548387096,
+      "accuracy_pct": 67.74193548387096,
+      "success_rate": 0.967741935483871,
+      "avg_duration_s": 27.98025341187754,
+      "wilson_ci": [
+        50.1,
+        81.4
+      ]
+    }
+  },
+  "mean_accuracy": 47.0,
+  "min_accuracy": 25.806451612903224,
+  "max_accuracy": 67.74193548387096,
+  "params_vs_acc_r": 0.289,
+  "params_vs_acc_r2": 0.084,
+  "params_vs_acc_p": 0.451,
+  "params_vs_composite_r": -0.179,
+  "params_vs_composite_r2": 0.032,
+  "params_vs_composite_p": 0.644,
+  "cohens_h": {
+    "coder_vs_deepseek": 0.868,
+    "coder_vs_qwen": 0.0,
+    "llama1b_vs_llama8b": 0.068,
+    "gemma_vs_llama8b": 0.525,
+    "coder_vs_gemma": 0.201
+  },
+  "tasks_all_pass": [
+    "COM-4"
+  ],
+  "tasks_all_fail": [
+    "DA-4",
+    "MSR-2",
+    "SAF-3"
+  ]
+}

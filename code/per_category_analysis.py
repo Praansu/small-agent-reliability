@@ -63,26 +63,54 @@ def compute_category_map():
         mapping[task.id] = task.category.value
     return mapping
 
-def fig_per_category(agg, cat_map):
-    """Heatmap of per-category accuracy for all models."""
-    models = sorted(agg["summary_comparison"].keys(),
-                    key=lambda m: agg["summary_comparison"][m]["composite_reliability"], reverse=True)
+cat_map_local = None
+
+def get_cat_map():
+    global cat_map_local
+    if cat_map_local is None:
+        cat_map_local = compute_category_map()
+    return cat_map_local
+
+def load_v2():
+    """Load v2 31-task capability results if available."""
+    path = os.path.join(RAW_DIR, "v2", "aggregate_v2.json")
+    if os.path.exists(path):
+        with open(path) as f:
+            return json.load(f)
+    return None
+
+def build_per_task_map(source, agg):
+    """Return {model: {task_id: score}} from v2 (preferred) or legacy aggregate."""
+    per_model = {}
+    if source:
+        for m, r in source["results"].items():
+            per_model[m] = {t["task_id"]: t.get("score", 0) for t in r.get("per_task", [])}
+        return per_model
+    for m in agg["summary_comparison"]:
+        report = next((r for r in agg.get("reports", []) if r["model"] == m), None)
+        if report:
+            per_model[m] = {pt["task_id"]: pt.get("score", 0)
+                            for pt in report.get("capability", {}).get("per_task", [])}
+    return per_model
+
+def fig_per_category(per_model, sort_key):
+    """Heatmap of per-category accuracy for all models (8 categories)."""
+    if not per_model:
+        print("  (No per-task data)")
+        return
+    models = sorted(per_model.keys(), key=sort_key, reverse=True)
     categories = list(CATEGORY_MAP.keys())
     cat_labels = [CATEGORY_MAP[c] for c in categories]
 
     # Build per-category accuracy matrix
     data = np.zeros((len(models), len(categories)))
     for i, model in enumerate(models):
-        report = next((r for r in agg.get("reports", []) if r["model"] == model), None)
-        if not report:
-            continue
-        per_task = report.get("capability", {}).get("per_task", [])
+        per_task = per_model[model]
         cat_scores = {c: [] for c in categories}
-        for pt in per_task:
-            tid = pt.get("task_id", "")
-            cat = cat_map.get(tid)
+        for tid, score in per_task.items():
+            cat = get_cat_map().get(tid)
             if cat and cat in cat_scores:
-                cat_scores[cat].append(pt.get("score", 0))
+                cat_scores[cat].append(score)
         for j, cat in enumerate(categories):
             scores = cat_scores[cat]
             data[i, j] = np.mean(scores) * 100 if scores else 0
@@ -108,7 +136,7 @@ def fig_per_category(agg, cat_map):
     cbar = fig.colorbar(im, ax=ax, shrink=0.8)
     cbar.set_label("Average Score (%)", fontsize=10)
 
-    fig.suptitle("Per-Category Task Accuracy Across All Models", fontsize=14, fontweight="bold")
+    fig.suptitle("Per-Category Task Accuracy Across All Models (31-Task Suite)", fontsize=14, fontweight="bold")
     plt.tight_layout()
     path = os.path.join(FIG_DIR, "per_category_accuracy.pdf")
     fig.savefig(path, dpi=300, bbox_inches="tight")
@@ -117,7 +145,7 @@ def fig_per_category(agg, cat_map):
 
     # Also print the table
     print(f"\n{'='*70}")
-    print(f"  PER-CATEGORY ACCURACY BREAKDOWN")
+    print(f"  PER-CATEGORY ACCURACY BREAKDOWN (31-task suite)")
     print(f"{'='*70}")
     header = f"  {'Model':<22}"
     for cl in cat_labels:
@@ -189,22 +217,20 @@ def fig_temp_sensitivity(sweep_data):
                   f"stdev={stdev:.2f}, "
                   f"max_drop={max(accs)-min(accs):.1f}pp")
 
-def print_hardest_task(agg, cat_map):
+def print_hardest_task(per_model):
     """Find which task categories are hardest across all models."""
-    models = list(agg["summary_comparison"].keys())
+    if not per_model:
+        print("  (No per-task data)")
+        return
+    models = list(per_model.keys())
     categories = list(CATEGORY_MAP.keys())
     cat_scores = {c: [] for c in categories}
 
     for model in models:
-        report = next((r for r in agg.get("reports", []) if r["model"] == model), None)
-        if not report:
-            continue
-        per_task = report.get("capability", {}).get("per_task", [])
-        for pt in per_task:
-            tid = pt.get("task_id", "")
-            cat = cat_map.get(tid)
+        for tid, score in per_model[model].items():
+            cat = get_cat_map().get(tid)
             if cat and cat in cat_scores:
-                cat_scores[cat].append(pt.get("score", 0))
+                cat_scores[cat].append(score)
 
     print(f"\n{'='*70}")
     print(f"  HARDEST TASK CATEGORIES (avg across all models)")
@@ -213,7 +239,7 @@ def print_hardest_task(agg, cat_map):
     for cat in categories:
         scores = cat_scores[cat]
         avg = np.mean(scores) * 100 if scores else 0
-        cat_avgs.append((CATEGORY_MAP[cat], avg, len(scores) // 9))
+        cat_avgs.append((CATEGORY_MAP[cat], avg, len(scores) // len(models)))
     cat_avgs.sort(key=lambda x: x[1])
     for cat, avg, n in cat_avgs:
         print(f"  {cat:<20}: {avg:>5.1f}% avg (n={n} tasks)")
@@ -221,11 +247,16 @@ def print_hardest_task(agg, cat_map):
 def main():
     print("Running per-category and temperature sensitivity analysis...")
     agg = load_aggregate()
-    cat_map = compute_category_map()
+    v2 = load_v2()
+    per_model = build_per_task_map(v2, agg)
 
-    # Per-category heatmap
-    fig_per_category(agg, cat_map)
-    print_hardest_task(agg, cat_map)
+    # Per-category heatmap (31-task suite preferred)
+    if v2:
+        sort_key = lambda m: v2["results"][m]["accuracy"]
+    else:
+        sort_key = lambda m: agg["summary_comparison"][m]["composite_reliability"]
+    fig_per_category(per_model, sort_key)
+    print_hardest_task(per_model)
 
     # Temperature sensitivity
     sweep = load_tempsweep()

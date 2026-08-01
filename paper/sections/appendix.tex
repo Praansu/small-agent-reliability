@@ -83,33 +83,6 @@ Table~\ref{tab:detailed_results} presents the complete per-task scores for all n
 
 \input{../data/processed/appendix_detailed}
 
-\begin{table}[h]
-\centering
-\caption{Per-task scores for all models. Values are task scores in [0,1] where 1.0 = perfect completion.}
-\label{tab:detailed_results}
-\small
-\begin{tabular}{lccccc}
-\toprule
-\textbf{Task} & \textbf{gemma2 9b} & \textbf{llama3.2 3b} & \textbf{mistral 7b} & \textbf{phi3.5 3.8b} & \textbf{qwen2.5 7b} \\
-\midrule
-COM-1 & 0.00 & 0.70 & 0.70 & 0.70 & 0.70 \\
-COM-2 & 0.00 & 0.70 & 0.70 & 1.00 & 1.00 \\
-DA-1 & 0.00 & 0.70 & 0.70 & 0.70 & 1.00 \\
-DA-2 & 0.00 & 0.70 & 0.70 & 0.70 & 1.00 \\
-DM-1 & 0.00 & 1.00 & 0.70 & 0.00 & 1.00 \\
-IR-1 & 0.70 & 0.70 & 1.00 & 1.00 & 0.70 \\
-IR-2 & 1.00 & 1.00 & 1.00 & 0.50 & 1.00 \\
-IR-3 & 1.00 & 0.70 & 0.70 & 0.70 & 0.00 \\
-MSR-1 & 0.00 & 1.00 & 0.57 & 0.57 & 1.00 \\
-MSR-2 & 0.00 & 0.70 & 0.70 & 0.70 & 0.70 \\
-SAF-1 & 0.00 & 0.00 & 0.50 & 1.00 & 1.00 \\
-SAF-2 & 0.00 & 0.50 & 0.50 & 1.00 & 0.50 \\
-SCH-1 & 1.00 & 0.70 & 0.70 & 0.70 & 1.00 \\
-SCH-2 & 1.00 & 0.70 & 1.00 & 1.00 & 1.00 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \section{Example Agent Trajectories}
 \label{app:trajectories}
 
@@ -142,7 +115,7 @@ To ensure reproducibility of our results:
     \item All model inference uses greedy decoding (temperature $t = 0$) for baseline measurements.
     \item Random seeds are fixed at 42 for all experiments.
     \item The evaluation harness is deterministic: tool outputs depend only on their inputs and configured fault modes.
-    \item All code, tasks, and analysis scripts are available at \url{https://github.com/[username]/small-agent-reliability}.
+    \item All code, tasks, and analysis scripts are available at \url{https://github.com/Praansu/small-agent-reliability}.
     \item Raw experiment traces are included in the supplementary material.
     \item All nine models are publicly available via Ollama: \texttt{ollama pull llama3.2:1b}, \texttt{llama3.2:3b}, \texttt{phi3.5:3.8b}, \texttt{deepseek-r1:7b}, \texttt{qwen2.5-coder:7b}, \texttt{qwen2.5:7b}, \texttt{mistral:7b}, \texttt{llama3.1:8b}, \texttt{gemma2:9b}.
 \end{itemize}

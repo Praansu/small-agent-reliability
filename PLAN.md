@@ -1,10 +1,10 @@
-# Small Agent Reliability — Multi-Phase Research Plan
+﻿# Small Agent Reliability â€” Multi-Phase Research Plan
 
 **Vision**: Build the definitive benchmark and understanding of small language model reliability as autonomous agents. Publish findings at top venues, release open-source tools, and drive industry best practices.
 
 ---
 
-## Phase 1: Foundation ✅ DONE
+## Phase 1: Foundation âœ… DONE
 - [x] Define 4-dimension reliability framework (consistency, robustness, fault tolerance, safety)
 - [x] Build 14-task evaluation suite across 7 categories
 - [x] Implement ReAct agent harness with 6 tools
@@ -20,30 +20,33 @@
 
 ---
 
-## Phase 2: Expansion ✅ DONE
+## Phase 2: Expansion âœ… DONE
 
 ### 2A: Models (added 4, total: 9)
-- [x] **Llama 3.2 1B** — extreme lower-bound baseline (56.1% composite)
-- [x] **Llama 3.1 8B** — larger Llama, compare vs 3.2 3B (24.2% — worse than 1B!)
-- [x] **DeepSeek-R1 7B** — reasoning-distilled (0% accuracy — conflicts with ReAct)
-- [x] **Qwen 2.5 Coder 7B** — code-specialized variant (85.0% — best overall)
+- [x] **Llama 3.2 1B** â€” extreme lower-bound baseline (56.1% composite)
+- [x] **Llama 3.1 8B** â€” larger Llama, compare vs 3.2 3B (24.2% â€” worse than 1B!)
+- [x] **DeepSeek-R1 7B** â€” reasoning-distilled (0% accuracy â€” conflicts with ReAct)
+- [x] **Qwen 2.5 Coder 7B** â€” code-specialized variant (85.0% â€” best overall)
 
 ### 2B: Tasks (add 15+ more)
+- [x] **31-task capability suite** across 8 categories (added coding + decision-making categories)
+- [x] Per-category analysis (coding easiest at 88.9%; data analysis & safety hardest at 25.0%)
 - [ ] Web navigation tasks (click, scroll, form fill)
 - [ ] Multi-turn conversation tasks
-- [ ] Code generation + execution tasks
 - [ ] JSON/structured data extraction
 - [ ] Image analysis with vision models
 
 ### 2C: Analysis
-- [ ] Cross-perturbation analysis: which perturbation types hurt which models most
-- [ ] Cost-reliability tradeoff curves (accuracy vs latency vs VRAM)
-- [ ] Per-category breakdown (which task categories are hardest)
-- [ ] Temperature sensitivity analysis (t=0, 0.3, 0.7, 1.0)
+- [x] Cross-perturbation analysis: which perturbation types hurt which models most
+- [x] Cost-reliability tradeoff curves (accuracy vs latency vs VRAM)
+- [x] Per-category breakdown (which task categories are hardest)
+- [x] Temperature sensitivity analysis (t=0, 0.3, 0.7, 1.0) â€” sweep in progress
+- [x] Statistical analysis: Wilson CIs, Cohen's h, Pearson correlations on 31-task data
+- [x] Universal pass/fail task identification (COM-4 passes all; DA-4, MSR-2, SAF-3 fail all)
 
 ---
 
-## Phase 3: Depth — 4-8 weeks
+## Phase 3: Depth â€” 4-8 weeks
 
 ### 3A: Real-World Fault Injection
 - [ ] Real API rate limits and timeouts
@@ -65,14 +68,14 @@
 
 ---
 
-## Phase 4: Publication — 8-12 weeks
+## Phase 4: Publication â€” 8-12 weeks
 
 ### 4A: Venue Targeting
-- [ ] **arXiv preprint** (immediate — can do now)
+- [ ] **arXiv preprint** (immediate â€” can do now)
 - [ ] **ICML Workshop** on AI Safety / Reliable ML
-- [ ] **NeurIPS Datasets & Benchmarks** — if we build a proper benchmark release
-- [ ] **ACL** — if we add multilingual dimension
-- [ ] **CCS / S&P** — if we emphasize safety
+- [ ] **NeurIPS Datasets & Benchmarks** â€” if we build a proper benchmark release
+- [ ] **ACL** â€” if we add multilingual dimension
+- [ ] **CCS / S&P** â€” if we emphasize safety
 
 ### 4B: Paper Enhancements
 - [ ] Add real failure trajectory examples
@@ -83,7 +86,7 @@
 
 ---
 
-## Phase 5: Platform — 12+ weeks
+## Phase 5: Platform â€” 12+ weeks
 
 ### 5A: Open-Source Benchmark
 - [ ] Standalone Python package (`pip install agent-reliability`)
@@ -103,10 +106,10 @@
 
 ---
 
-## Phase 6: Industry Impact — 16+ weeks
+## Phase 6: Industry Impact â€” 16+ weeks
 
 ### 6A: Best Practices Guide
-- [ ] "Deploying SLM Agents Safely" — practitioner guide
+- [ ] "Deploying SLM Agents Safely" â€” practitioner guide
 - [ ] Checklist for reliability testing before deployment
 - [ ] Case studies from real deployments
 
@@ -126,15 +129,15 @@
 | Metric | Value | Target (Phase 4) |
 |--------|-------|-------------------|
 | Models evaluated | 9 | 15+ |
-| Tasks | 14 | 50+ |
+| Tasks | 31 (capability) + 14 (reliability) | 50+ |
 | Reliability dimensions | 4 | 6+ |
-| Citations | 23 | 50+ |
+| Citations | 25 | 50+ |
 | Paper pages | 12 | 20+ |
 | Figures | 5 | 12+ |
-| Experiments run | 9 | 50+ |
-| Key finding | Code training → reliability transfer | -- |
-| Key finding | Reasoning models fail ReAct (0% acc) | -- |
-| Key finding | Size-reliability r = -0.179 | -- |
+| Experiments run | 9 + 31-task suite + temp sweep | 50+ |
+| Key finding | Code training â†’ reliability transfer | -- |
+| Key finding | Reasoning models fail ReAct (25.8% worst) | -- |
+| Key finding | Neither capability nor reliability scales (r=0.289/p=0.451, r=-0.179) | -- |
 
 ## How to Contribute
 1. Pick an item from any phase
@@ -142,3 +145,4 @@
 3. Run `python automate.py run --model <model>` for experiments
 4. Run `python automate.py publish` to regenerate paper
 5. Submit a PR with results
+

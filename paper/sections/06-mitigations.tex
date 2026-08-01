@@ -24,12 +24,12 @@ Research on guard models for small language models demonstrates that auxiliary c
 
 \subsection{Temperature Control for Reliability}
 
-Our temperature sensitivity analysis (Section~\ref{sec:temperature}) shows that sampling temperature is a first-order reliability lever that practitioners control directly. We recommend the following deployment guidelines:
+Our temperature sensitivity analysis (Section~\ref{sec:temperature}) shows that sampling temperature is a controllable reliability lever that practitioners can tune directly. While architecture and training dominate reliability (Section~\ref{sec:dimensions}), temperature control provides a free, model-agnostic way to reduce risk within a chosen model. We recommend the following deployment guidelines:
 
 \begin{itemize}[nosep]
     \item \textbf{Use greedy decoding ($t=0$) for deterministic tasks.} Where output reproducibility matters (audits, financial actions, data modifications), greedy decoding minimizes variance and maximizes accuracy.
     \item \textbf{Limit temperature to $t \le 0.3$ for general agent tasks.} Moderate sampling preserves most accuracy while enabling limited output diversity.
-    \item \textbf{Avoid $t \ge 0.7$ for tool-use agents.} Our results show that high temperatures increase malformed tool-call rates, compounding the format-fidelity failures documented in Section~\ref{sec:temperature}.
+    \item \textbf{Be cautious with $t \ge 0.7$ for tool-use agents.} Our results show accuracy degrades by up to 9.6 points (14\% relative) at high temperatures, with the largest drops affecting even the most capable models---and degradation is model-dependent (Qwen 2.5 7B retains full accuracy at $t=0.7$, while Qwen 2.5 Coder 7B does not).
     \item \textbf{Apply per-component temperatures.} Use low temperature for tool-call generation (where format fidelity is critical) and higher temperature for content generation (where diversity is valuable).
 \end{itemize}
 

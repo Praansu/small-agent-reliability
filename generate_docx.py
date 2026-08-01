@@ -185,7 +185,7 @@ def main():
         "Robustness under input perturbations is the primary bottleneck: average 52.2% degradation.",
         "Fault tolerance is rare and binary: only Qwen 2.5 Coder 7B achieves 100% recovery.",
         "Safety alignment is critically weak: no model exceeds 50% safety; average 25.9%.",
-        "Temperature degrades reliability: high sampling temperatures (t >= 0.7) amplify format failures.",
+        "Temperature is a bounded, second-order factor: accuracy degrades by 6.5-9.6 points at high sampling temperatures, but the model ranking is stable.",
     ]
     for f in findings:
         p = doc.add_paragraph(style='List Bullet')
@@ -332,9 +332,10 @@ def main():
             caption='Table 4: Accuracy at different sampling temperatures (31-task suite).'
         )
         add_body(doc, (
-            "Higher temperatures systematically degrade reliability across all three models. "
-            "The degradation is most severe for models with strict format requirements, "
-            "confirming that temperature is a first-order reliability lever in deployment."
+            "Higher temperatures cause modest accuracy degradation (up to 9.6 points, or 14% relative) "
+            "with the effect varying by model: Qwen 2.5 7B retains full accuracy through t = 0.7, while "
+            "Qwen 2.5 Coder 7B degrades earlier. The model ranking is stable across all temperatures, "
+            "confirming that temperature is a second-order reliability factor relative to architecture."
         ))
 
     # Key findings summary

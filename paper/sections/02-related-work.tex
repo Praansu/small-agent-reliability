@@ -3,7 +3,7 @@
 \section{Related Work}
 
 \paragraph{Agent benchmarks.}
-The rapid development of tool-using LLMs has produced numerous benchmarks. ToolBench \cite{qin2023toollm} provides 16,000+ real-world APIs for evaluating tool selection and orchestration. API-Bank \cite{li2023apibank} evaluates API call accuracy across 73 APIs. AgentBench \cite{liu2024agentbench} spans eight environments including operating systems and web browsing. SWE-bench \cite{jimenez2024swebench} targets software engineering with real GitHub issues. $\tau$-bench \cite{yao2024tau} introduces the pass$^k$ metric for measuring multi-trial consistency, showing that even state-of-the-art agents succeed on fewer than half the tasks at pass@1 and are highly inconsistent (pass$^8 < 25\%$ in retail).
+The rapid development of tool-using LLMs has produced numerous benchmarks. ToolLLM \cite{qin2023toollm} provides 16,000+ real-world APIs for evaluating tool selection and orchestration. API-Bank \cite{li2023apibank} evaluates API call accuracy across 73 APIs. AgentBench \cite{liu2024agentbench} spans eight environments including operating systems and web browsing. SWE-bench \cite{jimenez2024swebench} targets software engineering with real GitHub issues. $\tau$-bench \cite{yao2024tau} introduces the pass$^k$ metric for measuring multi-trial consistency, showing that even state-of-the-art agents succeed on fewer than half the tasks at pass@1 and are highly inconsistent (pass$^8 < 25\%$ in retail).
 
 However, these benchmarks share a common limitation: they report single-run success rates under idealized conditions, ignoring the production realities of varying inputs, infrastructure failures, and safety requirements.
 

@@ -15,13 +15,13 @@ The most effective mitigation for robustness failures is \textbf{input sanitizat
     \item \textbf{Template matching:} Mapping the extracted instruction to a standardized task template.
 \end{enumerate}
 
-Based on our perturbation analysis, this pipeline could recover approximately 20\% of robustness failures, with the largest effect for typographical errors and the smallest for semantic paraphrasing. Prior work on input normalization for LLM agents has demonstrated similar recovery rates \cite{gupta2026reliabilitybench, cho2026harness}.
+Based on our perturbation analysis, this pipeline could recover approximately 20\% of robustness failures, with the largest effect for typographical errors and the smallest for semantic paraphrasing. This estimate is consistent with prior findings that lightweight normalization and harness components materially improve the operational stability of small models \cite{cho2026harness, gupta2026reliabilitybench}: the 4-stage harness study attributes roughly a quarter of its gains to each of planning and recovery components, corroborating that cheap pre-processing can convert a substantial share of avoidable failures.
 
 \subsection{Verification Layer for Safety}
 
 To address safety failures, we recommend a lightweight \textbf{pre-input safety classifier}: a small BERT-based model ($\sim$110\,M parameters) that classifies user prompts as safe or unsafe before they reach the agent. Unsafe prompts are blocked with a default refusal message.
 
-Research on guard models for small language models demonstrates that auxiliary classifiers achieve 0.80--0.85 F1 on safety test sets with negligible latency ($\sim$5\,ms on CPU) \cite{guard2026slm}. Such a classifier could prevent approximately 70--80\% of safety failures observed in our evaluation, raising the average safety score from 25.9\% to an estimated 70--80\%. This is consistent with findings that lightweight guard models are effective even when the underlying agent lacks built-in safety alignment.
+Research on small-model guard layers demonstrates that lightweight, inference-time defenses can filter malicious prompts while preserving benign ones, motivating a classifier-based gate as a low-cost safety control \cite{guard2026slm}. Such a classifier could prevent a substantial share of the safety failures observed in our evaluation, whose aggregate rate was low (mean safety score 25.9\%) precisely because the models lack robust refusal behavior; even an imperfect filter that catches a majority of unsafe prompts would raise the average safety score materially. This is consistent with findings that lightweight guard mechanisms remain effective even when the underlying agent lacks built-in safety alignment.
 
 \subsection{Temperature Control for Reliability}
 
@@ -34,7 +34,7 @@ Our temperature sensitivity analysis (Section~\ref{sec:temperature}) shows that 
     \item \textbf{Apply per-component temperatures.} Use low temperature for tool-call generation (where format fidelity is critical) and higher temperature for content generation (where diversity is valuable).
 \end{itemize}
 
-These findings complement prior work showing that temperature interacts with model architecture: models with strong format training (e.g., code-specialized models) tolerate higher temperatures better than reasoning-distilled models, which degrade rapidly under sampling \cite{deepseek2024r1, qwen2024}.
+These findings complement prior work showing that temperature interacts with model architecture and training \cite{deepseek2024r1, qwen2024}: in our evaluation, the two Qwen models---despite identical parameter counts and comparable accuracy---degrade differently under sampling (Qwen 2.5 7B retains full accuracy at $t=0.7$, while Qwen 2.5 Coder 7B does not), indicating that temperature tolerance is model-specific and should be validated per deployment rather than assumed.
 
 \subsection{Cost-Benefit Analysis}
 

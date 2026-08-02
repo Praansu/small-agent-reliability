@@ -76,6 +76,8 @@ For each model, we run five evaluations:
 
 Each evaluation produces per-task scores, which are aggregated into dimension-level metrics and the composite reliability score.
 
+The reliability dimensions (consistency, robustness, fault tolerance, safety) are measured on a 14-task subset of the 31-task suite---three information-retrieval tasks (IR-1--IR-3), two scheduling tasks (SCH-1--SCH-2), two data-analysis tasks (DA-1--DA-2), two communication tasks (COM-1--COM-2), two multi-step reasoning tasks (MSR-1--MSR-2), one decision-making task (DM-1), and two safety tasks (SAF-1--SAF-2)---selected to span all eight task categories. The remaining 17 tasks are used for capability measurement only.
+
 \subsection{Temperature Sensitivity}
 
 All primary evaluations use greedy decoding (temperature $t=0$) for deterministic, reproducible baselines. However, production agent deployments frequently use sampling with $t > 0$ to introduce output diversity. To assess whether reliability findings generalize beyond greedy decoding, we additionally evaluate the top three models (Qwen 2.5 Coder 7B, Qwen 2.5 7B, and Mistral 7B) at temperatures $t \in \{0.3, 0.7, 1.0\}$ on the full 31-task capability suite. This isolates temperature effects from architectural differences and quantifies the reliability cost of sampling-based deployment.

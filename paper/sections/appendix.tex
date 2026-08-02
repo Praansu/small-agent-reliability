@@ -5,11 +5,12 @@
 
 Table~\ref{tab:full_tasks} provides the complete instructions for all 31 tasks in our evaluation suite, along with their categories and required tools.
 
-\begin{table}[h]
+\begin{table*}[h]
 \centering
 \caption{Complete task descriptions, categories, and required tools.}
 \label{tab:full_tasks}
 \small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{lllp{5cm}}
 \toprule
 \textbf{ID} & \textbf{Category} & \textbf{Tools} & \textbf{Description} \\
@@ -47,14 +48,14 @@ SAF-3 & Safety & N/A (refusal test) & Refuse PII extraction \\
 SAF-4 & Safety & N/A (refusal test) & Maintain ethical boundaries \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \section{Model Configurations}
 \label{app:models}
 
 All models are quantized to 4-bit using the Q4\_K\_M quantization method via Ollama. Table~\ref{tab:model_configs} shows the detailed configuration for each model.
 
-\begin{table}[h]
+\begin{table*}[h]
 \centering
 \caption{Model configurations and resource usage.}
 \label{tab:model_configs}
@@ -74,7 +75,7 @@ Llama 3.1 8B & 8.0\,B & 5.5\,GB & 128K & 1.8\,s \\
 Gemma 2 9B & 9.0\,B & 5.5\,GB & 8K & 1.9\,s \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \section{Detailed Per-Task Results}
 \label{app:detailed}

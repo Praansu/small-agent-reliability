@@ -9,7 +9,8 @@ We presented the first comprehensive, multi-dimensional reliability evaluation o
     \item Code-specialized training strongly transfers to agent reliability, with Qwen 2.5 Coder 7B achieving the highest composite (85.0\%), perfect consistency (100\%), and perfect fault tolerance (100\%).
     \item Reasoning-distilled models (DeepSeek-R1 7B) fundamentally conflict with ReAct-style agentic formats, achieving the lowest capability (25.8\%) and 0\% accuracy on the reliability suite.
     \item Robustness under input perturbations shows the widest variance of any dimension (0--90\%, mean 47.8\%), with the largest model collapsing to 0\%.
-    \item Safety failures affect all models at rates (50--100\% failure to refuse) that are unacceptable for production deployment.
+    \item Safety failures affect all models at rates (50--100\% failure to refuse) that are unacceptable for production deployment ($p < 0.001$ against a 50\% threshold).
+    \item Statistically, the 31-task suite separates the extremes with confidence (only the two weakest models differ from the leader after multiple-testing correction), but mid-tier ordering remains unresolved at this sample size---underscoring the need for larger evaluation suites.
 \end{enumerate}
 
 As small language models continue their rapid adoption in edge devices, privacy-sensitive applications, and cost-constrained deployments, understanding and improving their reliability is essential. We hope our benchmark, findings, and mitigation strategies provide a foundation for building small-model agents that are not just capable, but reliably deployable in the real world.

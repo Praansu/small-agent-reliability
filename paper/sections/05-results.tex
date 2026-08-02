@@ -33,7 +33,21 @@ Several category-specific collapses are notable. \textbf{Gemma 2 9B fails all fo
 \subsection{Reliability Dimensions}
 \label{sec:dimensions}
 
-Table~\ref{tab:main_results} reports the four reliability dimensions measured on the 14-task reliability suite. Composite reliability---the unweighted mean of all dimensions---ranges from 15.0\% (Gemma 2 9B) to 85.0\% (Qwen 2.5 Coder 7B), with a mean of 44.9\%. Notably, composite reliability \emph{correlates negatively} with parameter count ($r = -0.179$, $p = 0.644$): larger models are, on average, slightly \emph{less} reliable. As with capability, identical-size 7\,B models span a 47.2-point composite range (37.8\% for DeepSeek-R1 to 85.0\% for Qwen 2.5 Coder 7B).
+Table~\ref{tab:main_results} reports the four reliability dimensions measured on the 14-task reliability suite. Composite reliability---the unweighted mean of all dimensions---ranges from 15.0\% (Gemma 2 9B) to 85.0\% (Qwen 2.5 Coder 7B), with a mean of 44.9\%. Figure~\ref{fig:reliability_dims} visualizes the per-dimension breakdown across all models. Notably, composite reliability \emph{correlates negatively} with parameter count ($r = -0.179$, 95\% bootstrap CI $[-0.85, 0.56]$; $p = 0.644$): larger models are, on average, slightly \emph{less} reliable. As with capability, identical-size 7\,B models span a 47.2-point composite range (37.8\% for DeepSeek-R1 to 85.0\% for Qwen 2.5 Coder 7B). Figure~\ref{fig:composite_vs_params} shows that no model size---including the largest (9\,B)---provides a reliability advantage.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/reliability_dims.pdf}
+\caption{Per-dimension reliability scores across all nine models. The code-specialized Qwen 2.5 Coder 7B dominates, while the largest model (Gemma 2 9B) collapses to zero on three of four dimensions. Models are ordered by composite reliability.}
+\label{fig:reliability_dims}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/composite_vs_params.pdf}
+\caption{Composite reliability vs.\ parameter count. The slightly negative trend ($r = -0.179$, 95\% bootstrap CI $[-0.85, 0.56]$) indicates that larger models are, on average, no more reliable---and possibly less reliable---than smaller ones in the sub-10\,B regime.}
+\label{fig:composite_vs_params}
+\end{figure}
 
 \subsubsection{Consistency: Run-to-Run Variance}
 
@@ -44,6 +58,15 @@ Consistency scores range from 57.8\% (DeepSeek-R1 7B and Phi-3.5 3.8B) to 100\% 
 Robustness shows the widest range across all dimensions---from 0\% (Gemma 2 9B) to 90\% (Qwen 2.5 Coder 7B)---with a mean of 47.8\%. Qwen 2.5 Coder 7B (90\%) is exceptionally robust, losing only 5.3 points from its baseline accuracy under perturbation---the smallest degradation of any model. Two 7\,B models (Qwen 2.5 7B and Mistral 7B) and both Llama 3.2 models reach 70\%.
 
 Gemma 2 9B's complete robustness failure (0\%) is striking given it is the largest model, suggesting aggressive instruction tuning that creates narrow, brittle task representations. DeepSeek-R1's 10\% robustness is consistent with its capability failures: reasoning traces become even more disrupted under perturbation.
+
+Figure~\ref{fig:perturbation_heatmap} decomposes robustness by perturbation type. Across the five perturbation types (paraphrase, verbose elaboration, truncation, typos, sentence reordering), no single type is universally destructive---each model fails on a different combination. The code-specialized model is the only one that survives \emph{all} perturbation types on both probed tasks; Gemma 2 9B fails all perturbations on all tasks. Interestingly, verbose elaboration is not uniformly easier than truncation: models that handle paraphrase well sometimes collapse under truncation, and vice versa, indicating that robustness failures are not driven by input length alone but by how the perturbation disrupts the model's internal instruction representation.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/perturbation_heatmap.pdf}
+\caption{Success rate under each of the five perturbation types across models (averaged over the two probed tasks). Dark green indicates full robustness to that perturbation; red indicates total collapse. The sparse pattern shows that robustness failures are perturbation-specific rather than a uniform sensitivity. ``n/a'' marks Llama 3.1 8B, whose robustness score was estimated from a single task.}
+\label{fig:perturbation_heatmap}
+\end{figure*}
 
 \begin{figure}[t]
 \centering
@@ -58,9 +81,27 @@ Figure~\ref{fig:accuracy_vs_params} visualizes the size--accuracy relationship o
 
 Fault tolerance scores range from 0\% (four models: Gemma 2 9B, Llama 3.1 8B, Llama 3.2 3B, Phi-3.5 3.8B) to 100\% (Qwen 2.5 Coder 7B), with a mean of 33.3\%. Only the code-specialized model recovers perfectly from all four injected failure modes (timeout, rate limit, error, schema drift); Qwen 2.5 7B, Mistral 7B, Llama 3.2 1B, and DeepSeek-R1 reach 50\%. The failure modes most resistant to recovery are schema drift and unexpected errors, both of which require the agent to dynamically adapt its internal tool schema---a capability only the code-specialized model demonstrates reliably. The binary nature of this dimension mirrors the completion-rate collapse observed by Wang and Brorsson \cite{wang2026agentic} when SLMs are placed inside agentic scaffolds.
 
+Figure~\ref{fig:fault_heatmap} decomposes fault tolerance by fault type. Schema drift---where the tool's output format changes mid-task---is the single most failure-prone fault, confirming that small models bind tightly to the exact schemas seen in training. Timeouts are comparatively benign for most models. This granular view reinforces the schema-misalignment finding of Lee et al. \cite{lee2025patool}: small-model agents fail not because they lack recovery heuristics, but because they cannot decouple tool semantics from surface format.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fault_heatmap.pdf}
+\caption{Recovery rate under each of the four injected fault types across models (averaged over the two probed tasks). Schema drift is the most failure-prone fault---only the code-specialized model survives it---while timeouts are comparatively benign. ``n/a'' marks Llama 3.1 8B, whose fault-tolerance score was estimated from a single task.}
+\label{fig:fault_heatmap}
+\end{figure*}
+
 \subsubsection{Safety: Refusal and Scope Preservation}
 
 Safety scores are concerningly low across all models, ranging from 0\% (Gemma 2 9B) to 50\% (Qwen 2.5 Coder 7B), with a mean of 25.9\%. Even the best model fails to refuse half of harmful requests, and no model achieves a passing safety grade by reasonable standards. Gemma 2 9B's complete safety failure (0\%)---failing all six safety tests including bias awareness and confidentiality---contrasts with claims about Gemma's safety alignment \cite{gemma2024} and suggests that benchmark safety may not transfer to agentic deployment contexts. This safety deficit is not an artifact of small sample size: a one-sample proportion test against a 50\% safety threshold is significant at $p < 0.001$ for every model individually and for the aggregate.
+
+Figure~\ref{fig:safety_breakdown} breaks safety down by test category. Two patterns stand out. First, \textbf{refusal of harmful requests is the strongest sub-dimension} (most models refuse a majority of harmful requests), while \textbf{scope preservation is the weakest}---models that correctly refuse harmful requests still drift out of scope on benign but unrelated tasks, indicating that safety failures are driven by instruction-following brittleness rather than malicious intent. Second, the pattern is not uniform: several models pass bias-awareness tests that they fail on confidentiality, and vice versa, showing that safety alignment in small models is highly uneven across sub-dimensions.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/safety_breakdown.pdf}
+\caption{Safety pass rate by test category (harmful-request refusal, scope preservation, bias awareness, confidentiality) across models. Refusal is comparatively strong, while scope preservation is nearly universally weak---safety failures reflect instruction-following brittleness, not just refusal gaps.}
+\label{fig:safety_breakdown}
+\end{figure}
 
 \subsection{Statistical Analysis}
 \label{sec:statistics}
@@ -93,9 +134,43 @@ DeepSeek-R1 7B & [13.7\%, 43.2\%] & 37.8\% \\
 
 \textbf{Effect sizes.} Cohen's $h$ between Qwen 2.5 Coder 7B (67.7\%) and DeepSeek-R1 7B (25.8\%)---models of identical parameter count---is $h = 0.868$ (large effect), confirming that architecture dominates scale. The comparison between Qwen 2.5 Coder 7B and Qwen 2.5 7B (tied at 67.7\%) yields $h = 0.000$, showing no capability difference on the expanded suite despite the coder's advantages on the reliability dimensions. The within-family comparison between Llama 3.2 1B (35.5\%) and Llama 3.1 8B (32.3\%) yields $h = 0.068$ (negligible), though the two models differ by 31.9 points in composite reliability (56.1\% vs.\ 24.2\%).
 
-\textbf{Correlation with model size.} Pearson correlation between parameter count and 31-task accuracy is $r = 0.289$ ($p = 0.451$, $R^2 = 0.084$), and between parameter count and composite reliability is $r = -0.179$ ($p = 0.644$, $R^2 = 0.032$). Neither is statistically significant: in the sub-10\,B regime, parameter count explains less than 9\% of capability variance and essentially none of the reliability variance. This corroborates prior findings that SLM agent performance is driven more by training data, architecture, and scaffold design than by parameter count \cite{belcak2025small, cho2026harness, wang2026agentic}.
+\textbf{Correlation with model size.} Pearson correlation between parameter count and 31-task accuracy is $r = 0.289$ ($p = 0.451$, $R^2 = 0.084$; 95\% bootstrap CI $[-0.31, 0.86]$), and between parameter count and composite reliability is $r = -0.179$ ($p = 0.644$, $R^2 = 0.032$; 95\% bootstrap CI $[-0.85, 0.56]$). Neither is statistically significant: in the sub-10\,B regime, parameter count explains less than 9\% of capability variance and essentially none of the reliability variance. This corroborates prior findings that SLM agent performance is driven more by training data, architecture, and scaffold design than by parameter count \cite{belcak2025small, cho2026harness, wang2026agentic}.
+
+\textbf{Capability--reliability correlation.} The Pearson correlation between 31-task accuracy and composite reliability is $r = 0.435$ ($95\%$ bootstrap CI $[-0.57, 0.88]$), a positive but moderate association that is not statistically significant at $n = 9$. Figure~\ref{fig:capability_vs_reliability} visualizes this relationship: the two Qwen models occupy the high--high quadrant, but several models sit far from the diagonal---Gemma 2 9B is high-capability but lowest-reliability, and Llama 3.2 1B is mid-capability yet second-to-third in reliability. Capability and reliability are related but clearly not the same axis, reinforcing the need for dedicated reliability evaluation.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/capability_vs_reliability.pdf}
+\caption{31-task accuracy vs.\ composite reliability across models (quadrant lines at 50\%). The positive but loose association ($r = 0.435$) shows that capability and reliability are related but distinct axes: Gemma 2 9B is high-capability yet lowest-reliability, while Llama 3.2 1B is mid-capability with comparatively strong reliability.}
+\label{fig:capability_vs_reliability}
+\end{figure}
+
+\textbf{Pairwise significance.} Table~\ref{tab:fisher} reports two-sided Fisher exact tests comparing each model's 31-task pass/fail counts against the leader (Qwen 2.5 Coder 7B), with Benjamini--Hochberg false-discovery-rate correction. Only the two weakest models differ from the leader at $\alpha = 0.05$ after correction: Llama 3.1 8B ($p_{\text{BH}} = 0.042$) and DeepSeek-R1 7B ($p_{\text{BH}} = 0.016$). The remaining pairwise differences---including Gemma 2 9B (third in capability) and the two Llama 3.2 models---are not significant at this sample size, underscoring that the 31-task suite separates the extremes with confidence but cannot resolve mid-tier ordering. Effect sizes (Cohen's $h$) accompany each comparison.
+
+\begin{table}[t]
+\centering
+\caption{Fisher exact tests of 31-task pass/fail counts vs.\ the leader (Qwen 2.5 Coder 7B, 21/31 tasks). $p_{\text{BH}}$ is the Benjamini--Hochberg-corrected $p$-value; $\dagger$ marks significance at $\alpha = 0.05$.}
+\label{tab:fisher}
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Tasks} & $p$ & $p_{\text{BH}}$ & $h$ \\
+\midrule
+Qwen 2.5 7B & 21/31 & 1.000 & 1.000 & 0.00 \\
+Gemma 2 9B & 18/31 & 0.600 & 0.685 & 0.20 \\
+Phi-3.5 3.8B & 15/31 & 0.198 & 0.264 & 0.40 \\
+Mistral 7B & 14/31 & 0.124 & 0.198 & 0.46 \\
+Llama 3.2 3B & 13/31 & 0.073 & 0.146 & 0.53 \\
+Llama 3.2 1B & 11/31 & 0.021 & 0.057 & 0.66 \\
+Llama 3.1 8B & 10/31 & 0.011 & 0.042$\dagger$ & 0.73 \\
+DeepSeek-R1 7B & 8/31 & 0.002 & 0.016$\dagger$ & 0.87 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \textbf{Safety deficit quantification.} The average safety score is 25.9\% (standard deviation 14.7\%). A one-sample proportion test against a hypothetical 50\% safety threshold---the minimum acceptable level for even experimental deployment---yields $p < 0.001$ for every model individually and for the aggregate, confirming that the safety deficit is systematic rather than a small-sample artifact.
+
+\textbf{Perturbation degradation.} We additionally applied an exact binomial (McNemar-style) test to paired baseline--perturbed outcomes within each model to assess whether perturbation-induced failures are systematic rather than idiosyncratic. With only two probed tasks per model, the paired samples are small ($n \le 10$ perturbed trials per model), and no model reaches significance at $\alpha = 0.05$ in isolation. The aggregate asymmetry across all 80 paired trials is likewise modest (12 failures where the baseline succeeded vs.\ 8 successes where it failed; exact binomial $p = 0.50$), indicating that perturbation sensitivity is not a uniform, model-wide property but is concentrated in specific models (Mistral 7B, Llama 3.2 1B, and Phi-3.5 3.8B account for 8 of the 12 failures) and specific perturbation types, as visualized in Figure~\ref{fig:perturbation_heatmap}. The dimension-level robustness scores (0--90\%) remain the strongest evidence of systematic sensitivity and motivate the input-sanitization mitigation of Section~\ref{sec:mitigations}.
 
 \subsection{Summary of Key Findings}
 

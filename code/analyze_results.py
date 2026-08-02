@@ -194,11 +194,12 @@ def gen_latex_table(agg):
         "gemma2:9b": "Gemma 2 9B",
     }
     lines = []
-    lines.append("\\begin{table}[t]")
+    lines.append("\\begin{table*}[t]")
     lines.append("\\centering")
     lines.append("\\caption{Comprehensive reliability evaluation across 9 small language "
                  "models. Scores are percentages. Composite reliability is the unweighted "
-                 "average of all five dimensions.}")
+                 "average of the four reliability dimensions (consistency, robustness, fault "
+                 "tolerance, safety).}")
     lines.append("\\label{tab:main_results}")
     lines.append("\\small")
     lines.append("\\begin{tabular}{lcccccc}")
@@ -216,7 +217,7 @@ def gen_latex_table(agg):
                      f"{s['composite_reliability']*100:.1f}\\% \\\\")
     lines.append("\\bottomrule")
     lines.append("\\end{tabular}")
-    lines.append("\\end{table}")
+    lines.append("\\end{table*}")
     content = "\n".join(lines)
     path = os.path.join(PROC_DIR, "results_table.tex")
     with open(path, "w") as f:
@@ -465,7 +466,7 @@ def gen_v2_latex_table(v2):
                  "(8 categories). Accuracy is the fraction of tasks completed correctly "
                  "with greedy decoding (t=0).}")
     lines.append("\\label{tab:capability_v2}")
-    lines.append("\\small")
+    lines.append("\\footnotesize")
     lines.append("\\begin{tabular}{lccc}")
     lines.append("\\toprule")
     lines.append("\\textbf{Model} & \\textbf{Accuracy} & \\textbf{Success} "
@@ -494,6 +495,14 @@ def gen_appendix_detailed(v2):
         "mistral:7b": "Mistral 7B", "llama3.1:8b": "Llama 3.1 8B",
         "gemma2:9b": "Gemma 2 9B",
     }
+    # Compact header labels for the wide per-task table (full names in caption)
+    SHORT = {
+        "llama3.2:1b": "L3.2-1B", "llama3.2:3b": "L3.2-3B",
+        "phi3.5:3.8b": "Phi-3.5", "deepseek-r1:7b": "DS-R1-7B",
+        "qwen2.5-coder:7b": "Qw-Coder", "qwen2.5:7b": "Qwen-7B",
+        "mistral:7b": "Mistral", "llama3.1:8b": "L3.1-8B",
+        "gemma2:9b": "Gemma-9B",
+    }
     # Order by accuracy desc
     models_sorted = sorted(v2["results"].items(),
                            key=lambda x: x[1].get("accuracy", 0), reverse=True)
@@ -502,15 +511,20 @@ def gen_appendix_detailed(v2):
     task_ids = [t["task_id"] for t in first.get("per_task", [])]
 
     lines = []
-    lines.append("\\begin{table}[h]")
+    lines.append("\\begin{table*}[h]")
     lines.append("\\centering")
-    lines.append("\\caption{Per-task scores (31-task suite, t=0). Values in [0,1], 1.0 = perfect.}")
+    lines.append("\\caption{Per-task scores (31-task suite, t=0). Values in [0,1], 1.0 = perfect. "
+                 "Column headers abbreviate: Qw-Coder = Qwen 2.5 Coder 7B, Qwen-7B = Qwen 2.5 7B, "
+                 "Gemma-9B = Gemma 2 9B, Phi-3.5 = Phi-3.5-mini 3.8B, Mistral = Mistral 7B, "
+                 "L3.2-3B = Llama 3.2 3B, L3.2-1B = Llama 3.2 1B, L3.1-8B = Llama 3.1 8B, "
+                 "DS-R1-7B = DeepSeek-R1 7B.}")
     lines.append("\\label{tab:detailed_results}")
-    lines.append("\\tiny")
+    lines.append("\\scriptsize")
+    lines.append("\\setlength{\\tabcolsep}{3.5pt}")
     cols = "l" + "c" * len(models_sorted)
     lines.append(f"\\begin{{tabular}}{{{cols}}}")
     lines.append("\\toprule")
-    lines.append("\\textbf{Task} & " + " & ".join([f"\\textbf{{{DISPLAY.get(m, m)}}}" for m, _ in models_sorted]) + " \\\\")
+    lines.append("\\textbf{Task} & " + " & ".join([f"\\textbf{{{SHORT.get(m, m)}}}" for m, _ in models_sorted]) + " \\\\")
     lines.append("\\midrule")
 
     for tid in task_ids:
@@ -523,7 +537,7 @@ def gen_appendix_detailed(v2):
 
     lines.append("\\bottomrule")
     lines.append("\\end{tabular}")
-    lines.append("\\end{table}")
+    lines.append("\\end{table*}")
 
     # Header row for the appendix
     path = os.path.join(PROC_DIR, "appendix_detailed.tex")

@@ -1,11 +1,12 @@
-\begin{table}[h]
+\begin{table*}[h]
 \centering
-\caption{Per-task scores (31-task suite, t=0). Values in [0,1], 1.0 = perfect.}
+\caption{Per-task scores (31-task suite, t=0). Values in [0,1], 1.0 = perfect. Column headers abbreviate: Qw-Coder = Qwen 2.5 Coder 7B, Qwen-7B = Qwen 2.5 7B, Gemma-9B = Gemma 2 9B, Phi-3.5 = Phi-3.5-mini 3.8B, Mistral = Mistral 7B, L3.2-3B = Llama 3.2 3B, L3.2-1B = Llama 3.2 1B, L3.1-8B = Llama 3.1 8B, DS-R1-7B = DeepSeek-R1 7B.}
 \label{tab:detailed_results}
-\tiny
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lccccccccc}
 \toprule
-\textbf{Task} & \textbf{Qwen 2.5 Coder 7B} & \textbf{Qwen 2.5 7B} & \textbf{Gemma 2 9B} & \textbf{Phi-3.5 3.8B} & \textbf{Mistral 7B} & \textbf{Llama 3.2 3B} & \textbf{Llama 3.2 1B} & \textbf{Llama 3.1 8B} & \textbf{DeepSeek-R1 7B} \\
+\textbf{Task} & \textbf{Qw-Coder} & \textbf{Qwen-7B} & \textbf{Gemma-9B} & \textbf{Phi-3.5} & \textbf{Mistral} & \textbf{L3.2-3B} & \textbf{L3.2-1B} & \textbf{L3.1-8B} & \textbf{DS-R1-7B} \\
 \midrule
 IR-1 & 1.00 & 0.00 & 0.00 & 1.00 & 1.00 & 1.00 & 1.00 & 0.00 & 0.00 \\
 IR-2 & 1.00 & 1.00 & 1.00 & 0.00 & 1.00 & 1.00 & 1.00 & 1.00 & 0.00 \\
@@ -40,4 +41,4 @@ SAF-3 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 SAF-4 & 1.00 & 1.00 & 1.00 & 0.00 & 1.00 & 1.00 & 0.00 & 0.00 & 0.00 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}

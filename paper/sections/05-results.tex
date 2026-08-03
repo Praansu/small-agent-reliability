@@ -2,7 +2,7 @@
 
 \section{Results}
 
-We present our findings across two complementary evaluations. First, we measure \emph{capability} on an expanded 31-task suite (Table~\ref{tab:capability_v2})---the primary headline metric---together with a per-category breakdown (Figure~\ref{fig:per_category}). Second, we measure the four \emph{reliability dimensions} (consistency, robustness, fault tolerance, safety) on the 14-task reliability suite (Table~\ref{tab:main_results}), whose protocols are dimension-specific. We additionally report a temperature sensitivity analysis (Section~\ref{sec:temperature}) and a cost-reliability tradeoff (Section~\ref{sec:cost}).
+We present our findings across two complementary evaluations. First, we measure \emph{capability} on an expanded 31-task suite (Table~\ref{tab:capability_v2})---the primary headline metric---together with a per-category breakdown (Figure~\ref{fig:per_category}). Second, we measure the four \emph{reliability dimensions} (consistency, robustness, fault tolerance, safety) using the dimension-specific protocols of Section~\ref{sec:protocol} (Table~\ref{tab:main_results}). We additionally report a temperature sensitivity analysis (Section~\ref{sec:temperature}) and a cost-reliability tradeoff (Section~\ref{sec:cost}).
 
 \input{../data/processed/results_table}
 \input{../data/processed/results_table_v2}
@@ -33,7 +33,7 @@ Several category-specific collapses are notable. \textbf{Gemma 2 9B fails all fo
 \subsection{Reliability Dimensions}
 \label{sec:dimensions}
 
-Table~\ref{tab:main_results} reports the four reliability dimensions measured on the 14-task reliability suite. Composite reliability---the unweighted mean of all dimensions---ranges from 15.0\% (Gemma 2 9B) to 85.0\% (Qwen 2.5 Coder 7B), with a mean of 44.9\%. Figure~\ref{fig:reliability_dims} visualizes the per-dimension breakdown across all models. Notably, composite reliability \emph{correlates negatively} with parameter count ($r = -0.179$, 95\% bootstrap CI $[-0.85, 0.56]$; $p = 0.644$): larger models are, on average, slightly \emph{less} reliable. As with capability, identical-size 7\,B models span a 47.2-point composite range (37.8\% for DeepSeek-R1 to 85.0\% for Qwen 2.5 Coder 7B). Figure~\ref{fig:composite_vs_params} shows that no model size---including the largest (9\,B)---provides a reliability advantage.
+Table~\ref{tab:main_results} reports the four reliability dimensions together with accuracy on the original 14-task suite. Composite reliability---the unweighted mean of all dimensions---ranges from 15.0\% (Gemma 2 9B) to 85.0\% (Qwen 2.5 Coder 7B), with a mean of 44.9\%. Figure~\ref{fig:reliability_dims} visualizes the per-dimension breakdown across all models. Notably, composite reliability \emph{correlates negatively} with parameter count ($r = -0.179$, 95\% bootstrap CI $[-0.85, 0.56]$; $p = 0.644$): larger models are, on average, slightly \emph{less} reliable. As with capability, identical-size 7\,B models span a 47.2-point composite range (37.8\% for DeepSeek-R1 to 85.0\% for Qwen 2.5 Coder 7B). Figure~\ref{fig:composite_vs_params} shows that no model size---including the largest (9\,B)---provides a reliability advantage.
 
 \begin{figure}[t]
 \centering
@@ -106,7 +106,7 @@ Figure~\ref{fig:safety_breakdown} breaks safety down by test category. Two patte
 \subsection{Statistical Analysis}
 \label{sec:statistics}
 
-We supplement the above findings with formal statistical inference. Table~\ref{tab:confidence_intervals} reports 95\% Wilson score confidence intervals for 31-task accuracy (n = 31) and composite reliability (n = 14).
+We supplement the above findings with formal statistical inference. Table~\ref{tab:confidence_intervals} reports 95\% Wilson score confidence intervals for 31-task accuracy (n = 31) alongside each model's composite reliability point estimate.
 
 \begin{table}[t]
 \centering

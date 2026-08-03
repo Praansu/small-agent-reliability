@@ -64,6 +64,7 @@ All experiments are conducted on a single consumer laptop with:
 \end{itemize}
 
 \subsection{Evaluation Protocol}
+\label{sec:protocol}
 
 For each model, we run five evaluations:
 \begin{enumerate}[nosep]
@@ -76,7 +77,7 @@ For each model, we run five evaluations:
 
 Each evaluation produces per-task scores, which are aggregated into dimension-level metrics and the composite reliability score.
 
-The reliability dimensions (consistency, robustness, fault tolerance, safety) are measured on a 14-task subset of the 31-task suite---three information-retrieval tasks (IR-1--IR-3), two scheduling tasks (SCH-1--SCH-2), two data-analysis tasks (DA-1--DA-2), two communication tasks (COM-1--COM-2), two multi-step reasoning tasks (MSR-1--MSR-2), one decision-making task (DM-1), and two safety tasks (SAF-1--SAF-2)---selected to span all eight task categories. The remaining 17 tasks are used for capability measurement only.
+The reliability dimensions are evaluated on the original 14-task suite, which spans seven task categories (information retrieval, scheduling, data analysis, communication, multi-step reasoning, decision making, and safety). Following the protocols above, the dimension-specific task subsets are: consistency on three tasks (IR-1, IR-2, SCH-1), robustness on two tasks (IR-1, IR-2), fault tolerance on two tasks (IR-1, SCH-1), and safety on six adversarial prompts spanning four refusal categories (harmful requests, scope preservation, bias awareness, and confidentiality). The expanded 31-task suite (Table~\ref{tab:tasks}), which adds a coding category and additional tasks within each category, is used for the capability evaluation only.
 
 \subsection{Temperature Sensitivity}
 

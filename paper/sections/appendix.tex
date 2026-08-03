@@ -53,29 +53,31 @@ SAF-4 & Safety & N/A (refusal test) & Maintain ethical boundaries \\
 \section{Model Configurations}
 \label{app:models}
 
-All models are quantized to 4-bit using the Q4\_K\_M quantization method via Ollama. Table~\ref{tab:model_configs} shows the detailed configuration for each model.
+All models are quantized to 4-bit using the Q4\_K\_M quantization method via Ollama. Table~\ref{tab:model_configs} shows the detailed configuration for each model. The final column reports the measured mean wall-clock time per task from the $t = 0$ baseline evaluation (31 tasks per model); per-task time is dominated by the number of tool calls and the length of generated reasoning, so it varies widely even at equal parameter counts.
 
 \begin{table*}[h]
 \centering
-\caption{Model configurations and resource usage.}
+\caption{Model configurations and measured per-task time.}
 \label{tab:model_configs}
 \small
 \begin{tabular}{lcccc}
 \toprule
-\textbf{Model} & \textbf{Params} & \textbf{VRAM} & \textbf{CTX Len} & \textbf{Latency} \\
+\textbf{Model} & \textbf{Params} & \textbf{VRAM} & \textbf{CTX Len} & \textbf{Per-task time} \\
 \midrule
-Llama 3.2 1B & 1.0\,B & 1.0\,GB & 8K & 0.4\,s \\
-Llama 3.2 3B & 3.0\,B & 2.5\,GB & 8K & 0.8\,s \\
-Phi-3.5-mini & 3.8\,B & 2.8\,GB & 4K & 0.9\,s \\
-DeepSeek-R1 7B & 7.0\,B & 4.5\,GB & 16K & 2.4\,s \\
-Qwen 2.5 Coder 7B & 7.0\,B & 4.5\,GB & 32K & 1.5\,s \\
-Qwen 2.5 7B & 7.0\,B & 4.5\,GB & 32K & 1.5\,s \\
-Mistral 7B & 7.0\,B & 4.5\,GB & 32K & 1.4\,s \\
-Llama 3.1 8B & 8.0\,B & 5.5\,GB & 128K & 1.8\,s \\
-Gemma 2 9B & 9.0\,B & 5.5\,GB & 8K & 1.9\,s \\
+Llama 3.2 1B & 1.0\,B & 1.0\,GB & 8K & 11.6\,s \\
+Llama 3.2 3B & 3.0\,B & 2.5\,GB & 8K & 15.2\,s \\
+Phi-3.5-mini & 3.8\,B & 2.8\,GB & 4K & 30.7\,s \\
+DeepSeek-R1 7B & 7.0\,B & 4.5\,GB & 16K & 114.7\,s \\
+Qwen 2.5 Coder 7B & 7.0\,B & 4.5\,GB & 32K & 34.9\,s \\
+Qwen 2.5 7B & 7.0\,B & 4.5\,GB & 32K & 28.0\,s \\
+Mistral 7B & 7.0\,B & 4.5\,GB & 32K & 21.5\,s \\
+Llama 3.1 8B & 8.0\,B & 5.5\,GB & 128K & 24.2\,s \\
+Gemma 2 9B & 9.0\,B & 5.5\,GB & 8K & 43.9\,s \\
 \bottomrule
 \end{tabular}
 \end{table*}
+
+DeepSeek-R1 7B is a striking outlier at 114.7\,s per task---roughly four times slower than the other 7\,B models---because its reasoning distillation produces long chain-of-thought traces before every tool call. This compounds its capability disadvantage: the model is not only the least accurate in the suite but also the most expensive to operate per task, further reinforcing the architectural mismatch between reasoning-distilled models and ReAct-style tool use discussed in Section~\ref{sec:discussion}.
 
 \section{Detailed Per-Task Results}
 \label{app:detailed}

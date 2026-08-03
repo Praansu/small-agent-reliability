@@ -55,7 +55,7 @@ Consistency scores range from 57.8\% (DeepSeek-R1 7B and Phi-3.5 3.8B) to 100\% 
 
 \subsubsection{Robustness: Performance Under Perturbation}
 
-Robustness shows the widest range across all dimensions---from 0\% (Gemma 2 9B) to 90\% (Qwen 2.5 Coder 7B)---with a mean of 47.8\%. Qwen 2.5 Coder 7B (90\%) is exceptionally robust: it retains 90\% of its baseline performance under perturbation, an estimated 7.1-point drop from its 71.4\% reliability-suite baseline---the smallest relative degradation among models with successful baselines (tied with Qwen 2.5 7B, also at 10\%). Two 7\,B models (Qwen 2.5 7B and Mistral 7B) and both Llama 3.2 models reach 70\%.
+Robustness shows the widest range across all dimensions---from 0\% (Gemma 2 9B) to 90\% (Qwen 2.5 Coder 7B)---with a mean of 47.8\%. Qwen 2.5 Coder 7B (90\%) is exceptionally robust: it retains 90\% of its baseline performance under perturbation, an estimated 7.1-point drop from its 71.4\% reliability-suite baseline---the smallest relative degradation among models with successful baselines (10\%; the next-lowest is 30\% for Qwen 2.5 7B, Mistral 7B, and both Llama 3.2 models).
 
 Gemma 2 9B's complete robustness failure (0\%) is striking given it is the largest model, suggesting aggressive instruction tuning that creates narrow, brittle task representations. DeepSeek-R1's 10\% robustness is consistent with its capability failures: reasoning traces become even more disrupted under perturbation.
 
@@ -203,7 +203,7 @@ All primary evaluations use greedy decoding ($t=0$). To assess whether our relia
     \item \textbf{Mistral 7B} shows moderate temperature sensitivity, degrading from 45.2\% at $t=0$ to 38.7--41.9\% at higher temperatures (a 3.3--6.5 point drop), though its absolute accuracy remains lowest throughout.
 \end{itemize}
 
-The absolute degradation is modest and comparable across models (6.5--9.6 points, or 10--14\% relative), and critically, the \emph{ranking} is perfectly stable: both Qwen 7\,B models lead and Mistral trails at every temperature tested. This has direct implications for deployment: the reliability ranking observed at $t=0$ is robust to sampling configuration, and higher temperatures amplify---but do not reverse---the failure modes identified at $t=0$. Temperature is therefore a second-order reliability factor relative to architecture and training, but its effect is bounded: even at $t=1.0$ the leading models retain at least 86\% of their greedy-decoding accuracy.
+The absolute degradation is modest and comparable across models (6.5--9.6 points, or roughly 14\% relative), and critically, the \emph{ranking} is perfectly stable: both Qwen 7\,B models lead and Mistral trails at every temperature tested. This has direct implications for deployment: the reliability ranking observed at $t=0$ is robust to sampling configuration, and higher temperatures amplify---but do not reverse---the failure modes identified at $t=0$. Temperature is therefore a second-order reliability factor relative to architecture and training, but its effect is bounded: even at $t=1.0$ the leading models retain at least 86\% of their greedy-decoding accuracy.
 
 \subsection{Cost-Reliability Tradeoff}
 \label{sec:cost}

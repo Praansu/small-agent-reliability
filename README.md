@@ -8,7 +8,7 @@
 
 ## Overview
 
-This repository presents a comprehensive, multi-dimensional reliability evaluation of open-weight small language models (SLMs) as tool-using autonomous agents. We evaluate **9 models** (1B–9B parameters) across **31 capability tasks** and a **14-task reliability suite** measuring **5 reliability dimensions**, plus a **temperature sensitivity study** (t ∈ {0.3, 0.7, 1.0}) and **cost-reliability analysis**.
+This repository presents a comprehensive, multi-dimensional reliability evaluation of open-weight small language models (SLMs) as tool-using autonomous agents. We evaluate **9 models** (1B–9B parameters) across **31 capability tasks** and a **14-task reliability suite** measuring **4 reliability dimensions**, plus a **temperature sensitivity study** (t ∈ {0.3, 0.7, 1.0}) and **cost-reliability analysis**.
 
 | Dimension | What It Measures | How |
 |-----------|-----------------|-----|
@@ -33,14 +33,14 @@ This repository presents a comprehensive, multi-dimensional reliability evaluati
 
 | Model | Params | Quantization | VRAM | Context |
 |-------|--------|-------------|------|---------|
-| Llama 3.2 1B | 1.2 B | Q4_K_M | 1.1 GB | 8K |
+| Llama 3.2 1B | 1.0 B | Q4_K_M | 1.0 GB | 8K |
 | Llama 3.2 3B | 3.0 B | Q4_K_M | 2.5 GB | 8K |
 | Phi-3.5-mini | 3.8 B | Q4_K_M | 2.8 GB | 4K |
-| Mistral 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
-| Qwen 2.5 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
+| DeepSeek-R1 7B | 7.0 B | Q4_K_M | 4.5 GB | 16K |
 | Qwen 2.5 Coder 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
-| Llama 3.1 8B | 8.0 B | Q4_K_M | 5.0 GB | 8K |
-| DeepSeek-R1 7B | 7.0 B | Q4_K_M | 4.8 GB | 32K |
+| Qwen 2.5 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
+| Mistral 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
+| Llama 3.1 8B | 8.0 B | Q4_K_M | 5.5 GB | 128K |
 | Gemma 2 9B | 9.0 B | Q4_K_M | 5.5 GB | 8K |
 
 ## Project Structure
@@ -95,9 +95,9 @@ pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
 ## Citation
 
 ```bibtex
-@article{paudyal2026small,
+@article{karmacharya2026small,
   title={Small Models, Big Failures? A Comprehensive Reliability Evaluation of Small Language Models as Autonomous Agents},
-  author={Paudyal, Praansu},
+  author={Karmacharya, Praansu},
   journal={arXiv preprint},
   year={2026}
 }

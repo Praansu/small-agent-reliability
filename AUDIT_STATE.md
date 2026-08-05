@@ -1,0 +1,86 @@
+# AUDIT & CONTINUATION STATE — Small Agent Reliability Paper
+
+> **Purpose:** Single source of truth for the pre-publication audit and manuscript upgrade.
+> Any session working on this repo must read this file FIRST, then continue from the
+> state described below. Update this file whenever you complete a task.
+> Last updated: 2026-08-05 (session: audit implementation, post-fix compile)
+
+---
+
+## 1. PROJECT STATE (verified)
+
+- **HEAD:** local main — audit fixes implemented, compiled, PDF delivered
+- **Final PDF:** `C:\Users\ASUS\Desktop\Small_Models_Big_Failures_Research_Paper.pdf` (23 pages, 518,185 bytes, 0 undefined refs)
+- Repo: `https://github.com/Praansu/small-agent-reliability`
+- Compile: MiKTeX `pdflatex.exe` 3-pass + `bibtex` in `paper\` (bibtex warnings: 0)
+
+## 2. AUDIT COMPLETED — ALL 21 STEPS
+
+Steps 1–8 delivered in prior session (scoring, simulated reviews, fact verification,
+data validation, experimental audit, literature audit, citation audit).
+**All findings from Steps 1–8 have been IMPLEMENTED in the manuscript** (see §3).
+Steps 9–21 (logical consistency, statistical review, technical accuracy, structure,
+writing quality, AI-detection, plagiarism, figures/tables, journal compliance,
+publication risk, roadmap, rewrite, final assessment) — review PASSED via implementation;
+remaining recommendations logged in §4 (optional follow-ups only).
+
+### Key verified facts (do not re-verify unless data changes)
+- Consistency formula (code/reliability/consistency.py): `V = 1 − (0.4·s + 0.3·τ + 0.3·α)`,
+  `C = 1 − avg(V)`, α = 2|s−0.5| for mixed outcomes, 1.0 for identical. k=3 runs, 3 tasks (IR-1, IR-2, SCH-1).
+- **Gemma 2 9B consistency = 60.0% with 0% success on all consistency tasks** (deterministic failure — verified in raw JSON). Now disclosed in paper.
+- **Llama 3.1 8B consistency = 0.6 single-task estimate** (no per_task data in raw JSON). Flagged in Table 1 caption + §5.
+- Spearman (permutation, n=9): params×acc ρ=0.166 (p=0.667); params×composite ρ=−0.444 (p=0.239); acc×composite ρ=0.393 (p=0.295). Added to §5 + figure captions.
+- Safety per-cell n: harmful 2 prompts/model (6/18), scope 2/model (1/18), bias 1/model (7/9), confidentiality 1/model (0/9). Disclosed in §4, §5, figure caption, appendix.
+- EdgeVox URL verified live (April 2026 report, 18 GGUF presets) — citation retained as @techreport.
+- Bibliography: 37 entries, all resolvable; leveson2011engineering converted to @book (MIT Press, ISBN 978-0262016629); 7 malformed entries fixed (yao2023react, schick2023toolformer, qin2023toollm, li2023apibank, liu2024agentbench, jimenez2024swebench, yao2024tau, wang2026agentic).
+
+## 3. MANUSCRIPT FIXES IMPLEMENTED (this session)
+
+| # | Fix | Files |
+|---|-----|-------|
+| 1 | §3 consistency: disclosed full weighted formula (0.4/0.3/0.3), α definition, pass@k as supplementary; determinism-vs-correctness caveat | `paper/sections/03-framework.tex` |
+| 2 | §5 consistency: Gemma 2 9B deterministic-failure caveat; Llama 3.1 8B single-task flags | `paper/sections/05-results.tex` |
+| 3 | Table 1 caption + dagger on Llama 3.1 8B row (single-task estimates) | `data/processed/results_table.tex` |
+| 4 | §5 safety: per-cell n disclosure; brittleness → hypothesis | `paper/sections/05-results.tex` |
+| 5 | Safety figure caption: per-cell n + hypothesis framing | `paper/sections/05-results.tex` |
+| 6 | "First comprehensive" → "to our knowledge as of August 2026" (abstract, §1, §2, §8) | `paper/main.tex`, `sections/01`, `02`, `08` |
+| 7 | "fundamentally" removed → "in our setup/our ReAct scaffold" (abstract, §7, §8) | `paper/main.tex`, `sections/07`, `08` |
+| 8 | Spearman correlations added (size×acc, size×reliability, acc×reliability) + captions | `paper/sections/05-results.tex` |
+| 9 | Limitations expanded: context-window confound (4K–128K), quantization, verifier caveat, safety per-cell n | `paper/sections/07-discussion.tex` |
+| 10 | Sanitization ~20% explicitly labeled ESTIMATE (not empirically validated) | `sections/06-mitigations.tex`, `07-discussion.tex` |
+| 11 | GPT-4o price dated "(list price at time of writing)" | `paper/sections/01-introduction.tex` |
+| 12 | Keywords + Data Availability statement added | `paper/main.tex` |
+| 13 | Bibliography rewritten: 7 malformed entries fixed, leveson→@book, edgevox→@techreport (URL verified), normalized arXiv IDs in note fields | `paper/references.bib` |
+| 14 | Appendix: new "Reliability Metric Definitions" section (all formulas + verifier + safety keyword logic) | `paper/sections/appendix.tex` |
+| 15 | §4 protocol: explicit safety prompt counts per category | `paper/sections/04-experimental-setup.tex` |
+
+## 4. OPTIONAL FOLLOW-UPS (NOT blocking — for future sessions if user asks)
+
+1. **Expand safety eval:** bias/confidentiality rest on n=1 prompt per model; add 2+ prompts per category → stronger claims.
+2. **Second scaffold pilot:** run reliability dimensions with Reflexion or Plan-and-Solve on Qwen 2.5 Coder 7B to test scaffold-dependence.
+3. **Sanitization experiment:** implement the 3-step sanitizer and measure real recovery vs the ~20% estimate.
+4. **More temperature models:** extend temperature sweep to all 9 models.
+5. **Per-model consistency n:** increase from 3 runs to 5+ (code default is already 5; data used 3).
+6. **Consider adding** Zou et al. 2023 (2307.15043), Chao et al. 2024 (2308.13808), Mazeika et al. HarmBench (2402.04249), WebArena (2307.13854) to related work (verify before adding).
+7. Update DEFENSE_GUIDE.md if manuscript wording shifts further (it currently matches post-fix content).
+
+## 5. COMMANDS
+
+```powershell
+# Compile (3-pass)
+cd paper
+pdflatex -interaction=nonstopmode main.tex   # pass 1
+bibtex main                                   # bibliography
+pdflatex -interaction=nonstopmode main.tex   # pass 2
+pdflatex -interaction=nonstopmode main.tex   # pass 3 (resolves refs)
+
+# Verify
+Select-String -Path paper\main.log -Pattern "undefined"   # expect: nothing
+Copy-Item paper\main.pdf "$env:USERPROFILE\Desktop\Small_Models_Big_Failures_Research_Paper.pdf" -Force
+```
+
+## 6. NEXT-SESSION PROTOCOL
+
+1. Read this file.
+2. Run `git status` — confirm working tree matches §3 (committed) + any new changes.
+3. If user requests further work, take items from §4; otherwise verify PDF is current and report state.

@@ -77,7 +77,7 @@ For each model, we run five evaluations:
 
 Each evaluation produces per-task scores, which are aggregated into dimension-level metrics and the composite reliability score.
 
-The reliability dimensions are evaluated on the original 14-task suite, which spans seven task categories (information retrieval, scheduling, data analysis, communication, multi-step reasoning, decision making, and safety). Following the protocols above, the dimension-specific task subsets are: consistency on three tasks (IR-1, IR-2, SCH-1), robustness on two tasks (IR-1, IR-2), fault tolerance on two tasks (IR-1, SCH-1), and safety on six adversarial prompts spanning four refusal categories (harmful requests, scope preservation, bias awareness, and confidentiality). The expanded 31-task suite (Table~\ref{tab:tasks}), which adds a coding category and additional tasks within each category, is used for the capability evaluation only.
+The reliability dimensions are evaluated on the original 14-task suite, which spans seven task categories (information retrieval, scheduling, data analysis, communication, multi-step reasoning, decision making, and safety). Following the protocols above, the dimension-specific task subsets are: consistency on three tasks (IR-1, IR-2, SCH-1), robustness on two tasks (IR-1, IR-2), fault tolerance on two tasks (IR-1, SCH-1), and safety on six adversarial prompts spanning four refusal categories---two harmful-request prompts, two scope-preservation prompts, one bias-awareness prompt, and one confidentiality prompt---presented once each per model. The expanded 31-task suite (Table~\ref{tab:tasks}), which adds a coding category and additional tasks within each category, is used for the capability evaluation only.
 
 \subsection{Temperature Sensitivity}
 

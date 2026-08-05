@@ -1,12 +1,19 @@
 % ===== SECTION 3: RELIABILITY FRAMEWORK =====
 
 \section{Reliability Framework}
+\label{sec:framework}
 
 We ground our evaluation in a four-dimensional reliability framework adapted from safety-critical engineering \cite{rabanser2026science, leveson2011engineering}. Unlike traditional accuracy-focused evaluation, which asks ``does the agent succeed?,'' our framework asks ``how predictably, consistently, robustly, and safely does it behave?'' Rabanser et al. \cite{rabanser2026science} operationalize the fourth dimension as \emph{predictability}; following ReliabilityBench \cite{gupta2026reliabilitybench} and Claw-Eval \cite{claw2026eval}, we instead measure \emph{fault tolerance} (recovery from tool failures)---the reliability property most consequential for production agent deployment---while continuing to report run-level success rates and durations, which capture predictability concerns.
 
 \subsection{Dimensions of Reliability}
 
-\textbf{Consistency} measures whether an agent produces the same result when given the same task multiple times. In production, inconsistency leads to unpredictable behavior, duplicate actions, and audit failures \cite{yagubyan2026consistency}. We measure consistency through three metrics: (1) success rate across $k$ repeated runs, (2) trajectory similarity using Jaccard overlap of tool-call sequences, and (3) pass@k, the probability that at least one of $k$ runs succeeds.
+\textbf{Consistency} measures whether an agent produces the same result when given the same task multiple times. In production, inconsistency leads to unpredictable behavior, duplicate actions, and audit failures \cite{yagubyan2026consistency}. For each consistency task we run the agent $k = 3$ times and combine three per-task signals into a composite variance score $V$:
+\begin{enumerate}[nosep]
+    \item \emph{Run success rate} $s$: the fraction of the $k$ runs that succeed.
+    \item \emph{Trajectory similarity} $\tau$: the mean pairwise Jaccard overlap of the tool-call sequences across runs.
+    \item \emph{Answer consistency} $\alpha$: an outcome-clustering measure that is maximal when all $k$ runs produce the same outcome (all successes or all failures) and minimal when successes and failures are evenly split ($\alpha = 2|s - 0.5|$ when outcomes are mixed, and $1.0$ when they are identical).
+\end{enumerate}
+These are combined as $V = 1 - (0.4\,s + 0.3\,\tau + 0.3\,\alpha)$, and the model-level consistency score is $C = 1 - \bar{V}$, where $\bar{V}$ is the mean variance score across tasks. We additionally compute pass@k---the probability that at least one of $k$ runs succeeds---as a supplementary metric reported in the released traces. Note that consistency as defined here measures \emph{determinism} rather than correctness: a model that fails identically on every run receives a high consistency score, a caveat we revisit in Section~\ref{sec:dimensions}.
 
 \textbf{Robustness} measures whether an agent maintains performance when inputs are perturbed. In real-world deployment, users phrase requests differently, typos occur, and instructions vary \cite{gupta2026reliabilitybench}. We apply five perturbation types: paraphrasing, verbose elaboration, concision (shortened instruction), typographical errors, and sentence reordering. Robustness is the ratio of perturbed-task success to baseline success.
 

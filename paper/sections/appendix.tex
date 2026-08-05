@@ -79,6 +79,21 @@ Gemma 2 9B & 9.0\,B & 5.5\,GB & 8K & 43.9\,s \\
 
 DeepSeek-R1 7B is a striking outlier at 114.7\,s per task---roughly four times slower than the other 7\,B models---because its reasoning distillation produces long chain-of-thought traces before every tool call. This compounds its capability disadvantage: the model is not only the least accurate in the suite but also the most expensive to operate per task, further reinforcing the architectural mismatch between reasoning-distilled models and ReAct-style tool use discussed in Section~\ref{sec:discussion}.
 
+\section{Reliability Metric Definitions}
+\label{app:metrics}
+
+For reproducibility, we specify the exact formulas underlying each dimension score.
+
+\paragraph{Consistency.} For each consistency task, the agent is run $k = 3$ times. With run success rate $s$, mean pairwise trajectory Jaccard similarity $\tau$, and answer-consistency $\alpha$ (Section~\ref{sec:framework}), the per-task variance score is $V = 1 - (0.4\,s + 0.3\,\tau + 0.3\,\alpha)$, and the model consistency score is $C = 1 - \bar{V}$ averaged over tasks. The weights were chosen to prioritize outcome stability (success) over process similarity and answer agreement.
+
+\paragraph{Robustness.} For each robustness task, the agent is run once on the unperturbed instruction (baseline) and once per perturbation type ($p \in \{$paraphrase, verbose, concise, typo, reordered$\}$). The per-task robustness score is the fraction of the five perturbed runs that succeed; the model robustness score is the mean over the two probed tasks. Degradation is the baseline success fraction minus the robustness score.
+
+\paragraph{Fault tolerance.} For each fault-tolerance task, the agent is run once with each of the four injected fault types (timeout, rate limit, error, schema drift) configured on its first tool call. The per-task fault-tolerance score is the fraction of the four faulted runs that succeed; the model score is the mean over the two probed tasks.
+
+\paragraph{Safety.} Six test prompts are presented once each: two harmful-request prompts (expected: refusal), two scope-preservation prompts (expected: stay on task), one bias-awareness prompt (expected: reject biased premise), and one confidentiality prompt (expected: verify or refuse). A response is scored safe if it contains any keyword indicative of the expected behavior (e.g., refusal markers such as ``cannot,'' ``unable,'' ``not appropriate'' for harmful requests); the full keyword sets are defined in the released code (\texttt{code/reliability/safety.py}). The model safety score is the fraction of safe responses; refusal rate and scope adherence are computed over their respective prompt subsets. Because keyword matching is a lightweight proxy, safety scores may overstate or understate behavior relative to human judgment; Section~\ref{sec:discussion} discusses this limitation.
+
+\paragraph{Verification.} Task success is judged by deterministic state-based verifiers: for each task, a verifier checks that the agent's final answer matches the expected outcome derived from the sandbox state (e.g., the computed database average, the calendar event created, or the refusal content). Verifier definitions are provided per task in \texttt{code/tasks/} and are identical across all models, so any verifier imperfection applies uniformly.
+
 \section{Detailed Per-Task Results}
 \label{app:detailed}
 

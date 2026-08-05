@@ -2,12 +2,12 @@
 
 \section{Conclusion}
 
-We presented the first comprehensive, multi-dimensional reliability evaluation of small language models as autonomous agents. Across nine models (1\,B--9\,B parameters), 31 tool-use tasks, and four reliability dimensions (consistency, robustness, fault tolerance, and safety), we found that:
+We presented, to our knowledge as of August 2026, the first comprehensive, multi-dimensional reliability evaluation of small language models as autonomous agents. Across nine models (1\,B--9\,B parameters), 31 tool-use tasks, and four reliability dimensions (consistency, robustness, fault tolerance, and safety), we found that:
 
 \begin{enumerate}[nosep]
     \item Reliability does not simply scale with parameter count---correlation is weakly negative ($r = -0.179$), capability--size correlation is non-significant ($r = 0.289$, $p = 0.451$), a 1\,B model achieves higher composite reliability than 8\,B and 9\,B models, and identical-size 7\,B models span 37.8\% to 85.0\% composite reliability and 25.8\% to 67.7\% capability.
     \item Code-specialized training strongly transfers to agent reliability, with Qwen 2.5 Coder 7B achieving the highest composite (85.0\%), perfect consistency (100\%), and perfect fault tolerance (100\%).
-    \item Reasoning-distilled models (DeepSeek-R1 7B) fundamentally conflict with ReAct-style agentic formats, achieving the lowest capability (25.8\%) and 0\% accuracy on the original 14-task suite.
+    \item Reasoning-distilled models (DeepSeek-R1 7B) conflict with ReAct-style agentic formats in our setup, achieving the lowest capability (25.8\%) and 0\% accuracy on the original 14-task suite.
     \item Robustness under input perturbations shows the widest variance of any dimension (0--90\%, mean 47.8\%), with the largest model collapsing to 0\%.
     \item Safety failures affect nearly all models at rates that are unacceptable for production deployment: eight of nine models fail to refuse at least half of harmful requests (four fail all of them), and only one model attains even 50\% overall safety. The pooled safety rate of 14/54 (25.9\%) is significantly below a 50\% threshold ($p = 0.0003$, one-sided binomial test).
     \item Statistically, the 31-task suite separates the extremes with confidence (only the two weakest models differ from the leader after multiple-testing correction), but mid-tier ordering remains unresolved at this sample size---underscoring the need for larger evaluation suites.

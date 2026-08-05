@@ -15,7 +15,7 @@ The most effective mitigation for robustness failures is \textbf{input sanitizat
     \item \textbf{Template matching:} Mapping the extracted instruction to a standardized task template.
 \end{enumerate}
 
-Based on our perturbation analysis, this pipeline could recover approximately 20\% of robustness failures, with the largest effect for typographical errors and the smallest for semantic paraphrasing. This estimate is consistent with prior findings that lightweight normalization and harness components materially improve the operational stability of small models \cite{cho2026harness, gupta2026reliabilitybench}: the 4-stage harness study attributes roughly a quarter of its gains to each of planning and recovery components, corroborating that cheap pre-processing can convert a substantial share of avoidable failures.
+Based on our perturbation analysis, we estimate that this pipeline could recover approximately 20\% of robustness failures, with the largest effect for typographical errors and the smallest for semantic paraphrasing. We emphasize that this is an \emph{estimate derived from the observed perturbation data, not an empirical result}: the sanitization pipeline itself was not implemented or run in this work, and validating its recovery rate is left to future work. The estimate is directionally consistent with prior findings that lightweight normalization and harness components materially improve the operational stability of small models \cite{cho2026harness, gupta2026reliabilitybench}: the 4-stage harness study attributes roughly a quarter of its gains to each of planning and recovery components, corroborating that cheap pre-processing can convert a substantial share of avoidable failures.
 
 \subsection{Verification Layer for Safety}
 

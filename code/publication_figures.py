@@ -24,6 +24,32 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 
+def _rankdata_avg(a):
+    """Average ranks for ties (scipy.stats.rankdata(method='average') equivalent,
+    pure numpy). Required: naive argsort ranks mishandle ties (e.g. four tied
+    7B-parameter models), which shifts Spearman values."""
+    a = np.asarray(a, dtype=float)
+    sorter = np.argsort(a, kind="mergesort")
+    a_sorted = a[sorter]
+    inv = np.empty_like(sorter, dtype=int)
+    inv[sorter] = np.arange(a.size)
+    obs = np.r_[True, a_sorted[1:] != a_sorted[:-1]]     # group starts
+    dense = np.cumsum(obs)[inv]                          # group id per element
+    bounds = np.nonzero(obs)[0]
+    ends = np.r_[bounds[1:], a.size]
+    avg_rank = (bounds + ends + 1) / 2.0                 # per-group average rank
+    return avg_rank[dense - 1]
+
+def _spearman(x, y):
+    """Spearman rank correlation with average-rank tie handling (matches
+    scipy.stats.spearmanr and the paper's reported values)."""
+    rx = _rankdata_avg(x)
+    ry = _rankdata_avg(y)
+    mx, my = rx.mean(), ry.mean()
+    num = ((rx - mx) * (ry - my)).sum()
+    den = np.sqrt(((rx - mx) ** 2).sum() * ((ry - my) ** 2).sum())
+    return num / den if den > 0 else 0.0
+
 BASE = os.path.dirname(os.path.abspath(__file__))
 RAW_DIR = os.path.join(BASE, "..", "data", "raw")
 PROC_DIR = os.path.join(BASE, "..", "data", "processed")
@@ -159,7 +185,7 @@ def fig_composite_vs_params(agg):
     z = np.polyfit(ps, vs, 1)
     xl = np.linspace(0, 10, 100)
     ax.plot(xl, np.poly1d(z)(xl), "--", color="#888", linewidth=0.9,
-            label=f"r = {np.corrcoef(ps, vs)[0,1]:.2f}")
+            label=f"r = {np.corrcoef(ps, vs)[0,1]:.2f}, rho = {_spearman(ps, vs):.2f}")
     ax.set_xlabel("Parameters (billions)")
     ax.set_ylabel("Composite reliability (%)")
     ax.set_xlim(0.4, 10)
@@ -185,7 +211,8 @@ def fig_capability_vs_reliability(agg, v2):
     ax.axhline(50, color="#999", linestyle=":", linewidth=0.7)
     ps = [accs[m] for m in MODELS_ORDER]
     vs = [comps[m] for m in MODELS_ORDER]
-    ax.text(3, 97, f"r = {np.corrcoef(ps, vs)[0,1]:.2f}", fontsize=7, color="#333")
+    ax.text(3, 97, f"r = {np.corrcoef(ps, vs)[0,1]:.2f}, rho = {_spearman(ps, vs):.2f}",
+            fontsize=7, color="#333")
     ax.set_xlabel("31-task accuracy (%)")
     ax.set_ylabel("Composite reliability (%)")
     ax.set_xlim(15, 80)
@@ -313,7 +340,7 @@ def fig_accuracy_vs_params(agg, v2):
     z = np.polyfit(ps, vs, 1)
     xl = np.linspace(0, 10, 100)
     ax.plot(xl, np.poly1d(z)(xl), "--", color="#888", linewidth=0.9,
-            label=f"r = {np.corrcoef(ps, vs)[0,1]:.2f}")
+            label=f"r = {np.corrcoef(ps, vs)[0,1]:.2f}, rho = {_spearman(ps, vs):.2f}")
     ax.set_xlabel("Parameters (billions)")
     ax.set_ylabel("31-task accuracy (%)")
     ax.set_xlim(0.4, 10)

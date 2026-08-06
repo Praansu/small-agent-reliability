@@ -159,18 +159,20 @@ def main():
         "as autonomous agents for tool-use tasks, driven by their cost efficiency, privacy advantages, "
         "and low latency. However, while substantial research has evaluated the capability of large "
         "frontier models as agents, the reliability of small models in this role remains largely "
-        "unmeasured. We present the first comprehensive, multi-dimensional reliability evaluation of "
-        "open-weight small language models as tool-using autonomous agents. Across four reliability "
+        "unmeasured. We present, to our knowledge as of August 2026, the first comprehensive, "
+        "multi-dimensional reliability evaluation of open-weight small language models as tool-using "
+        "autonomous agents. Across four reliability "
         "dimensions—consistency (run-to-run variance), robustness (stability under input perturbations), "
         "fault tolerance (recovery from tool failures), and safety (appropriate refusal behavior)—we "
         "evaluate nine representative models spanning 1B to 9B parameters on a suite of 31 diverse "
         "agentic tasks. Our results reveal four key findings. First, overall reliability does not simply "
         "scale with parameter count: parameter count correlates weakly negatively with reliability "
-        "(r = -0.179), and identical-size 7B models span the full range from 0% to 85% composite "
+        "(r = -0.179), and identical-size 7B models span the full range from 37.8% to 85.0% composite "
         "reliability. Second, model architecture dominates scale: code-specialized training strongly "
         "transfers to agentic reliability (Qwen 2.5 Coder 7B achieves 85.0% composite), while reasoning-"
-        "distilled models fundamentally conflict with ReAct-style tool use (DeepSeek-R1 7B achieves 0% "
-        "accuracy). Third, small models are disproportionately affected by input perturbations (average "
+        "distilled models conflict with ReAct-style tool use in our setup (DeepSeek-R1 7B achieves 25.8% "
+        "capability on the 31-task suite and 0% on the original 14-task suite). Third, small models are "
+        "disproportionately affected by input perturbations (average "
         "degradation of 52.2%). Fourth, safety-critical failures affect all tested models, with no model "
         "exceeding 50% safety."
     )
@@ -179,9 +181,9 @@ def main():
     # ===== KEY FINDINGS BOX =====
     add_heading_styled(doc, 'Key Findings', level=1)
     findings = [
-        "Reliability does not scale with model size: r = -0.179; a 1B model (Llama 3.2 1B) beats 8B and 9B models.",
+        "Reliability does not scale with model size: r = -0.179 (Spearman rho = -0.444); a 1B model (Llama 3.2 1B) beats 8B and 9B models.",
         "Code-specialized training transfers to agent reliability: Qwen 2.5 Coder 7B leads at 85.0% composite.",
-        "Reasoning-distilled models fail ReAct tool use: DeepSeek-R1 7B achieves 0% accuracy.",
+        "Reasoning-distilled models fail ReAct tool use in our scaffold: DeepSeek-R1 7B achieves the lowest capability (25.8%) and 0% on the original 14-task suite.",
         "Robustness under input perturbations is the primary bottleneck: average 52.2% degradation.",
         "Fault tolerance is rare and binary: only Qwen 2.5 Coder 7B achieves 100% recovery.",
         "Safety alignment is critically weak: no model exceeds 50% safety; average 25.9%.",
@@ -312,7 +314,8 @@ def main():
         "The gap between Qwen 2.5 Coder 7B (71.4%) and DeepSeek-R1 7B (0.0%)—models of identical "
         "parameter count—yields Cohen's h = 2.106 (very large effect), underscoring that architecture "
         "dominates scale. Pearson correlation between parameter count and composite reliability is "
-        "r = -0.179 (R-squared = 0.032), confirming that model size explains essentially none of the "
+        "r = -0.179 (R-squared = 0.032); the Spearman rank correlation confirms the direction "
+        "(rho = -0.444, permutation p = 0.239). Model size explains essentially none of the "
         "reliability variance in the 1-9B regime."
     ))
 
@@ -346,17 +349,19 @@ def main():
         "the highest accuracy, consistency (100%), robustness (90%), fault tolerance (100%), and "
         "safety (50%). Second, Gemma 2 9B and DeepSeek-R1 7B should be avoided despite their size: "
         "Gemma 2 9B achieves the lowest composite reliability (15.0%) with zero robustness and zero "
-        "safety, while DeepSeek-R1 7B achieves 0% accuracy because reasoning models conflict with "
-        "the ReAct format. Third, an auxiliary safety guard is mandatory for any deployment—no "
-        "tested model can be safely deployed without one."
+        "safety, while DeepSeek-R1 7B achieves the lowest capability (25.8%) because reasoning models "
+        "conflict with the ReAct format in our scaffold. Third, an auxiliary safety guard is mandatory "
+        "for any deployment—no tested model can be safely deployed without one."
     ))
     add_body(doc, (
         "Our results confirm and extend the reliability-capability disconnect observed in frontier "
         "models [9]. For small models, this disconnect is even more pronounced. The negative "
-        "correlation between parameter count and reliability (r = -0.179) versus the positive "
-        "correlation between accuracy and composite reliability highlights that what matters is not "
+        "correlation between parameter count and reliability (r = -0.179; Spearman rho = -0.444) versus "
+        "the positive correlation between accuracy and composite reliability (r = 0.435; Spearman "
+        "rho = 0.393) highlights that what matters is not "
         "how large a model is but how well its training aligns with structured tool-use tasks—code-"
-        "specialized models excel, while reasoning-distilled models fail completely [4]."
+        "specialized models excel, while reasoning-distilled models struggle with the action-schema "
+        "protocol in our scaffold [4]."
     ))
 
     add_heading_styled(doc, '5. Limitations', level=1)
@@ -365,21 +370,28 @@ def main():
         "benchmarks like tau-bench (115 tasks) or ReliabilityBench (300 tasks). Second, we evaluate only "
         "one agent architecture (ReAct). Third, our fault injection is simulated rather than using real "
         "API failures. Fourth, we focus on English-language tasks. Fifth, our safety evaluation relies "
-        "on prompt-level tests rather than sophisticated adversarial attacks."
+        "on prompt-level tests rather than sophisticated adversarial attacks, with per-cell sample sizes "
+        "of one to two prompts per model. Sixth, evaluated models span heterogeneous context windows "
+        "(4K for Phi-3.5 vs. up to 128K for others), which may confound long-context tasks. Seventh, all "
+        "models run in 4-bit Q4_K_M quantization, which may interact with model-specific tokenizers and "
+        "architectures. Eighth, the consistency protocol uses three repeated runs per task rather than "
+        "a larger sample. Ninth, the sanitization recovery estimate (~20%) is derived from perturbation "
+        "data, not from a run sanitization pipeline. Tenth, state-based verifiers, while deterministic, "
+        "may not capture all forms of correctness."
     ))
 
     # ===== 6. CONCLUSION =====
     add_heading_styled(doc, '6. Conclusion', level=1)
     conclusion = (
-        "We presented the first comprehensive, multi-dimensional reliability evaluation of small "
-        "language models as autonomous agents. Across nine models (1B-9B parameters), 31 tool-use "
-        "tasks, and four reliability dimensions, we found that: (1) reliability does not scale with "
-        "parameter count (r = -0.179); (2) code-specialized training strongly transfers to agent "
-        "reliability, with Qwen 2.5 Coder 7B leading at 85.0% composite; (3) reasoning-distilled "
-        "models fundamentally conflict with ReAct-style tool use, achieving 0% accuracy; (4) robustness "
-        "under input perturbations is the primary weakness; (5) safety failures affect all models at "
-        "unacceptable rates. As SLMs continue their rapid adoption in edge devices and privacy-sensitive "
-        "applications, understanding and improving their reliability is essential."
+        "We presented, to our knowledge as of August 2026, the first comprehensive, multi-dimensional "
+        "reliability evaluation of small language models as autonomous agents. Across nine models (1B-9B "
+        "parameters), 31 tool-use tasks, and four reliability dimensions, we found that: (1) reliability "
+        "does not scale with parameter count (r = -0.179; Spearman rho = -0.444); (2) code-specialized "
+        "training strongly transfers to agent reliability, with Qwen 2.5 Coder 7B leading at 85.0% "
+        "composite; (3) reasoning-distilled models conflict with ReAct-style agentic formats in our "
+        "setup; (4) robustness under input perturbations is the primary weakness; (5) safety failures "
+        "affect all models at unacceptable rates. As SLMs continue their rapid adoption in edge devices "
+        "and privacy-sensitive applications, understanding and improving their reliability is essential."
     )
     add_body(doc, conclusion)
 

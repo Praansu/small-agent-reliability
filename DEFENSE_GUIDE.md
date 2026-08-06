@@ -272,9 +272,9 @@ variance score (1 − variance).
   - Qwen Coder vs Qwen 2.5 (tied): h = 0.000.
   - Llama 3.2 1B vs Llama 3.1 8B: h = 0.068 (negligible) — but 31.9 points apart in composite.
 - **Correlations:**
-  - Params vs accuracy: r = 0.289 (p = 0.451, R² = 0.084).
-  - Params vs composite: r = −0.179 (p = 0.644, R² = 0.032).
-  - Accuracy vs composite: r = 0.435 (positive but not significant at n=9).
+  - Params vs accuracy: r = 0.289 (p = 0.451, R² = 0.084); Spearman ρ = 0.166 (permutation p = 0.667).
+  - Params vs composite: r = −0.179 (p = 0.644, R² = 0.032); Spearman ρ = −0.444 (permutation p = 0.239).
+  - Accuracy vs composite: r = 0.435 (positive but not significant at n=9); Spearman ρ = 0.393 (permutation p = 0.295).
 - **Fisher exact tests vs leader (BH-corrected):** only the two weakest differ significantly —
   Llama 3.1 8B (p_BH = 0.042) and DeepSeek-R1 (p_BH = 0.016).
 - **Safety deficit:** pooled 14/54 vs 50% threshold, one-sided binomial p = 0.0003
@@ -318,8 +318,8 @@ variance score (1 − variance).
 
 ## 7.1 Reliability–capability disconnect
 
-- r = 0.435 between accuracy and composite — capability leaderboards mislead reliability
-  decisions.
+- r = 0.435 (Pearson) / ρ = 0.393 (Spearman) between accuracy and composite — capability
+  leaderboards mislead reliability decisions.
 - Gemma 2 9B: 3rd capability, last reliability. Llama 3.2 1B beats Llama 3.1 8B in
   reliability by 31.9 points.
 - This *extends* Rabanser et al.'s frontier finding to small models — and it's MORE
@@ -421,6 +421,21 @@ hypothesis: aggressive instruction tuning creates narrow, brittle task represent
 it's very accurate on clean inputs but breaks completely under perturbation and fails to
 recover from tool errors. (Note: this is an interpretation, presented as such in the paper.)
 
+## Q6b: "But Gemma 2 9B got 60% consistency — isn't that reliable?"
+**A:** Consistency measures determinism, not correctness — and Gemma's 60% is the
+deterministic-failure case: it failed all 3 consistency tasks with 0% success yet produced
+perfectly identical failures (variance 0.4, trajectory similarity 1.0, outcome agreement
+1.0 on every task). It is rigid, not reliable. I disclose this explicitly in Section 5.3:
+a model that fails the same way every time is worse for deployment, not better.
+
+## Q6c: "Llama 3.1 8B's 60% consistency — same story?"
+**A:** No — for Llama 3.1 8B the 60% is a single-task estimate: its consistency, robustness,
+and fault-tolerance scores come from one representative task each (flagged with † in
+Table 1 and disclosed in Section 5.3), not the full multi-task protocol. It carries less
+weight than the multi-task scores of the other models. If anything, its true multi-task
+consistency could differ — the estimate is a lower-confidence data point, and I say so in
+the paper rather than hiding it.
+
 ## Q7: "How do you know your safety results are fair? Maybe the prompts are just hard."
 **A:** The safety prompts span four standard categories (harmful requests, scope
 preservation, bias awareness, confidentiality) following prior guard-rail work. The pattern
@@ -498,7 +513,7 @@ Test yourself: cover the answers, then check.
 12. Worst model? → **Gemma 2 9B** (15.0% composite; 0/0/0 on rob/FT/saf)
 13. Params vs accuracy correlation? → **r = 0.289, p = 0.451**
 14. Params vs composite correlation? → **r = −0.179, p = 0.644**
-15. Accuracy vs composite correlation? → **r = 0.435**
+15. Accuracy vs composite correlation? → **r = 0.435; Spearman ρ = 0.393**
 16. Cohen's h (Qwen Coder vs DeepSeek-R1)? → **0.868** (large)
 17. Safety pooled p-value vs 50%? → **p = 0.0003**
 18. DeepSeek-R1 per-task time? → **114.7s** (2.6–9.9× slower)

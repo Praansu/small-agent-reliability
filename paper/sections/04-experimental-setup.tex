@@ -15,7 +15,7 @@ We evaluate nine open-weight small language models that can run on consumer hard
     \item \textbf{Qwen 2.5 Coder 7B} \cite{qwen2024, qwen2024coder}---Alibaba's code-specialized variant of Qwen 2.5, trained on additional code data.
     \item \textbf{Mistral 7B v0.3} \cite{jiang2023mistral}---A widely-adopted baseline with extensive benchmark coverage.
     \item \textbf{Llama 3.1 8B} \cite{meta2024llama3}---Meta's previous-generation model, providing a within-family comparison against Llama 3.2.
-    \item \textbf{ Gemma 2 9B} \cite{gemma2024b}---Google's largest model that fits in 6\,GB VRAM with 4-bit quantization, representing the upper end of the small-model spectrum.
+    \item \textbf{Gemma 2 9B} \cite{gemma2024b}---Google's largest model that fits in 6\,GB VRAM with 4-bit quantization, representing the upper end of the small-model spectrum.
 \end{itemize}
 
 All models are served locally via Ollama using Q4\_K\_M quantization and accessed through a unified API. Inference uses greedy decoding (temperature $t=0$) for deterministic baseline measurements and controlled sampling for consistency evaluation.

@@ -440,6 +440,64 @@ def fig_per_category(v2):
 
 
 # --------------------------------------------------------------------------
+# Fig 11: Reliability radar (paper-styled 3x3 panel, full width)
+# --------------------------------------------------------------------------
+def fig_radar_paper(agg, v2):
+    models = sorted(agg["summary_comparison"].keys(),
+                    key=lambda m: agg["summary_comparison"][m]["composite_reliability"],
+                    reverse=True)
+    # 5 axes: 4 reliability dims + 31-task accuracy
+    labels = ["Consistency", "Robustness", "Fault Tol.", "Safety", "Accuracy"]
+    n_axes = len(labels)
+    angles = np.linspace(0, 2 * np.pi, n_axes, endpoint=False).tolist()
+    angles += angles[:1]
+    fig, axes = plt.subplots(3, 3, figsize=(6.7, 5.9),
+                             subplot_kw=dict(polar=True))
+    palette = ["#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3", "#937860",
+               "#DA8BC3", "#8C8C8C", "#CCB974"]
+    for idx, model in enumerate(models):
+        ax = axes.flat[idx]
+        s = agg["summary_comparison"][model]
+        acc = v2["results"][model]["accuracy"] * 100 if v2 else 0.0
+        vals = [s[d] * 100 for d in DIMS] + [acc]
+        vals += vals[:1]
+        color = palette[idx % len(palette)]
+        ax.fill(angles, vals, alpha=0.14, color=color)
+        ax.plot(angles, vals, "o-", linewidth=1.1, color=color, markersize=2.8)
+        ax.set_ylim(0, 100)
+        ax.set_yticks([25, 50, 75, 100])
+        ax.set_yticklabels(["", "", "", ""], fontsize=5)
+        ax.set_xticks(angles[:-1])
+        ax.set_xticklabels(labels, fontsize=5.4)
+        ax.tick_params(pad=1.5)
+        comp = s["composite_reliability"] * 100
+        ax.set_title(f"{SHORT[model]} ({PARAMS[model]:g}B) · comp. {comp:.0f}%",
+                     fontsize=6.3, fontweight="bold", pad=6)
+    fig.tight_layout(w_pad=1.2, h_pad=1.6)
+    _save(fig, "reliability_radar.pdf")
+
+
+# --------------------------------------------------------------------------
+# Fig 12: Accuracy vs per-task latency (single column, real duration data)
+# --------------------------------------------------------------------------
+def fig_latency_accuracy(v2):
+    accs = {m: v2["results"][m]["accuracy"] * 100 for m in MODELS_ORDER}
+    durs = {m: v2["results"][m]["avg_duration_s"] for m in MODELS_ORDER}
+    fig, ax = plt.subplots(figsize=(3.45, 2.4))
+    for m in MODELS_ORDER:
+        ax.scatter(durs[m], accs[m], s=32, zorder=5, edgecolors="black",
+                   linewidth=0.4, color="#8172B3")
+        ax.annotate(SHORT[m], (durs[m], accs[m]),
+                    (durs[m] + 1.5, accs[m] + 2.0), fontsize=6, ha="left")
+    ax.set_xlabel("Avg. per-task duration (s)")
+    ax.set_ylabel("31-task accuracy (%)")
+    ax.set_xlim(0, 128)
+    ax.set_ylim(0, 80)
+    ax.grid(alpha=0.3)
+    _save(fig, "latency_accuracy.pdf")
+
+
+# --------------------------------------------------------------------------
 def main():
     agg = load_aggregate()
     v2 = load_v2()
@@ -457,6 +515,8 @@ def main():
     fig_temperature(ts, v2)
     fig_cost_reliability(v2)
     fig_per_category(v2)
+    fig_radar_paper(agg, v2)
+    fig_latency_accuracy(v2)
     print("All figures generated.")
 
 

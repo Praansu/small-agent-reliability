@@ -5,7 +5,31 @@
 \paragraph{Agent benchmarks.}
 The rapid development of tool-using LLMs has produced numerous benchmarks. ToolLLM \cite{qin2023toollm} provides 16,000+ real-world APIs for evaluating tool selection and orchestration. API-Bank \cite{li2023apibank} evaluates API call accuracy across 73 APIs. AgentBench \cite{liu2024agentbench} spans eight environments including operating systems and web browsing. WebArena \cite{zhou2024webarena} evaluates autonomous agents in realistic, self-hosted web environments. SWE-bench \cite{jimenez2024swebench} targets software engineering with real GitHub issues. $\tau$-bench \cite{yao2024tau} introduces the pass$^k$ metric for measuring multi-trial consistency, showing that even state-of-the-art agents succeed on fewer than half the tasks at pass@1 and are highly inconsistent (pass$^8 < 25\%$ in retail).
 
-However, these benchmarks share a common limitation: they report single-run success rates under idealized conditions, ignoring the production realities of varying inputs, infrastructure failures, and safety requirements.
+However, these benchmarks share a common limitation: they report single-run success rates under idealized conditions, ignoring the production realities of varying inputs, infrastructure failures, and safety requirements. Table~\ref{tab:benchmark_comparison} summarizes the scale and evaluation protocol of the major agent benchmarks alongside our suite. Two structural contrasts stand out. First, scale: the community-standard benchmarks evaluate hundreds to thousands of tasks (WebArena: 812; $\tau$-bench: 165; SWE-bench: 2{,}294), whereas we trade task count for multi-dimensional measurement---each of our nine models is additionally evaluated on repeated runs, perturbed inputs, injected faults, and adversarial safety prompts, none of which the capability-scale benchmarks administer. Second, model coverage: every benchmark above evaluates frontier or large open-weight models, and $\tau$-bench explicitly excludes models under 13\,B as too weak for its difficulty. Our suite is the only one of the group that evaluates a multi-model cohort of sub-10\,B models on reliability dimensions at all.
+
+\begin{table*}[t]
+\centering
+\caption{Comparison of our evaluation with major agent benchmarks. ``Reliability'' lists the reliability-oriented dimensions each work measures; ``Sub-10\,B'' indicates whether models under 10\,B parameters are included in the evaluated cohort.}
+\label{tab:benchmark_comparison}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lllllc}
+\toprule
+\textbf{Benchmark} & \textbf{Domain} & \textbf{Scale} & \textbf{Models} & \textbf{Reliability} & \textbf{Sub-10\,B} \\
+\midrule
+ToolLLM \cite{qin2023toollm} & 16{,}464 RapidAPI tools & 16k+ APIs & 4 & None & No \\
+API-Bank \cite{li2023apibank} & 73 APIs & 753 dialogues & 4 & None & No \\
+AgentBench \cite{liu2024agentbench} & 8 environments & 1{,}091 test queries & 27 & None & Few \\
+WebArena \cite{zhou2024webarena} & 4 self-hosted websites & 812 tasks & 6 agents & None & No \\
+SWE-bench \cite{jimenez2024swebench} & Real GitHub repos & 2{,}294 issues & 20+ & None & No \\
+$\tau$-bench \cite{yao2024tau} & Retail, airline & 165 tasks & 7 & pass$^k$, cost & No \\
+ReliabilityBench \cite{gupta2026reliabilitybench} & 4 domains & 1{,}280 episodes & 2 & $R(k,\varepsilon,\lambda)$ & No \\
+Science of Reliability \cite{rabanser2026science} & 2 benchmarks & -- & 15 & 12 metrics, 4 dims & No \\
+\midrule
+\textbf{This work} & \textbf{8 categories} & \textbf{31 + 14 tasks} & \textbf{9} & \textbf{4 dims + composite} & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 \paragraph{Reliability evaluation.}
 Several recent works have begun treating reliability as a first-class evaluation dimension. ReliabilityBench \cite{gupta2026reliabilitybench} introduces a three-dimensional reliability surface $R(k, \varepsilon, \lambda)$ capturing consistency, robustness, and fault tolerance, and evaluates it on two large models. The Science of AI Agent Reliability \cite{rabanser2026science} proposes twelve metrics across four dimensions---consistency, robustness, predictability, and safety---and evaluates 15 frontier models across two benchmarks. Claw-Eval \cite{claw2026eval} adds trajectory-aware grading to evaluate completion, safety, and robustness across 14 frontier models. A complementary diagnostic framework by Huang et al. \cite{huang2026diagnostic} proposes a 12-category error taxonomy for tool invocation failures and evaluates both open-weight and proprietary models, finding that procedural reliability---particularly tool initialization---is the primary bottleneck for smaller models.
@@ -25,7 +49,7 @@ TinyLLM \cite{tinyllm2026edge} evaluates sub-3\,B models on function-calling ben
 These studies provide valuable insights into what small models \emph{can do}, but not \emph{how reliably} they do it.
 
 \paragraph{Our position.}
-Table~\ref{tab:position} situates our work in the landscape. To our knowledge (as of August 2026), this is the first study that combines (a) multiple small models (\textless10\,B), (b) a comprehensive reliability framework spanning multiple dimensions, and (c) tool-use agent tasks with multi-step execution.
+Table~\ref{tab:benchmark_comparison} situates our evaluation against the major agent benchmarks, and Table~\ref{tab:position} positions us in the reliability literature. To our knowledge (as of August 2026), this is the first study that combines (a) multiple small models (\textless10\,B), (b) a comprehensive reliability framework spanning multiple dimensions, and (c) tool-use agent tasks with multi-step execution.
 
 \begin{table*}[t]
 \centering

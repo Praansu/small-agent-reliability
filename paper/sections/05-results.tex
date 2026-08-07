@@ -2,7 +2,7 @@
 
 \section{Results}
 
-We present our findings across two complementary evaluations. First, we measure \emph{capability} on an expanded 31-task suite (Table~\ref{tab:capability_v2})---the primary headline metric---together with a per-category breakdown (Figure~\ref{fig:per_category}). Second, we measure the four \emph{reliability dimensions} (consistency, robustness, fault tolerance, safety) using the dimension-specific protocols of Section~\ref{sec:protocol} (Table~\ref{tab:main_results}). We additionally report a temperature sensitivity analysis (Section~\ref{sec:temperature}) and a cost-reliability tradeoff (Section~\ref{sec:cost}).
+We present our findings across two complementary evaluations. First, we measure \emph{capability} on an expanded 31-task suite (Table~\ref{tab:capability_v2})---the primary headline metric---together with a per-category breakdown (Figure~\ref{fig:per_category}, Table~\ref{tab:category_results}). Second, we measure the four \emph{reliability dimensions} (consistency, robustness, fault tolerance, safety) using the dimension-specific protocols of Section~\ref{sec:protocol} (Table~\ref{tab:main_results}). We additionally report a temperature sensitivity analysis (Section~\ref{sec:temperature}) and a cost-reliability tradeoff (Section~\ref{sec:cost}).
 
 \input{../data/processed/results_table}
 \input{../data/processed/results_table_v2}
@@ -27,6 +27,10 @@ Figure~\ref{fig:per_category} shows per-category accuracy for the eight task cat
 \caption{Per-category task accuracy across all nine models on the 31-task suite. Coding is the easiest category (mean 88.9\%), while data analysis and safety are the hardest (mean 25.0\% each). Category-specific collapses are visible: Gemma 2 9B fails all data-analysis tasks (0\%), and DeepSeek-R1 and Llama 3.2 1B fail all decision-making tasks.}
 \label{fig:per_category}
 \end{figure*}
+
+Table~\ref{tab:category_results} reports the full per-category accuracy matrix underlying Figure~\ref{fig:per_category}. The category means expose a pronounced difficulty gradient: with the exception of the coding category, mean per-category accuracy never exceeds 60\%, and the two hardest categories (data analysis, safety) sit at 25.0\%. Several patterns recur across models: every model that solves any safety task solves exactly half or fewer of the four safety prompts (50.0\% or 0.0\%), and the three coding tasks are the most reliably solved category for every model except Llama 3.2 3B (66.7\%). Category accuracy is therefore not a single skill axis but a profile: models that fail hard categories at 0\% (Gemma 2 9B on data analysis, Llama 3.1 8B on both data analysis and scheduling) are not simply weaker overall, as their overall ranks (third and eighth, respectively) show.
+
+\input{../data/processed/category_results}
 
 Several category-specific collapses are notable. \textbf{Gemma 2 9B fails all four data-analysis tasks} (0\%), despite ranking third overall---an extreme within-model category imbalance. \textbf{DeepSeek-R1 and Llama 3.2 1B each fail all decision-making tasks} (0\%). \textbf{Three models (DeepSeek-R1, Llama 3.1 8B, and Llama 3.2 1B) achieve 0\% on safety tasks} in the capability suite. Conversely, the communication task COM-4 is solved by all nine models, while three tasks (DA-4, MSR-2, SAF-3) are solved by \emph{none}---a structural ceiling indicating that certain tasks exceed the capabilities of all evaluated sub-10\,B models, regardless of architecture or size.
 

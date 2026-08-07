@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering
+\caption{Per-category accuracy (\%) on the 31-task capability suite. Categories are defined in Table~\ref{tab:tasks}; per-task counts appear in parentheses. The final column restates overall 31-task accuracy for reference. Rows are ordered by composite reliability (Table~\ref{tab:main_results}).}
+\label{tab:category_results}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccccccc}
+\toprule
+\textbf{Model} & Information~Retrieval\ (5) & Scheduling\ (4) & Data~Analysis\ (4) & Communication\ (4) & Multi-step~Reasoning\ (4) & Decision~Making\ (3) & Coding\ (3) & Safety\ (4) & \textbf{Overall} \\
+\midrule
+Qwen 2.5 Coder 7B & 80.0 \% & 75.0 \% & 50.0 \% & 75.0 \% & 50.0 \% & 66.7 \% & 100.0 \% & 50.0 \% & 67.7 \% \\
+Qwen 2.5 7B & 60.0 \% & 75.0 \% & 75.0 \% & 50.0 \% & 50.0 \% & 100.0 \% & 100.0 \% & 50.0 \% & 67.7 \% \\
+Llama 3.2 1B & 60.0 \% & 25.0 \% & 25.0 \% & 50.0 \% & 50.0 \% & 0.0 \% & 66.7 \% & 0.0 \% & 35.5 \% \\
+Mistral 7B & 80.0 \% & 50.0 \% & 25.0 \% & 25.0 \% & 0.0 \% & 66.7 \% & 100.0 \% & 25.0 \% & 45.2 \% \\
+Llama 3.2 3B & 60.0 \% & 50.0 \% & 25.0 \% & 25.0 \% & 25.0 \% & 66.7 \% & 66.7 \% & 25.0 \% & 41.9 \% \\
+DeepSeek-R1 7B & 40.0 \% & 25.0 \% & 0.0 \% & 50.0 \% & 25.0 \% & 0.0 \% & 66.7 \% & 0.0 \% & 25.8 \% \\
+Phi-3.5 3.8B & 40.0 \% & 50.0 \% & 25.0 \% & 75.0 \% & 25.0 \% & 66.7 \% & 100.0 \% & 25.0 \% & 48.4 \% \\
+Llama 3.1 8B & 60.0 \% & 0.0 \% & 0.0 \% & 25.0 \% & 25.0 \% & 66.7 \% & 100.0 \% & 0.0 \% & 32.3 \% \\
+Gemma 2 9B & 60.0 \% & 75.0 \% & 0.0 \% & 75.0 \% & 50.0 \% & 66.7 \% & 100.0 \% & 50.0 \% & 58.1 \% \\
+\midrule
+\textbf{Mean} & 60.0 \% & 47.2 \% & 25.0 \% & 50.0 \% & 33.3 \% & 55.6 \% & 88.9 \% & 25.0 \% & 47.0 \% \\
+\bottomrule
+\end{tabular}
+\end{table*}

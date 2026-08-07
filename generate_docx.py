@@ -306,17 +306,67 @@ def main():
             caption='Table 3: Capability accuracy on the expanded 31-task suite.'
         )
 
+    # Per-category analysis (computed live from raw v2 runs)
+    categories = [
+        ('IR', 'Info Retrieval'), ('SCH', 'Scheduling'), ('DA', 'Data Analysis'),
+        ('COM', 'Communication'), ('MSR', 'Multi-Step'), ('DM', 'Decision Making'),
+        ('COD', 'Coding'), ('SAF', 'Safety'),
+    ]
+    v2_raw_dir = os.path.join(BASE, 'data', 'raw', 'v2')
+    cat_rows = []
+    if v2 and os.path.isdir(v2_raw_dir):
+        import glob as _glob
+        per_model = {}
+        for path in _glob.glob(os.path.join(v2_raw_dir, 'capability_*.json')):
+            with open(path, encoding='utf-8') as f:
+                data = json.load(f)
+            per_model[data['model']] = {p['task_id']: bool(p['correctness'])
+                                        for p in data['per_task']}
+        for m in sorted(per_model, key=lambda x: v2.get(x, {}).get('accuracy', 0),
+                        reverse=True):
+            row = [DISPLAY.get(m, m)]
+            for prefix, _label in categories:
+                tasks = [t for t in per_model[m] if t.startswith(prefix)]
+                row.append(f"{100.0 * sum(per_model[m][t] for t in tasks) / len(tasks):.0f}%")
+            row.append(f"{100.0 * sum(per_model[m].values()) / len(per_model[m]):.0f}%")
+            cat_rows.append(row)
+        mean_row = ['Mean']
+        for prefix, _label in categories:
+            vals = []
+            for m in per_model:
+                tasks = [t for t in per_model[m] if t.startswith(prefix)]
+                vals.append(100.0 * sum(per_model[m][t] for t in tasks) / len(tasks))
+            mean_row.append(f"{sum(vals) / len(vals):.0f}%")
+        all_vals = [100.0 * sum(per_model[m].values()) / len(per_model[m])
+                    for m in per_model]
+        mean_row.append(f"{sum(all_vals) / len(all_vals):.0f}%")
+        cat_rows.append(mean_row)
+        create_table(doc,
+            ['Model'] + [label for _p, label in categories] + ['Overall'],
+            cat_rows,
+            caption='Table 3b: Per-category accuracy on the 31-task suite '
+                    '(per-category n: IR 5, SCH 4, DA 4, COM 4, MSR 4, DM 3, COD 3, SAF 4).'
+        )
+        add_body(doc, (
+            "Coding is the easiest category (mean 88.9%), while data analysis and safety are the "
+            "hardest (25.0% each). Three tasks are failed by all nine models (DA-4, MSR-2, SAF-3), "
+            "while COM-4 is solved by all nine. Category-specific total collapses include Gemma 2 9B "
+            "on data analysis and DeepSeek-R1 plus Llama 3.2 1B on decision making."
+        ))
+
     # Statistical Analysis
     add_heading_styled(doc, '3.2 Statistical Analysis', level=2)
     add_body(doc, (
-        "The Qwen 2.5 Coder 7B accuracy confidence interval [45.4%, 87.9%] does not overlap with "
-        "those of the 0%-21.4% models, indicating statistically significant differences at alpha = 0.05. "
-        "The gap between Qwen 2.5 Coder 7B (71.4%) and DeepSeek-R1 7B (0.0%)—models of identical "
-        "parameter count—yields Cohen's h = 2.106 (very large effect), underscoring that architecture "
-        "dominates scale. Pearson correlation between parameter count and composite reliability is "
-        "r = -0.179 (R-squared = 0.032); the Spearman rank correlation confirms the direction "
-        "(rho = -0.444, permutation p = 0.239). Model size explains essentially none of the "
-        "reliability variance in the 1-9B regime."
+        "The 95% Wilson confidence interval of the two leading models [50.1%, 81.4%] does not overlap "
+        "with that of DeepSeek-R1 7B [13.7%, 43.2%], indicating a statistically significant capability "
+        "gap at alpha = 0.05 between models of identical parameter count. The gap between Qwen 2.5 "
+        "Coder 7B (67.7%) and DeepSeek-R1 7B (25.8%)—models of identical parameter count—yields "
+        "Cohen's h = 0.868 (large effect), underscoring that architecture dominates scale. Fisher exact "
+        "tests with Benjamini-Hochberg correction find that only the two weakest models differ from the "
+        "leader at alpha = 0.05 (Llama 3.1 8B, p_BH = 0.042; DeepSeek-R1 7B, p_BH = 0.016). Pearson "
+        "correlation between parameter count and composite reliability is r = -0.179 (R-squared = 0.032); "
+        "the Spearman rank correlation confirms the direction (rho = -0.444, permutation p = 0.239). "
+        "Model size explains essentially none of the reliability variance in the 1-9B regime."
     ))
 
     # Temperature results
@@ -367,17 +417,20 @@ def main():
     add_heading_styled(doc, '5. Limitations', level=1)
     add_body(doc, (
         "Our study has several limitations. First, the task suite (31 tasks) is smaller than dedicated "
-        "benchmarks like tau-bench (115 tasks) or ReliabilityBench (300 tasks). Second, we evaluate only "
-        "one agent architecture (ReAct). Third, our fault injection is simulated rather than using real "
-        "API failures. Fourth, we focus on English-language tasks. Fifth, our safety evaluation relies "
-        "on prompt-level tests rather than sophisticated adversarial attacks, with per-cell sample sizes "
-        "of one to two prompts per model. Sixth, evaluated models span heterogeneous context windows "
-        "(4K for Phi-3.5 vs. up to 128K for others), which may confound long-context tasks. Seventh, all "
-        "models run in 4-bit Q4_K_M quantization, which may interact with model-specific tokenizers and "
-        "architectures. Eighth, the consistency protocol uses three repeated runs per task rather than "
-        "a larger sample. Ninth, the sanitization recovery estimate (~20%) is derived from perturbation "
-        "data, not from a run sanitization pipeline. Tenth, state-based verifiers, while deterministic, "
-        "may not capture all forms of correctness."
+        "benchmarks like tau-bench (165 tasks) or ReliabilityBench (1,280 episodes). Second, we evaluate "
+        "only one agent architecture (ReAct). Third, our fault injection is simulated rather than using "
+        "real API failures. Fourth, we focus on English-language tasks. Fifth, our safety evaluation "
+        "relies on prompt-level tests rather than sophisticated adversarial attacks, with per-cell sample "
+        "sizes of one to two prompts per model. Sixth, evaluated models span heterogeneous context "
+        "windows (4K for Phi-3.5 vs. up to 128K for others), which may confound long-context tasks. "
+        "Seventh, all models run in 4-bit Q4_K_M quantization, which may interact with model-specific "
+        "tokenizers and architectures. Eighth, the consistency protocol uses three repeated runs per "
+        "task rather than a larger sample, and capability on the 31-task suite was measured with a "
+        "single run per task. Ninth, the sanitization recovery estimate (~20%) is derived from "
+        "perturbation data, not from a run sanitization pipeline. Tenth, state-based verifiers, while "
+        "deterministic, may not capture all forms of correctness. Eleventh, the composite reliability "
+        "weights (equal across dimensions; 0.4/0.3/0.3 within consistency) were fixed a priori without "
+        "a sensitivity analysis, though every dimension is reported separately."
     ))
 
     # ===== 6. CONCLUSION =====

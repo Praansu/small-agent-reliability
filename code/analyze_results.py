@@ -199,7 +199,9 @@ def gen_latex_table(agg):
     lines.append("\\caption{Comprehensive reliability evaluation across 9 small language "
                  "models. Scores are percentages. Composite reliability is the unweighted "
                  "average of the four reliability dimensions (consistency, robustness, fault "
-                 "tolerance, safety).}")
+                 "tolerance, safety). $\\dagger$: consistency, robustness, and fault-tolerance "
+                 "scores for Llama 3.1 8B are single-task estimates "
+                 "(see Section~\\ref{sec:dimensions}).}")
     lines.append("\\label{tab:main_results}")
     lines.append("\\small")
     lines.append("\\begin{tabular}{lcccccc}")
@@ -209,10 +211,11 @@ def gen_latex_table(agg):
     lines.append("\\midrule")
     for model, s in models_sorted:
         display = DISPLAY.get(model, model)
+        dagger = lambda col: "$\\dagger$" if (model == "llama3.1:8b" and col in ("c", "r", "f")) else ""
         lines.append(f"        {display} & {s['accuracy']*100:.1f}\\% & "
-                     f"{s['consistency_score']*100:.1f}\\% & "
-                     f"{s['robustness_score']*100:.1f}\\% & "
-                     f"{s['fault_tolerance_score']*100:.1f}\\% & "
+                     f"{s['consistency_score']*100:.1f}\\%{dagger('c')} & "
+                     f"{s['robustness_score']*100:.1f}\\%{dagger('r')} & "
+                     f"{s['fault_tolerance_score']*100:.1f}\\%{dagger('f')} & "
                      f"{s['safety_score']*100:.1f}\\% & "
                      f"{s['composite_reliability']*100:.1f}\\% \\\\")
     lines.append("\\bottomrule")
@@ -464,18 +467,21 @@ def gen_v2_latex_table(v2):
     lines.append("\\centering")
     lines.append("\\caption{Capability accuracy on the expanded 31-task suite "
                  "(8 categories). Accuracy is the fraction of tasks completed correctly "
-                 "with greedy decoding (t=0).}")
+                 "with greedy decoding (t=0); Err. is the fraction of runs ending in a "
+                 "harness-detected execution error (e.g., malformed tool calls or "
+                 "protocol violations) rather than a completed response.}")
     lines.append("\\label{tab:capability_v2}")
     lines.append("\\footnotesize")
-    lines.append("\\begin{tabular}{lccc}")
+    lines.append("\\begin{tabular}{lcccc}")
     lines.append("\\toprule")
     lines.append("\\textbf{Model} & \\textbf{Accuracy} & \\textbf{Success} "
-                 "& \\textbf{Avg Time} \\\\")
+                 "& \\textbf{Err.} & \\textbf{Avg Time} \\\\")
     lines.append("\\midrule")
     for model, r in models_sorted:
         display = DISPLAY.get(model, model)
         lines.append(f"        {display} & {r['accuracy']*100:.1f}\\% & "
                      f"{r['success_rate']*100:.1f}\\% & "
+                     f"{r['error_rate']*100:.1f}\\% & "
                      f"{r['avg_duration_s']:.1f}s \\\\")
     lines.append("\\bottomrule")
     lines.append("\\end{tabular}")
@@ -574,6 +580,7 @@ def main():
         summary["v2_num_tasks"] = v2["num_tasks"]
         summary["v2_capability"] = {m: {"accuracy": r["accuracy"],
                                         "success_rate": r["success_rate"],
+                                        "error_rate": r["error_rate"],
                                         "avg_duration_s": r["avg_duration_s"]}
                                     for m, r in v2["results"].items()}
     if ts:

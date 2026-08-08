@@ -298,10 +298,11 @@ def main():
                 DISPLAY.get(m, m),
                 f"{r['accuracy']:.1%}",
                 f"{r['success_rate']:.1%}",
+                f"{r['error_rate']:.1%}",
                 f"{r['avg_duration_s']:.1f}s",
             ])
         create_table(doc,
-            ['Model', 'Accuracy (31 tasks)', 'Success Rate', 'Avg Time'],
+            ['Model', 'Accuracy (31 tasks)', 'Success Rate', 'Error Rate', 'Avg Time'],
             v2_rows,
             caption='Table 3: Capability accuracy on the expanded 31-task suite.'
         )

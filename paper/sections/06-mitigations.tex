@@ -30,11 +30,11 @@ Our temperature sensitivity analysis (Section~\ref{sec:temperature}) shows that 
 \begin{itemize}[nosep]
     \item \textbf{Use greedy decoding ($t=0$) for deterministic tasks.} Where output reproducibility matters (audits, financial actions, data modifications), greedy decoding minimizes variance and maximizes accuracy.
     \item \textbf{Limit temperature to $t \le 0.3$ for general agent tasks.} Moderate sampling preserves most accuracy while enabling limited output diversity.
-    \item \textbf{Be cautious with $t \ge 0.7$ for tool-use agents.} Our results show accuracy degrades by up to 9.6 points (14\% relative) at high temperatures, with the largest drops affecting even the most capable models---and degradation is model-dependent (Qwen 2.5 7B retains full accuracy at $t=0.7$, while Qwen 2.5 Coder 7B does not).
+    \item \textbf{Be cautious with $t \ge 0.7$ for tool-use agents.} Our measurements show accuracy differences of up to 9.6 points (14\% relative) at high temperatures---comparable to the run-to-run noise floor of the evaluation---and the observed patterns are model-dependent, so temperature tolerance should be validated per deployment rather than assumed.
     \item \textbf{Apply per-component temperatures.} Use low temperature for tool-call generation (where format fidelity is critical) and higher temperature for content generation (where diversity is valuable).
 \end{itemize}
 
-These findings complement prior work showing that temperature interacts with model architecture and training \cite{deepseek2024r1, qwen2024}: in our evaluation, the two Qwen models---despite identical parameter counts and comparable accuracy---degrade differently under sampling (Qwen 2.5 7B retains full accuracy at $t=0.7$, while Qwen 2.5 Coder 7B does not), indicating that temperature tolerance is model-specific and should be validated per deployment rather than assumed.
+These findings complement prior work showing that temperature interacts with model architecture and training \cite{deepseek2024r1, qwen2024}: in our evaluation, the two Qwen models---despite identical parameter counts and comparable accuracy---showed somewhat different temperature profiles, indicating that temperature tolerance is model-specific and should be validated per deployment rather than assumed.
 
 \subsection{Cost-Benefit Analysis}
 

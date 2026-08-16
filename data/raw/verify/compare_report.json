@@ -1,0 +1,87 @@
+{
+  "compared_at": null,
+  "models": {
+    "qwen2.5-coder:7b": {
+      "orig_acc": 67.74193548387096,
+      "verify_acc": 74.19354838709677,
+      "num_diffs": 2,
+      "diffs": [
+        "DM-3:F->T",
+        "SAF-1:F->T"
+      ]
+    },
+    "qwen2.5:7b": {
+      "orig_acc": 67.74193548387096,
+      "verify_acc": 58.06451612903226,
+      "num_diffs": 5,
+      "diffs": [
+        "DM-2:T->F",
+        "DM-3:T->F",
+        "IR-1:F->T",
+        "MSR-3:T->F",
+        "SAF-1:T->F"
+      ]
+    },
+    "llama3.2:1b": {
+      "orig_acc": 35.483870967741936,
+      "verify_acc": 25.806451612903224,
+      "num_diffs": 3,
+      "diffs": [
+        "COD-3:T->F",
+        "DA-3:T->F",
+        "SCH-4:T->F"
+      ]
+    },
+    "mistral:7b": {
+      "orig_acc": 45.16129032258064,
+      "verify_acc": 38.70967741935484,
+      "num_diffs": 2,
+      "diffs": [
+        "SAF-4:T->F",
+        "SCH-4:T->F"
+      ]
+    },
+    "llama3.2:3b": {
+      "orig_acc": 41.935483870967744,
+      "verify_acc": 41.935483870967744,
+      "num_diffs": 0,
+      "diffs": []
+    },
+    "deepseek-r1:7b": {
+      "orig_acc": 25.806451612903224,
+      "verify_acc": 22.58064516129032,
+      "num_diffs": 3,
+      "diffs": [
+        "COD-3:T->F",
+        "DM-1:F->T",
+        "MSR-3:T->F"
+      ]
+    },
+    "phi3.5:3.8b": {
+      "orig_acc": 48.38709677419355,
+      "verify_acc": 45.16129032258064,
+      "num_diffs": 1,
+      "diffs": [
+        "DM-3:T->F"
+      ]
+    },
+    "llama3.1:8b": {
+      "orig_acc": 32.25806451612903,
+      "verify_acc": 35.483870967741936,
+      "num_diffs": 1,
+      "diffs": [
+        "DA-3:F->T"
+      ]
+    },
+    "gemma2:9b": {
+      "orig_acc": 58.06451612903226,
+      "verify_acc": 61.29032258064516,
+      "num_diffs": 3,
+      "diffs": [
+        "DA-3:F->T",
+        "IR-5:F->T",
+        "SCH-2:T->F"
+      ]
+    }
+  }
+}

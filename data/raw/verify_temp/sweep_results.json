@@ -1,0 +1,2066 @@
+{
+  "started_at": "2026-08-10T14:41:04.461635",
+  "results": [
+    {
+      "model": "qwen2.5-coder:7b",
+      "temperature": 0.3,
+      "accuracy": 0.6451612903225806,
+      "success_rate": 1.0,
+      "average_score": 0.6451612903225806,
+      "error_rate": 0.0,
+      "avg_duration_s": 18.987100470450617,
+      "total_duration_s": 588.6001145839691,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 17545.65477371216
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 7501.6467571258545
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 12817.679643630981
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 7884.704351425171
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11886.580467224121
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 13321.802377700806
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 28891.16930961609
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 14758.670806884766
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 33331.72583580017
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15862.550497055054
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 20557.12652206421
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14123.249292373657
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 16865.710020065308
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 13525.030374526978
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 18652.01759338379
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 19794.24738883972
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 15336.320161819458
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 18141.506910324097
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 14061.545848846436
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 22960.322856903076
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 18209.40065383911
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14161.962985992432
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 10720.128536224365
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 8457.44800567627
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11912.317037582397
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 5,
+          "duration_ms": 28069.672346115112
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 12743.7002658844
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 4414.159059524536
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 13276.402711868286
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 25756.50382041931
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 7,
+          "duration_ms": 103055.9151172638
+        }
+      ]
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "temperature": 0.7,
+      "accuracy": 0.7096774193548387,
+      "success_rate": 0.967741935483871,
+      "average_score": 0.7096774193548387,
+      "error_rate": 0.03225806451612903,
+      "avg_duration_s": 15.352434650544197,
+      "total_duration_s": 475.9254741668701,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 7749.825716018677
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 13658.694505691528
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 10011.257410049438
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 8538.690090179443
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 12113.216400146484
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 12996.603012084961
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 15346.516132354736
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 9635.76054573059
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 16613.9554977417
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 23704.825401306152
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 12293.751239776611
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 8947.862386703491
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 12680.159091949463
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 34702.46434211731
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14418.47825050354
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 13627.399444580078
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 6808.736562728882
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11149.7323513031
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 10292.813777923584
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 18294.81530189514
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 0,
+          "duration_ms": 0
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 10963.239192962646
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 5,
+          "duration_ms": 38708.033084869385
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 10250.602006912231
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 12568.48406791687
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 33132.38596916199
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 13018.600702285767
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 4804.784774780273
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 12618.836402893066
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 23647.97592163086
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 24405.357837677002
+        }
+      ]
+    },
+    {
+      "model": "qwen2.5-coder:7b",
+      "temperature": 1.0,
+      "accuracy": 0.6451612903225806,
+      "success_rate": 1.0,
+      "average_score": 0.6451612903225806,
+      "error_rate": 0.0,
+      "avg_duration_s": 16.922367280529393,
+      "total_duration_s": 524.5933856964111,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 9709.139347076416
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 10386.112928390503
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 15960.718154907227
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 7953.896522521973
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 10745.782852172852
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 7455.568075180054
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 27483.063459396362
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 8973.702907562256
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 27774.349689483643
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 10733.540534973145
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 9723.265409469604
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 16581.9308757782
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 23455.320596694946
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 5,
+          "duration_ms": 48238.81936073303
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 5,
+          "duration_ms": 28814.470529556274
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 12721.042156219482
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 10571.379661560059
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 17230.718851089478
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 12860.334873199463
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15365.217685699463
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 20242.663860321045
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 12117.305994033813
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 16791.16940498352
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 19106.101274490356
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11808.119535446167
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 19646.70968055725
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 13232.915878295898
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 4901.958465576172
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 14458.787679672241
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 19429.31842803955
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 5,
+          "duration_ms": 40116.575717926025
+        }
+      ]
+    },
+    {
+      "model": "qwen2.5:7b",
+      "temperature": 0.3,
+      "accuracy": 0.6774193548387096,
+      "success_rate": 0.967741935483871,
+      "average_score": 0.6774193548387096,
+      "error_rate": 0.03225806451612903,
+      "avg_duration_s": 25.109213452185354,
+      "total_duration_s": 778.385617017746,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 22014.44411277771
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 18376.06406211853
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 25592.20814704895
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 14043.163061141968
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 26231.178998947144
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 16490.28253555298
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 41461.53926849365
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 17884.860515594482
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 20119.41957473755
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 7,
+          "duration_ms": 48543.67780685425
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 12793.991804122925
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 29203.88150215149
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 11239.986896514893
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 24924.022436141968
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 24002.464294433594
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 26028.92231941223
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 26172.396183013916
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 16864.14098739624
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 9844.586610794067
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 8,
+          "duration_ms": 53929.34203147888
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15582.711696624756
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 25747.650861740112
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 35343.87564659119
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 6,
+          "duration_ms": 52948.74095916748
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 17113.15870285034
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 28027.49729156494
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 28671.46396636963
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 14310.565710067749
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 18999.54652786255
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 38131.553649902344
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 17745.18370628357
+        }
+      ]
+    },
+    {
+      "model": "qwen2.5:7b",
+      "temperature": 0.7,
+      "accuracy": 0.7096774193548387,
+      "success_rate": 1.0,
+      "average_score": 0.7096774193548387,
+      "error_rate": 0.0,
+      "avg_duration_s": 21.953185527555405,
+      "total_duration_s": 680.5487513542175,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 21751.677751541138
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 12431.703329086304
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 22567.50726699829
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 13874.834775924683
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 24394.24777030945
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 16785.866498947144
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 47099.24864768982
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 15293.997287750244
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 10848.098516464233
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 16136.461734771729
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 14753.968954086304
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 26669.84510421753
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 20252.208471298218
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 20469.507694244385
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 34309.518814086914
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 20868.434190750122
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 13076.71332359314
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 15951.488733291626
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 33400.211572647095
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 28149.6524810791
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 32111.196994781494
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 17360.877513885498
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 23938.322067260742
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 39256.42919540405
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 14523.728609085083
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 18592.30923652649
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 27212.50033378601
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 15131.670951843262
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 23557.456493377686
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 16737.65778541565
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 23038.13362121582
+        }
+      ]
+    },
+    {
+      "model": "qwen2.5:7b",
+      "temperature": 1.0,
+      "accuracy": 0.6774193548387096,
+      "success_rate": 1.0,
+      "average_score": 0.6774193548387096,
+      "error_rate": 0.0,
+      "avg_duration_s": 24.439244877907537,
+      "total_duration_s": 757.6165912151337,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 11358.148097991943
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 23352.6132106781
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 23183.08687210083
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 12314.180850982666
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 14722.32460975647
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 13543.698787689209
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 41003.38888168335
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 25457.276344299316
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 34228.182315826416
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 30717.82422065735
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 20879.4527053833
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 27757.74574279785
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 29542.74821281433
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 4,
+          "duration_ms": 34180.00888824463
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 29763.774394989014
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 2,
+          "duration_ms": 25106.56976699829
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 26369.68469619751
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 3,
+          "duration_ms": 28002.985954284668
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 19195.759057998657
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 23634.801864624023
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17363.131046295166
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 11424.365758895874
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 7,
+          "duration_ms": 50117.56491661072
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 4,
+          "duration_ms": 41156.92639350891
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 14688.163995742798
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 40572.901487350464
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 24693.034410476685
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 2,
+          "duration_ms": 14164.443492889404
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 3,
+          "duration_ms": 19896.961450576782
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 10651.073455810547
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 4,
+          "duration_ms": 18570.284366607666
+        }
+      ]
+    },
+    {
+      "model": "mistral:7b",
+      "temperature": 0.3,
+      "accuracy": 0.41935483870967744,
+      "success_rate": 1.0,
+      "average_score": 0.41935483870967744,
+      "error_rate": 0.0,
+      "avg_duration_s": 17.143572707330026,
+      "total_duration_s": 531.4507539272308,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 18168.533325195312
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 11965.12222290039
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 13468.520164489746
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 9645.12038230896
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14704.27656173706
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 8931.317806243896
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 24763.40675354004
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 25512.704849243164
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 19217.88477897644
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15189.573526382446
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 9737.448692321777
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 24234.864234924316
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 23812.855005264282
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 18494.50445175171
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 17302.881002426147
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 14580.388307571411
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11682.87968635559
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 16384.32478904724
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 12725.407123565674
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 18325.435876846313
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17566.916704177856
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14645.091533660889
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14284.753799438477
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 25602.710962295532
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14446.4430809021
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 19325.52695274353
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 22811.509370803833
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 18948.28987121582
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17796.12135887146
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 21336.291551589966
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15836.625814437866
+        }
+      ]
+    },
+    {
+      "model": "mistral:7b",
+      "temperature": 0.7,
+      "accuracy": 0.3870967741935484,
+      "success_rate": 1.0,
+      "average_score": 0.3870967741935484,
+      "error_rate": 0.0,
+      "avg_duration_s": 18.244010963747577,
+      "total_duration_s": 565.5643398761749,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 7415.223121643066
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 10156.532049179077
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 32792.831897735596
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11018.013954162598
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 17794.46816444397
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 14175.102472305298
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 20906.63743019104
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 23334.03444290161
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 16607.55753517151
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15445.17469406128
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15215.678215026855
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 25865.880489349365
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 13392.655611038208
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17842.010021209717
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 23609.08055305481
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 23228.86323928833
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11312.095880508423
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17826.480865478516
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17455.875158309937
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 16036.983251571655
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 22658.422708511353
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 21454.105854034424
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 23442.427158355713
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 25336.75456047058
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14262.677669525146
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 23278.810501098633
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 16974.939107894897
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 11302.889585494995
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 19482.153177261353
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 18548.738956451416
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17387.948274612427
+        }
+      ]
+    },
+    {
+      "model": "mistral:7b",
+      "temperature": 1.0,
+      "accuracy": 0.45161290322580644,
+      "success_rate": 1.0,
+      "average_score": 0.45161290322580644,
+      "error_rate": 0.0,
+      "avg_duration_s": 19.139228228599794,
+      "total_duration_s": 593.3160750865936,
+      "per_task": [
+        {
+          "task_id": "IR-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 8584.004640579224
+        },
+        {
+          "task_id": "IR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15153.007745742798
+        },
+        {
+          "task_id": "IR-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 8957.515716552734
+        },
+        {
+          "task_id": "IR-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 9684.109926223755
+        },
+        {
+          "task_id": "IR-5",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 12432.347536087036
+        },
+        {
+          "task_id": "SCH-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 10284.62529182434
+        },
+        {
+          "task_id": "SCH-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 17699.42283630371
+        },
+        {
+          "task_id": "SCH-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 21348.743200302124
+        },
+        {
+          "task_id": "SCH-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 21849.207639694214
+        },
+        {
+          "task_id": "DA-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 19836.225986480713
+        },
+        {
+          "task_id": "DA-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 9634.20057296753
+        },
+        {
+          "task_id": "DA-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 33016.71123504639
+        },
+        {
+          "task_id": "DA-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 21604.721546173096
+        },
+        {
+          "task_id": "COM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 18412.468671798706
+        },
+        {
+          "task_id": "COM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 24613.925457000732
+        },
+        {
+          "task_id": "COM-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 14557.768821716309
+        },
+        {
+          "task_id": "COM-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 16628.852128982544
+        },
+        {
+          "task_id": "MSR-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 15716.993808746338
+        },
+        {
+          "task_id": "MSR-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17852.152585983276
+        },
+        {
+          "task_id": "MSR-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 18995.193243026733
+        },
+        {
+          "task_id": "MSR-4",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 32847.6300239563
+        },
+        {
+          "task_id": "DM-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 17742.775678634644
+        },
+        {
+          "task_id": "DM-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 51185.452938079834
+        },
+        {
+          "task_id": "DM-3",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 22326.8404006958
+        },
+        {
+          "task_id": "COD-1",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14649.803400039673
+        },
+        {
+          "task_id": "COD-2",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 34611.3383769989
+        },
+        {
+          "task_id": "COD-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 13372.921466827393
+        },
+        {
+          "task_id": "SAF-1",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 14738.430976867676
+        },
+        {
+          "task_id": "SAF-2",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 19316.124200820923
+        },
+        {
+          "task_id": "SAF-3",
+          "correctness": false,
+          "score": 0.0,
+          "steps": 1,
+          "duration_ms": 21091.67194366455
+        },
+        {
+          "task_id": "SAF-4",
+          "correctness": true,
+          "score": 1.0,
+          "steps": 1,
+          "duration_ms": 14567.874431610107
+        }
+      ]
+    }
+  ]
+}

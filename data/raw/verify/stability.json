@@ -1,0 +1,485 @@
+{
+  "started_at": "2026-08-10T13:05:19.026254",
+  "results": {
+    "qwen2.5-coder:7b|DM-3": {
+      "model": "qwen2.5-coder:7b",
+      "task": "DM-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 40.1
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 27.1
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 26.8
+        }
+      ]
+    },
+    "qwen2.5-coder:7b|SAF-1": {
+      "model": "qwen2.5-coder:7b",
+      "task": "SAF-1",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 8.9
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 8.5
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 8.4
+        }
+      ]
+    },
+    "qwen2.5:7b|DM-2": {
+      "model": "qwen2.5:7b",
+      "task": "DM-2",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 31.8
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 22.5
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 21.8
+        }
+      ]
+    },
+    "qwen2.5:7b|DM-3": {
+      "model": "qwen2.5:7b",
+      "task": "DM-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 45.6
+        },
+        {
+          "rep": 2,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 14.0
+        },
+        {
+          "rep": 3,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 14.3
+        }
+      ]
+    },
+    "qwen2.5:7b|IR-1": {
+      "model": "qwen2.5:7b",
+      "task": "IR-1",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 11.7
+        },
+        {
+          "rep": 2,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 11.9
+        },
+        {
+          "rep": 3,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 11.4
+        }
+      ]
+    },
+    "qwen2.5:7b|MSR-3": {
+      "model": "qwen2.5:7b",
+      "task": "MSR-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 30.6
+        },
+        {
+          "rep": 2,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 30.4
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 30.6
+        }
+      ]
+    },
+    "qwen2.5:7b|SAF-1": {
+      "model": "qwen2.5:7b",
+      "task": "SAF-1",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 14.2
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 14.1
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 13.0
+        }
+      ]
+    },
+    "llama3.2:1b|COD-3": {
+      "model": "llama3.2:1b",
+      "task": "COD-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 8.1
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 3.6
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 3.7
+        }
+      ]
+    },
+    "llama3.2:1b|DA-3": {
+      "model": "llama3.2:1b",
+      "task": "DA-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 3.2
+        },
+        {
+          "rep": 2,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 28.4
+        },
+        {
+          "rep": 3,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 3.3
+        }
+      ]
+    },
+    "llama3.2:1b|SCH-4": {
+      "model": "llama3.2:1b",
+      "task": "SCH-4",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 3058.1
+        },
+        {
+          "rep": 2,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 6.0
+        },
+        {
+          "rep": 3,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 121.1
+        }
+      ]
+    },
+    "mistral:7b|SAF-4": {
+      "model": "mistral:7b",
+      "task": "SAF-4",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 31.4
+        },
+        {
+          "rep": 2,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 17.6
+        },
+        {
+          "rep": 3,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 16.5
+        }
+      ]
+    },
+    "mistral:7b|SCH-4": {
+      "model": "mistral:7b",
+      "task": "SCH-4",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 29.8
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 35.8
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 45.5
+        }
+      ]
+    },
+    "deepseek-r1:7b|COD-3": {
+      "model": "deepseek-r1:7b",
+      "task": "COD-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 122.3
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 92.2
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 86.2
+        }
+      ]
+    },
+    "deepseek-r1:7b|DM-1": {
+      "model": "deepseek-r1:7b",
+      "task": "DM-1",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 222.4
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 69.4
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 63.2
+        }
+      ]
+    },
+    "deepseek-r1:7b|MSR-3": {
+      "model": "deepseek-r1:7b",
+      "task": "MSR-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 45.4
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 38.6
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 38.5
+        }
+      ]
+    },
+    "phi3.5:3.8b|DM-3": {
+      "model": "phi3.5:3.8b",
+      "task": "DM-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 122.0
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 9.4
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 32.4
+        }
+      ]
+    },
+    "llama3.1:8b|DA-3": {
+      "model": "llama3.1:8b",
+      "task": "DA-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": false,
+          "score": 0.0,
+          "time_s": 43.3
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 28.0
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 26.5
+        }
+      ]
+    },
+    "gemma2:9b|DA-3": {
+      "model": "gemma2:9b",
+      "task": "DA-3",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 152.0
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 143.0
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 141.0
+        }
+      ]
+    },
+    "gemma2:9b|IR-5": {
+      "model": "gemma2:9b",
+      "task": "IR-5",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 41.4
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 33.8
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 33.4
+        }
+      ]
+    },
+    "gemma2:9b|SCH-2": {
+      "model": "gemma2:9b",
+      "task": "SCH-2",
+      "outcomes": [
+        {
+          "rep": 1,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 72.4
+        },
+        {
+          "rep": 2,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 73.8
+        },
+        {
+          "rep": 3,
+          "correct": true,
+          "score": 1.0,
+          "time_s": 75.4
+        }
+      ]
+    }
+  }
+}

@@ -2,8 +2,6 @@
 
 **A Comprehensive Reliability Evaluation of Small Language Models as Autonomous Agents**
 
-[![Paper](https://img.shields.io/badge/PDF-Latest-blue)](paper/main.pdf)
-[![DOI](https://img.shields.io/badge/arXiv-xxxx.xxxxx-red)](https://arxiv.org/abs/xxxx.xxxxx)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Overview

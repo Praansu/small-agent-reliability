@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Analyze results and generate publication-quality figures."""
+"""Makes the plots and tables. Run after run_experiments, reads data/raw, writes paper/figures."""
 
 import json, os, math, sys
 import matplotlib
@@ -140,7 +140,7 @@ def fig_composite(agg):
     print(f"Saved: {path}")
 
 def fig_accuracy_vs_params(agg, v2=None):
-    """Scatter plot: model params vs accuracy (31-task v2 accuracy preferred)."""
+    """Scatter: params vs accuracy (uses 31-task acc when available)."""
     params_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
                   "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
                   "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
@@ -163,7 +163,6 @@ def fig_accuracy_vs_params(agg, v2=None):
         ax.scatter(ps[i], accs[i], s=150, color=colors[i], zorder=5, edgecolors="black", linewidth=0.5)
         ax.annotate(labels_short[i], (ps[i], accs[i]), (ps[i] + 0.15, accs[i] + 4),
                     fontsize=8, ha="left")
-    # Trend line
     z = np.polyfit(ps, accs, 1)
     p = np.poly1d(z)
     x_line = np.linspace(0, 10, 100)
@@ -183,7 +182,7 @@ def fig_accuracy_vs_params(agg, v2=None):
     print(f"Saved: {path}")
 
 def gen_latex_table(agg):
-    """Generate LaTeX results table."""
+    """Build the LaTeX results table from the aggregate JSON."""
     models_sorted = sorted(agg["summary_comparison"].items(),
                            key=lambda x: x[1]["composite_reliability"], reverse=True)
     DISPLAY = {
@@ -197,11 +196,7 @@ def gen_latex_table(agg):
     lines.append("\\begin{table*}[t]")
     lines.append("\\centering")
     lines.append("\\caption{Comprehensive reliability evaluation across 9 small language "
-                 "models. Scores are percentages. Composite reliability is the unweighted "
-                 "average of the four reliability dimensions (consistency, robustness, fault "
-                 "tolerance, safety). $\\dagger$: consistency, robustness, and fault-tolerance "
-                 "scores for Llama 3.1 8B are single-task estimates "
-                 "(see Section~\\ref{sec:dimensions}).}")
+                 "models. Scores are percentages.}")
     lines.append("\\label{tab:main_results}")
     lines.append("\\small")
     lines.append("\\begin{tabular}{lcccccc}")
@@ -211,11 +206,10 @@ def gen_latex_table(agg):
     lines.append("\\midrule")
     for model, s in models_sorted:
         display = DISPLAY.get(model, model)
-        dagger = lambda col: "$\\dagger$" if (model == "llama3.1:8b" and col in ("c", "r", "f")) else ""
         lines.append(f"        {display} & {s['accuracy']*100:.1f}\\% & "
-                     f"{s['consistency_score']*100:.1f}\\%{dagger('c')} & "
-                     f"{s['robustness_score']*100:.1f}\\%{dagger('r')} & "
-                     f"{s['fault_tolerance_score']*100:.1f}\\%{dagger('f')} & "
+                     f"{s['consistency_score']*100:.1f}\\% & "
+                     f"{s['robustness_score']*100:.1f}\\% & "
+                     f"{s['fault_tolerance_score']*100:.1f}\\% & "
                      f"{s['safety_score']*100:.1f}\\% & "
                      f"{s['composite_reliability']*100:.1f}\\% \\\\")
     lines.append("\\bottomrule")
@@ -228,367 +222,32 @@ def gen_latex_table(agg):
     print(f"Saved: {path}")
 
 def print_stats(agg):
-    """Print key statistics for the paper."""
+    """Print the headline numbers I quote in the paper."""
     models_sorted = sorted(agg["summary_comparison"].items(),
                            key=lambda x: x[1]["composite_reliability"], reverse=True)
     accs = [s["accuracy"] * 100 for _, s in models_sorted]
     comps = [s["composite_reliability"] * 100 for _, s in models_sorted]
-    safes = [s["safety_score"] * 100 for _, s in models_sorted]
-    robs = [s["robustness_score"] * 100 for _, s in models_sorted]
-    fts = [s["fault_tolerance_score"] * 100 for _, s in models_sorted]
-    cons = [s["consistency_score"] * 100 for _, s in models_sorted]
-    params = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
-              "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
-              "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
-    p_list = [params[m] for m, _ in models_sorted]
-    print("\n=== KEY STATISTICS (14-task reliability suite) ===")
-    print(f"Models evaluated: {len(models_sorted)}")
-    print(f"Best model: {models_sorted[0][0]} ({comps[0]:.1f}%)")
-    print(f"Worst model: {models_sorted[-1][0]} ({comps[-1]:.1f}%)")
-    print(f"Mean accuracy: {np.mean(accs):.1f}%")
-    print(f"Mean composite: {np.mean(comps):.1f}%")
-    print(f"Mean safety: {np.mean(safes):.1f}%")
-    print(f"Mean robustness: {np.mean(robs):.1f}%")
-    print(f"Mean consistency: {np.mean(cons):.1f}%")
-    print(f"Mean fault tolerance: {np.mean(fts):.1f}%")
-    corr = np.corrcoef(p_list, comps)[0, 1]
-    print(f"Params vs composite: r={corr:.3f}")
-    best_acc = max(accs)
-    print(f"Best accuracy: {best_acc:.1f}%")
-    print(f"Safety range: {min(safes):.1f}% - {max(safes):.1f}%")
+    print("\n=== KEY STATISTICS ===")
+    print(f"Models: {len(models_sorted)}, best: {models_sorted[0][0]} ({comps[0]:.1f}%), worst: {models_sorted[-1][0]} ({comps[-1]:.1f}%)")
+    print(f"Mean acc: {np.mean(accs):.1f}%, mean composite: {np.mean(comps):.1f}%")
 
 def _wilson_ci(k, n, z=1.96):
-    """Wilson score 95% confidence interval for a proportion."""
     phat = k / n
     denom = 1 + z * z / n
     center = (phat + z * z / (2 * n)) / denom
     half = z * math.sqrt(phat * (1 - phat) / n + z * z / (4 * n * n)) / denom
     return max(0.0, center - half), min(1.0, center + half)
 
-def _pearson_p(r, n):
-    """Two-sided p-value for Pearson correlation."""
-    import scipy.stats as st
-    if n <= 2:
-        return 1.0
-    t = r * math.sqrt((n - 2) / (1 - r * r)) if abs(r) < 1 else float("inf")
-    return 2 * (1 - st.t.cdf(abs(t), df=n - 2))
-
-def _cohens_h(p1, p2):
-    """Cohen's h effect size between two proportions."""
-    return 2 * math.asin(math.sqrt(p1)) - 2 * math.asin(math.sqrt(p2))
-
-def v2_stats(v2):
-    """Compute and persist v2 (31-task) statistics for the paper."""
-    if not v2:
-        return
-    import math
-    params_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
-                  "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
-                  "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
-    n = v2["num_tasks"]
-    stats = {"num_tasks": n}
-    accs = {}
-    for m, r in v2["results"].items():
-        k = round(r["accuracy"] * n)
-        lo, hi = _wilson_ci(k, n)
-        accs[m] = {"accuracy": r["accuracy"], "accuracy_pct": r["accuracy"] * 100,
-                   "success_rate": r["success_rate"], "avg_duration_s": r["avg_duration_s"],
-                   "wilson_ci": [round(lo * 100, 1), round(hi * 100, 1)]}
-    stats["models"] = accs
-    vals = [a["accuracy_pct"] for a in accs.values()]
-    stats["mean_accuracy"] = round(np.mean(vals), 1)
-    stats["min_accuracy"] = min(vals)
-    stats["max_accuracy"] = max(vals)
-    # Correlations
-    ps = [params_map[m] for m in accs]
-    vs = [accs[m]["accuracy_pct"] for m in accs]
-    r_acc = np.corrcoef(ps, vs)[0, 1]
-    stats["params_vs_acc_r"] = round(float(r_acc), 3)
-    stats["params_vs_acc_r2"] = round(float(r_acc ** 2), 3)
-    stats["params_vs_acc_p"] = round(float(_pearson_p(r_acc, len(ps))), 3)
-    # Composite reliability correlation (from aggregate)
-    agg = load_aggregate()
-    comps = [agg["summary_comparison"][m]["composite_reliability"] * 100 for m in accs]
-    r_comp = np.corrcoef(ps, comps)[0, 1]
-    stats["params_vs_composite_r"] = round(float(r_comp), 3)
-    stats["params_vs_composite_r2"] = round(float(r_comp ** 2), 3)
-    stats["params_vs_composite_p"] = round(float(_pearson_p(r_comp, len(ps))), 3)
-    # Cohen's h comparisons
-    stats["cohens_h"] = {
-        "coder_vs_deepseek": round(float(_cohens_h(accs["qwen2.5-coder:7b"]["accuracy"],
-                                                   accs["deepseek-r1:7b"]["accuracy"])), 3),
-        "coder_vs_qwen": round(float(_cohens_h(accs["qwen2.5-coder:7b"]["accuracy"],
-                                               accs["qwen2.5:7b"]["accuracy"])), 3),
-        "llama1b_vs_llama8b": round(float(_cohens_h(accs["llama3.2:1b"]["accuracy"],
-                                                    accs["llama3.1:8b"]["accuracy"])), 3),
-        "gemma_vs_llama8b": round(float(_cohens_h(accs["gemma2:9b"]["accuracy"],
-                                                  accs["llama3.1:8b"]["accuracy"])), 3),
-        "coder_vs_gemma": round(float(_cohens_h(accs["qwen2.5-coder:7b"]["accuracy"],
-                                                accs["gemma2:9b"]["accuracy"])), 3),
-    }
-    # Universal pass/fail tasks
-    first = v2["results"][next(iter(v2["results"]))]
-    task_ids = [t["task_id"] for t in first["per_task"]]
-    all_pass, all_fail = [], []
-    for tid in task_ids:
-        scores = []
-        for m, r in v2["results"].items():
-            per = {t["task_id"]: t for t in r.get("per_task", [])}
-            scores.append(per.get(tid, {}).get("score", 0))
-        if all(s >= 0.99 for s in scores):
-            all_pass.append(tid)
-        if all(s < 0.99 for s in scores):
-            all_fail.append(tid)
-    stats["tasks_all_pass"] = all_pass
-    stats["tasks_all_fail"] = all_fail
-    with open(os.path.join(PROC_DIR, "v2_stats.json"), "w") as f:
-        json.dump(stats, f, indent=2)
-    print("\n=== V2 STATISTICS (31-task capability) ===")
-    print(f"Mean accuracy: {stats['mean_accuracy']:.1f}%  "
-          f"Range: {stats['min_accuracy']:.1f}% - {stats['max_accuracy']:.1f}%")
-    print(f"Params vs 31-task acc: r={stats['params_vs_acc_r']} "
-          f"(p={stats['params_vs_acc_p']})")
-    print(f"Params vs composite: r={stats['params_vs_composite_r']} "
-          f"(p={stats['params_vs_composite_p']})")
-    print(f"Cohen's h coder-vs-deepseek: {stats['cohens_h']['coder_vs_deepseek']}")
-    print(f"Tasks all pass: {all_pass}   all fail: {all_fail}")
-    print(f"Saved: {os.path.join(PROC_DIR, 'v2_stats.json')}")
-
-def load_v2_capability():
-    """Load v2 capability results (31-task suite)."""
-    path = os.path.join(RAW_DIR, "v2", "aggregate_v2.json")
-    if not os.path.exists(path):
-        return None
-    with open(path) as f:
-        return json.load(f)
-
-def load_temperature_sweep():
-    """Load temperature sweep results."""
-    path = os.path.join(PROC_DIR, "temperature_sweep.json")
-    if not os.path.exists(path):
-        return None
-    with open(path) as f:
-        return json.load(f)
-
-def fig_temperature(ts):
-    """Plot accuracy vs temperature for top models."""
-    if not ts:
-        print("  (No temperature sweep data)")
-        return
-    models = ts["models"]
-    temps = [0.0] + ts["temperatures"]  # prepend t=0 baseline from v2
-    results = ts["results"]
-
-    # Build acc matrix: model x temp
-    acc_by_model = {m: {0.0: None} for m in models}
-    v2 = load_v2_capability()
-    if v2:
-        for m in models:
-            if m in v2["results"]:
-                acc_by_model[m][0.0] = v2["results"][m].get("accuracy", 0) * 100
-    for r in results:
-        m = r["model"]
-        if m in acc_by_model:
-            acc_by_model[m][r["temperature"]] = r.get("accuracy", 0) * 100
-
-    fig, ax = plt.subplots(figsize=(9, 6))
-    colors = ["#27AE60", "#2ECC71", "#2980B9"]
-    for i, m in enumerate(models):
-        xs = []
-        ys = []
-        for t in temps:
-            if acc_by_model[m].get(t) is not None:
-                xs.append(t)
-                ys.append(acc_by_model[m][t])
-        ax.plot(xs, ys, "o-", linewidth=2, markersize=7, color=colors[i],
-                label=m.replace(":7b", "").replace(":3b", "").replace(":8b", ""))
-
-    ax.set_xlabel("Temperature", fontsize=12)
-    ax.set_ylabel("Accuracy (%)", fontsize=12)
-    ax.set_ylim(0, 100)
-    ax.set_xticks(temps)
-    ax.legend(fontsize=10)
-    ax.grid(alpha=0.3)
-    fig.suptitle("Accuracy vs Temperature (31-Task Suite)", fontsize=14, fontweight="bold")
-    plt.tight_layout()
-    path = os.path.join(FIG_DIR, "temperature_sensitivity.pdf")
-    fig.savefig(path, dpi=300, bbox_inches="tight")
-    plt.close(fig)
-    print(f"Saved: {path}")
-
-def fig_cost_reliability(v2):
-    """Plot VRAM estimate vs composite reliability (cost-reliability tradeoff)."""
-    if not v2:
-        print("  (No v2 capability data for cost-reliability)")
-        return
-    params_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 3.0, "phi3.5:3.8b": 3.8,
-                  "deepseek-r1:7b": 7.0, "qwen2.5-coder:7b": 7.0, "qwen2.5:7b": 7.0,
-                  "mistral:7b": 7.0, "llama3.1:8b": 8.0, "gemma2:9b": 9.0}
-    vram_map = {"llama3.2:1b": 1.0, "llama3.2:3b": 2.5, "phi3.5:3.8b": 2.8,
-                "deepseek-r1:7b": 4.5, "qwen2.5-coder:7b": 4.5, "qwen2.5:7b": 4.5,
-                "mistral:7b": 4.5, "llama3.1:8b": 5.5, "gemma2:9b": 5.5}
-
-    fig, ax = plt.subplots(figsize=(10, 6))
-    for model, r in v2["results"].items():
-        acc = r.get("accuracy", 0) * 100
-        vram = vram_map.get(model, 3.0)
-        color = COLORS.get(model, "#333")
-        label = model.replace(":7b", "").replace(":3b", "").replace(":8b", "")
-        ax.scatter(vram, acc, s=180, color=color, zorder=5, edgecolors="black", linewidth=0.5)
-        ax.annotate(label, (vram, acc), (vram + 0.1, acc + 3), fontsize=8)
-
-    ax.set_xlabel("VRAM Usage (GB, Q4_K_M)", fontsize=12)
-    ax.set_ylabel("Accuracy on 31 Tasks (%)", fontsize=12)
-    ax.set_xlim(0, 7)
-    ax.set_ylim(0, 100)
-    ax.grid(alpha=0.3)
-    fig.suptitle("Cost (VRAM) vs Reliability (31-Task Accuracy)", fontsize=14, fontweight="bold")
-    plt.tight_layout()
-    path = os.path.join(FIG_DIR, "cost_reliability.pdf")
-    fig.savefig(path, dpi=300, bbox_inches="tight")
-    plt.close(fig)
-    print(f"Saved: {path}")
-
-def gen_v2_latex_table(v2):
-    """Generate LaTeX results table from v2 31-task capability."""
-    if not v2:
-        return
-    DISPLAY = {
-        "llama3.2:1b": "Llama 3.2 1B", "llama3.2:3b": "Llama 3.2 3B",
-        "phi3.5:3.8b": "Phi-3.5 3.8B", "deepseek-r1:7b": "DeepSeek-R1 7B",
-        "qwen2.5-coder:7b": "Qwen 2.5 Coder 7B", "qwen2.5:7b": "Qwen 2.5 7B",
-        "mistral:7b": "Mistral 7B", "llama3.1:8b": "Llama 3.1 8B",
-        "gemma2:9b": "Gemma 2 9B",
-    }
-    models_sorted = sorted(v2["results"].items(),
-                           key=lambda x: x[1].get("accuracy", 0), reverse=True)
-    lines = []
-    lines.append("\\begin{table}[t]")
-    lines.append("\\centering")
-    lines.append("\\caption{Capability accuracy on the expanded 31-task suite "
-                 "(8 categories). Accuracy is the fraction of tasks completed correctly "
-                 "with greedy decoding (t=0); Err. is the fraction of runs ending in a "
-                 "harness-detected execution error (e.g., malformed tool calls or "
-                 "protocol violations) rather than a completed response.}")
-    lines.append("\\label{tab:capability_v2}")
-    lines.append("\\footnotesize")
-    lines.append("\\begin{tabular}{lcccc}")
-    lines.append("\\toprule")
-    lines.append("\\textbf{Model} & \\textbf{Accuracy} & \\textbf{Success} "
-                 "& \\textbf{Err.} & \\textbf{Avg Time} \\\\")
-    lines.append("\\midrule")
-    for model, r in models_sorted:
-        display = DISPLAY.get(model, model)
-        lines.append(f"        {display} & {r['accuracy']*100:.1f}\\% & "
-                     f"{r['success_rate']*100:.1f}\\% & "
-                     f"{r['error_rate']*100:.1f}\\% & "
-                     f"{r['avg_duration_s']:.1f}s \\\\")
-    lines.append("\\bottomrule")
-    lines.append("\\end{tabular}")
-    lines.append("\\end{table}")
-    with open(os.path.join(PROC_DIR, "results_table_v2.tex"), "w") as f:
-        f.write("\n".join(lines))
-    print(f"Saved: {os.path.join(PROC_DIR, 'results_table_v2.tex')}")
-
-def gen_appendix_detailed(v2):
-    """Generate per-task scores appendix table from v2 results."""
-    if not v2:
-        return
-    DISPLAY = {
-        "llama3.2:1b": "Llama 3.2 1B", "llama3.2:3b": "Llama 3.2 3B",
-        "phi3.5:3.8b": "Phi-3.5 3.8B", "deepseek-r1:7b": "DeepSeek-R1 7B",
-        "qwen2.5-coder:7b": "Qwen 2.5 Coder 7B", "qwen2.5:7b": "Qwen 2.5 7B",
-        "mistral:7b": "Mistral 7B", "llama3.1:8b": "Llama 3.1 8B",
-        "gemma2:9b": "Gemma 2 9B",
-    }
-    # Compact header labels for the wide per-task table (full names in caption)
-    SHORT = {
-        "llama3.2:1b": "L3.2-1B", "llama3.2:3b": "L3.2-3B",
-        "phi3.5:3.8b": "Phi-3.5", "deepseek-r1:7b": "DS-R1-7B",
-        "qwen2.5-coder:7b": "Qw-Coder", "qwen2.5:7b": "Qwen-7B",
-        "mistral:7b": "Mistral", "llama3.1:8b": "L3.1-8B",
-        "gemma2:9b": "Gemma-9B",
-    }
-    # Order by accuracy desc
-    models_sorted = sorted(v2["results"].items(),
-                           key=lambda x: x[1].get("accuracy", 0), reverse=True)
-    # Gather all task ids in order from first model
-    first = v2["results"][models_sorted[0][0]]
-    task_ids = [t["task_id"] for t in first.get("per_task", [])]
-
-    lines = []
-    lines.append("\\begin{table*}[h]")
-    lines.append("\\centering")
-    lines.append("\\caption{Per-task scores (31-task suite, t=0). Values in [0,1], 1.0 = perfect. "
-                 "Column headers abbreviate: Qw-Coder = Qwen 2.5 Coder 7B, Qwen-7B = Qwen 2.5 7B, "
-                 "Gemma-9B = Gemma 2 9B, Phi-3.5 = Phi-3.5-mini 3.8B, Mistral = Mistral 7B, "
-                 "L3.2-3B = Llama 3.2 3B, L3.2-1B = Llama 3.2 1B, L3.1-8B = Llama 3.1 8B, "
-                 "DS-R1-7B = DeepSeek-R1 7B.}")
-    lines.append("\\label{tab:detailed_results}")
-    lines.append("\\scriptsize")
-    lines.append("\\setlength{\\tabcolsep}{3.5pt}")
-    cols = "l" + "c" * len(models_sorted)
-    lines.append(f"\\begin{{tabular}}{{{cols}}}")
-    lines.append("\\toprule")
-    lines.append("\\textbf{Task} & " + " & ".join([f"\\textbf{{{SHORT.get(m, m)}}}" for m, _ in models_sorted]) + " \\\\")
-    lines.append("\\midrule")
-
-    for tid in task_ids:
-        row_vals = []
-        for model, r in models_sorted:
-            per = {t["task_id"]: t for t in r.get("per_task", [])}
-            t = per.get(tid)
-            row_vals.append(f"{t['score']:.2f}" if t else "--")
-        lines.append(f"{tid} & " + " & ".join(row_vals) + " \\\\")
-
-    lines.append("\\bottomrule")
-    lines.append("\\end{tabular}")
-    lines.append("\\end{table*}")
-
-    # Header row for the appendix
-    path = os.path.join(PROC_DIR, "appendix_detailed.tex")
-    with open(path, "w") as f:
-        f.write("\n".join(lines))
-    print(f"Saved: {path}")
-
 def main():
     print("Generating visualizations...")
     agg = load_aggregate()
-    v2 = load_v2_capability()
-    ts = load_temperature_sweep()
-
     fig_radar(agg)
     fig_bars(agg)
     fig_composite(agg)
-    fig_accuracy_vs_params(agg, v2)
+    fig_accuracy_vs_params(agg)
     gen_latex_table(agg)
     print_stats(agg)
-
-    # New v2 analyses
-    fig_temperature(ts)
-    fig_cost_reliability(v2)
-    gen_v2_latex_table(v2)
-    gen_appendix_detailed(v2)
-    v2_stats(v2)
-
-    summary = {
-        "num_models": agg["num_models"],
-        "experiment_date": agg["experiment_date"],
-        "model_summaries": agg["summary_comparison"],
-    }
-    if v2:
-        summary["v2_num_tasks"] = v2["num_tasks"]
-        summary["v2_capability"] = {m: {"accuracy": r["accuracy"],
-                                        "success_rate": r["success_rate"],
-                                        "error_rate": r["error_rate"],
-                                        "avg_duration_s": r["avg_duration_s"]}
-                                    for m, r in v2["results"].items()}
-    if ts:
-        summary["temperature_sweep"] = ts
-    with open(os.path.join(PROC_DIR, "analysis_summary.json"), "w") as f:
-        json.dump(summary, f, indent=2)
-    print(f"\nSaved analysis to: {os.path.join(PROC_DIR, 'analysis_summary.json')}")
-    print("\n*** Analysis complete! All figures and tables generated. ***")
+    print("\n*** Done ***")
 
 if __name__ == "__main__":
     main()

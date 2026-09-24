@@ -1,148 +1,45 @@
-﻿# Small Agent Reliability â€” Multi-Phase Research Plan
+# Where this is going
 
-**Vision**: Build the definitive benchmark and understanding of small language model reliability as autonomous agents. Publish findings at top venues, release open-source tools, and drive industry best practices.
+Writing this down mostly so I don't lose track. What's done, what's next, what I'd like to get to eventually.
 
----
+## Done so far
 
-## Phase 1: Foundation âœ… DONE
-- [x] Define 4-dimension reliability framework (consistency, robustness, fault tolerance, safety)
-- [x] Build 14-task evaluation suite across 7 categories
-- [x] Implement ReAct agent harness with 6 tools
-- [x] Evaluate 5 models (Llama 3.2 3B, Phi-3.5 3.8B, Qwen 2.5 7B, Mistral 7B, Gemma 2 9B)
-- [x] Generate 4 figures (radar, bars, composite, perturbation heatmap)
-- [x] Write 12-page paper with statistical analysis (Wilson CI, Cohen's h, Pearson r)
-- [x] Compile PDF + DOCX deliverables
-- [x] All 22 citations verified against real arXiv IDs
-- [x] GitHub repo: https://github.com/Praansu/small-agent-reliability
-- [x] GitHub Actions CI/CD for paper compilation
-- [x] Automation script: `python automate.py publish`
-- [x] Custom skill: `small-agent-research`
+**Phase 1 — the basics:**
+- [x] 4-dimension reliability framework (consistency, robustness, fault tolerance, safety)
+- [x] 14-task eval suite across 7 categories
+- [x] ReAct harness with 6 tools
+- [x] First 5 models: Llama 3.2 3B, Phi-3.5, Qwen 2.5 7B, Mistral 7B, Gemma 2 9B
+- [x] 4 figures, 12-page paper (Wilson CIs, Cohen's h, Pearson r)
+- [x] All 22 citations checked against real arXiv IDs — verify every one, always
+- [x] `python automate.py publish` regenerates the whole paper
 
----
+**Phase 2 — expansion, also done:**
+- [x] 4 more models (9 total). Two surprises: Llama 1B at 56% beat Llama 8B at 24%. DeepSeek-R1 7B got 0% — it just fights the ReAct format. Qwen Coder 7B best overall at 85%.
+- [x] 31-task suite across 8 categories. Coding easiest (~89%), data analysis and safety hardest (~25%).
+- [x] Cost-reliability tradeoff (accuracy vs latency vs VRAM), temperature sweep, per-category breakdown
+- [x] One task every model passes (COM-4), three every model fails (DA-4, MSR-2, SAF-3)
 
-## Phase 2: Expansion âœ… DONE
+Still missing: web nav tasks, multi-turn conversations, JSON extraction, anything with vision models.
 
-### 2A: Models (added 4, total: 9)
-- [x] **Llama 3.2 1B** â€” extreme lower-bound baseline (56.1% composite)
-- [x] **Llama 3.1 8B** â€” larger Llama, compare vs 3.2 3B (24.2% â€” worse than 1B!)
-- [x] **DeepSeek-R1 7B** â€” reasoning-distilled (0% accuracy â€” conflicts with ReAct)
-- [x] **Qwen 2.5 Coder 7B** â€” code-specialized variant (85.0% â€” best overall)
+## Next up
 
-### 2B: Tasks (add 15+ more)
-- [x] **31-task capability suite** across 8 categories (added coding + decision-making categories)
-- [x] Per-category analysis (coding easiest at 88.9%; data analysis & safety hardest at 25.0%)
-- [ ] Web navigation tasks (click, scroll, form fill)
-- [ ] Multi-turn conversation tasks
-- [ ] JSON/structured data extraction
-- [ ] Image analysis with vision models
+Real fault injection — rate limits, timeouts, malformed tool outputs, adversarial inputs. Then comparing ReAct against Reflexion and Plan-and-Solve on the same tasks. And a proper safety deep dive (jailbreaks, multi-step harmful requests, exfiltration scenarios).
 
-### 2C: Analysis
-- [x] Cross-perturbation analysis: which perturbation types hurt which models most
-- [x] Cost-reliability tradeoff curves (accuracy vs latency vs VRAM)
-- [x] Per-category breakdown (which task categories are hardest)
-- [x] Temperature sensitivity analysis (t=0, 0.3, 0.7, 1.0) â€” sweep in progress
-- [x] Statistical analysis: Wilson CIs, Cohen's h, Pearson correlations on 31-task data
-- [x] Universal pass/fail task identification (COM-4 passes all; DA-4, MSR-2, SAF-3 fail all)
+## Publishing
 
----
+arXiv preprint first, can do that anytime. After that maybe an ICML workshop, or NeurIPS Datasets & Benchmarks if I package this as a real benchmark release. Paper still needs failure trajectory examples, an ablation study, frontier models on the same benchmark, and a bigger lit review (aiming 50+ citations).
 
-## Phase 3: Depth â€” 4-8 weeks
+## Later / maybe
 
-### 3A: Real-World Fault Injection
-- [ ] Real API rate limits and timeouts
-- [ ] Network failures and partial responses
-- [ ] Malformed tool outputs
-- [ ] Adversarial input attacks
+- pip package (`pip install agent-reliability`) plus a leaderboard on GitHub Pages
+- Multilingual tasks, multimodal tasks (LLaVA, Qwen-VL)
+- A practitioner guide — "deploying SLM agents safely" with a pre-deployment checklist
+- Reliability scores for model cards, policy input — ambitious, we'll see
 
-### 3B: Multi-Architecture Comparison
-- [ ] ReAct (current) vs Reflexion vs Plan-and-Solve
-- [ ] Tool-augmented vs pure prompting
-- [ ] Single-agent vs multi-agent systems
-- [ ] Different tool-calling formats (JSON, XML, function calling)
+## By the numbers
 
-### 3C: Safety Deep Dive
-- [ ] Adversarial jailbreak attempts
-- [ ] Multi-step harmful requests
-- [ ] Data exfiltration scenarios
-- [ ] Comparison with frontier model safety guardrails
+9 models, 31 + 14 tasks, 25 citations, 12 pages, 5 figures. Targets: 15+ models, 50+ tasks, 50+ citations, 20+ pages. Main findings so far: code training transfers to reliability; reasoning-distilled models break ReAct; neither capability nor reliability scales cleanly (r=0.289 and r=-0.179, both non-significant).
 
----
+## Contributing
 
-## Phase 4: Publication â€” 8-12 weeks
-
-### 4A: Venue Targeting
-- [ ] **arXiv preprint** (immediate â€” can do now)
-- [ ] **ICML Workshop** on AI Safety / Reliable ML
-- [ ] **NeurIPS Datasets & Benchmarks** â€” if we build a proper benchmark release
-- [ ] **ACL** â€” if we add multilingual dimension
-- [ ] **CCS / S&P** â€” if we emphasize safety
-
-### 4B: Paper Enhancements
-- [ ] Add real failure trajectory examples
-- [ ] Inter-rater reliability for task scoring
-- [ ] Ablation study: which framework components matter
-- [ ] Comparison with frontier models on same benchmark
-- [ ] Literature review expansion (50+ citations)
-
----
-
-## Phase 5: Platform â€” 12+ weeks
-
-### 5A: Open-Source Benchmark
-- [ ] Standalone Python package (`pip install agent-reliability`)
-- [ ] CLI tool for running evaluations
-- [ ] Leaderboard website (GitHub Pages)
-- [ ] Community contribution guide
-
-### 5B: Multilingual Extension
-- [ ] Translate tasks to 5+ languages
-- [ ] Evaluate cross-lingual reliability
-- [ ] Study language-specific failure modes
-
-### 5C: Multimodal Extension
-- [ ] Vision-language models (e.g., LLaVA, Qwen-VL)
-- [ ] Audio processing tasks
-- [ ] Multi-modal tool use
-
----
-
-## Phase 6: Industry Impact â€” 16+ weeks
-
-### 6A: Best Practices Guide
-- [ ] "Deploying SLM Agents Safely" â€” practitioner guide
-- [ ] Checklist for reliability testing before deployment
-- [ ] Case studies from real deployments
-
-### 6B: Model Development Feedback
-- [ ] Collaborate with model developers on reliability improvements
-- [ ] Propose reliability-specific fine-tuning methods
-- [ ] Develop "reliability score" for model cards
-
-### 6C: Policy Recommendations
-- [ ] Safety standards for SLM agent deployment
-- [ ] Transparency requirements for reliability reporting
-- [ ] Regulatory framework input
-
----
-
-## Current Metrics
-| Metric | Value | Target (Phase 4) |
-|--------|-------|-------------------|
-| Models evaluated | 9 | 15+ |
-| Tasks | 31 (capability) + 14 (reliability) | 50+ |
-| Reliability dimensions | 4 | 6+ |
-| Citations | 25 | 50+ |
-| Paper pages | 12 | 20+ |
-| Figures | 5 | 12+ |
-| Experiments run | 9 + 31-task suite + temp sweep | 50+ |
-| Key finding | Code training â†’ reliability transfer | -- |
-| Key finding | Reasoning models fail ReAct (25.8% worst) | -- |
-| Key finding | Neither capability nor reliability scales (r=0.289/p=0.451, r=-0.179) | -- |
-
-## How to Contribute
-1. Pick an item from any phase
-2. Create a GitHub issue
-3. Run `python automate.py run --model <model>` for experiments
-4. Run `python automate.py publish` to regenerate paper
-5. Submit a PR with results
-
+Pick something from the list, open an issue first so we don't double up, run experiments with `python automate.py run --model <model>`, regenerate with `python automate.py publish`, and PR the results.

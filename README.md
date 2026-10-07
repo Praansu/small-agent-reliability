@@ -1,96 +1,96 @@
-# Small Models, Big Failures?
+# Small models as agents — how reliable are they really?
 
-**A Comprehensive Reliability Evaluation of Small Language Models as Autonomous Agents**
+I started this repo because I kept trying to use small open models (1B-9B) as agents on my own machine and they kept breaking in weird ways. Not just wrong answers — ignoring tools, looping, crashing on slightly rephrased inputs, failing to say "I can't do that" when they should.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+So I built a little test setup and ran 9 models through the same tasks to see what actually holds up.
 
-## Overview
+## What I tested
 
-This repository presents a comprehensive, multi-dimensional reliability evaluation of open-weight small language models (SLMs) as tool-using autonomous agents. We evaluate **9 models** (1B–9B parameters) across **31 capability tasks** and a **14-task reliability suite** measuring **4 reliability dimensions**, plus a **temperature sensitivity study** (t ∈ {0.3, 0.7, 1.0}) and **cost-reliability analysis**.
+9 models, all through Ollama, Q4 quant, on a single RTX 3060:
 
-| Dimension | What It Measures | How |
-|-----------|-----------------|-----|
-| **Accuracy** | Task completion rate | 31-task capability suite, 8 categories |
-| **Consistency** | Run-to-run variance | 3 repeated trials per task |
-| **Robustness** | Stability under input perturbations | 5 perturbation types |
-| **Fault Tolerance** | Recovery from tool failures | 4 failure modes |
-| **Safety** | Appropriate refusal behavior | 6 safety tests |
+- Llama 3.2 1B, 3B
+- Phi-3.5-mini 3.8B
+- DeepSeek-R1 7B, Mistral 7B, Qwen 2.5 7B, Qwen 2.5 Coder 7B
+- Llama 3.1 8B
+- Gemma 2 9B
 
-## Key Findings
+Two suites:
+- 31 capability tasks in 8 groups (math, code, web-ish stuff, data analysis, safety, etc.)
+- 14 reliability tasks where I look at 4 things: does it give the same answer twice, does it survive rephrased inputs, does it recover when a tool fails, does it refuse the stuff it should refuse.
 
-- **Reliability does NOT scale with model size**: the 7B Qwen models dominate, while Gemma 2 9B is the least reliable (15.0%) despite being the largest
-- **Qwen 2.5 Coder 7B** is the reliability leader (85.0% composite) — code-specialization beats raw scale
-- **Capability leaders**: Qwen 2.5 Coder 7B and Qwen 2.5 7B tie at 67.7% on the 31-task suite; Mistral 7B trails at 45.2%
-- **Safety is critically weak**: no model exceeds 50% safety (average 25.9%)
-- **Robustness** is the primary bottleneck: average 47.8%
-- **Fault tolerance** shows a divide: 100% for the Qwen models vs. near-zero for most others
-- **Temperature is a bounded, second-order factor**: accuracy degrades 6.5–9.6 points at high sampling temperatures, but the model ranking is perfectly stable across t
-- **Size does not predict reliability**: Pearson r = -0.18 between parameters and composite reliability
+I also ran a temperature sweep at 0.3 / 0.7 / 1.0 because I wanted to know if sampling temp was secretly driving most of the variance.
 
-## Models Evaluated
+~855 trials total. Reran most things 3x because single runs lie.
 
-| Model | Params | Quantization | VRAM | Context |
-|-------|--------|-------------|------|---------|
-| Llama 3.2 1B | 1.0 B | Q4_K_M | 1.0 GB | 8K |
-| Llama 3.2 3B | 3.0 B | Q4_K_M | 2.5 GB | 8K |
-| Phi-3.5-mini | 3.8 B | Q4_K_M | 2.8 GB | 4K |
-| DeepSeek-R1 7B | 7.0 B | Q4_K_M | 4.5 GB | 16K |
-| Qwen 2.5 Coder 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
-| Qwen 2.5 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
-| Mistral 7B | 7.0 B | Q4_K_M | 4.5 GB | 32K |
-| Llama 3.1 8B | 8.0 B | Q4_K_M | 5.5 GB | 128K |
-| Gemma 2 9B | 9.0 B | Q4_K_M | 5.5 GB | 8K |
+## What I found (short version)
 
-## Project Structure
+- Bigger isn't more reliable here. Correlation between size and my composite score was basically zero (r around -0.18, p = 0.64). Gemma 2 9B, the biggest, scored lowest at 15%.
+- Qwen 2.5 Coder 7B was the clear outlier at 85% composite. Regular Qwen 2.5 7B was second. Code training seems to transfer to tool use.
+- Capability range was 25.8% to 67.7% (mean ~47%). Reliability composite was 15% to 85% (mean ~45%).
+- Safety is bad everywhere. Best model under 50%, average ~26%. Don't put these in front of users without a guardrail.
+- Robustness to rephrasing is the main bottleneck (~48% avg).
+- Fault tolerance is bimodal: Qwens recover ~100% of the time, most others ~0%.
+- Temperature matters but doesn't change the ranking. High temp drops accuracy 6-10 points, same winners/losers.
+
+If you only remember one thing: pick by measured reliability, not parameter count.
+
+## Repo layout
 
 ```
-├── paper/                  # LaTeX source for the paper
-│   ├── main.tex            # Main file
-│   ├── sections/           # Individual sections
-│   ├── figures/            # Generated visualizations
-│   └── references.bib      # Bibliography
-├── code/                   # Evaluation framework
-│   ├── tasks/              # Task definitions (31 capability + 14 reliability)
-│   ├── harness/            # Agent harness + tools
-│   ├── models/             # Model registry
-│   ├── reliability/        # Metric implementations
-│   ├── run_experiments.py  # Experiment runner
-│   ├── analyze_results.py  # Analysis + figures
-│   └── resume_temp_sweep.py# Temperature sweep orchestrator (checkpointed)
-├── data/                   # Experiment data
-│   ├── raw/                # Raw reports (JSON)
-│   └── processed/          # Analysis output
-├── generate_docx.py        # Word doc generation
-└── opencode.jsonc          # OpenCode project config
+paper/        latex source, NeurIPS format
+  main.tex
+  sections/
+  figures/    15 pdfs, generated by code/publication_figures.py
+  references.bib
+code/
+  tasks/      31 + 14 task defs
+  harness/    ReAct loop + 10 tools
+  models/     ollama registry
+  reliability/ metrics
+  run_experiments.py
+  analyze_results.py
+  resume_temp_sweep.py  - temp sweep with checkpoints, because it takes forever
+data/
+  raw/        raw json reports
+  processed/  analysis output
+docs/         my notes, audit logs, defense prep - messy but honest
 ```
 
-## Reproducibility
+## How to rerun
 
-All models are publicly available via Ollama:
+You'll need Ollama + python 3.10+.
+
 ```bash
-ollama pull llama3.2:1b
-ollama pull llama3.2:3b
-ollama pull phi3.5:3.8b
-ollama pull mistral:7b
-ollama pull qwen2.5:7b
 ollama pull qwen2.5-coder:7b
-ollama pull llama3.1:8b
-ollama pull deepseek-r1:7b
-ollama pull gemma2:9b
-```
+ollama pull qwen2.5:7b
+ollama pull mistral:7b
+# ... same for llama3.2:1b, llama3.2:3b, phi3.5:3.8b, llama3.1:8b, deepseek-r1:7b, gemma2:9b
 
-Run the full evaluation:
-```bash
+pip install -r code/requirements.txt
 python code/run_experiments.py
+python code/analyze_results.py
 ```
 
-Compile the paper:
+Paper:
+
 ```bash
 cd paper
 pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
 ```
 
-## Citation
+Fair warning: full run takes a long time on a 3060. I did it in chunks and used resume_temp_sweep.py to pick up where it died. Check data/processed/analysis_summary.json first before rerunning everything.
+
+## Things I'd do differently / limits
+
+- 31 tasks isn't huge. Per-category n is 3-5, so don't overread small gaps. I put Wilson CIs + Fisher + Cohen's h in the paper for that reason.
+- Capability suite is single-run except for 3 consistency tasks (k=3). The temp sweep helped but it's still a lower bound on variance.
+- One harness (ReAct). DeepSeek-R1 hates ReAct formatting and scores 0% accuracy in places — that's partly scaffold mismatch, not just "dumb model".
+- Safety scoring is keyword-based + my own reading. No second annotator. Take it as directional.
+- Synthetic sandbox, not real APIs. Real rate limits / timeouts would be worse.
+
+Desktop copy I submit from lives in a journal single-column format (47 pages with appendices). What's in paper/ here is the NeurIPS two-column version. Same numbers, same figures.
+
+## Cite
 
 ```bibtex
 @article{karmacharya2026small,
@@ -101,6 +101,4 @@ pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
 }
 ```
 
-## License
-
-MIT
+MIT. Use it, break it, tell me where I'm wrong — issues welcome.

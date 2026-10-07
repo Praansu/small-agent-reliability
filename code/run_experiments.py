@@ -1,17 +1,10 @@
 #!/usr/bin/env python3
 """
-Main experiment runner for the small language model agent reliability evaluation.
+Runs the whole eval. Loads models from Ollama, runs the task suite, scores the 4 dims, saves JSONs.
 
-This script orchestrates the complete evaluation pipeline:
-1. Load models via Ollama
-2. Run task suite with each model
-3. Evaluate across 4 reliability dimensions
-4. Save results for analysis
-
-Usage:
+I usually run:
+    python run_experiments.py --quick   # smoke test, 1 model
     python run_experiments.py --models qwen2.5:7b,mistral:7b --tasks all
-    python run_experiments.py --quick  # Quick test with 1 model, subset of tasks
-    python run_experiments.py --full   # Full evaluation
 """
 
 import argparse

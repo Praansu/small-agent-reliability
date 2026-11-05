@@ -1,6 +1,6 @@
-# Small models as agents — how reliable are they really?
+# Small models as agents: how reliable are they really?
 
-I started this repo because I kept trying to use small open models (1B-9B) as agents on my own machine and they kept breaking in weird ways. Not just wrong answers — ignoring tools, looping, crashing on slightly rephrased inputs, failing to say "I can't do that" when they should.
+I started this repo because I kept trying to use small open models (1B-9B) as agents on my own machine and they kept breaking in weird ways. Not just wrong answers: ignoring tools, looping, crashing on slightly rephrased inputs, failing to say "I can't do that" when they should.
 
 So I built a little test setup and ran 9 models through the same tasks to see what actually holds up.
 
@@ -101,4 +101,4 @@ Desktop copy I submit from lives in a journal single-column format (47 pages wit
 }
 ```
 
-MIT. Use it, break it, tell me where I'm wrong — issues welcome.
+MIT. Use it, break it, tell me where I'm wrong: issues welcome.

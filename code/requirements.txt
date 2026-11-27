@@ -1,7 +1,7 @@
 # Core
 torch>=2.0.0
 transformers>=4.36.0
-sentence-transformers>=2.2.0
+sentence-transformers>=6.3.0
 datasets>=2.14.0
 
 # LLM Inference

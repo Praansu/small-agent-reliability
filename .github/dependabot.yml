@@ -1,0 +1,64 @@
+version: 2
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "code"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Asia/Kathmandu"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps(pip)"
+    groups:
+      python-ml:
+        patterns:
+          - "torch*"
+          - "transformers*"
+          - "sentence-transformers*"
+          - "datasets*"
+          - "llama-cpp-python*"
+          - "scikit-learn*"
+          - "scipy*"
+          - "numpy*"
+          - "pandas*"
+        update-types:
+          - "minor"
+          - "patch"
+      python-viz:
+        patterns:
+          - "matplotlib*"
+          - "seaborn*"
+        update-types:
+          - "minor"
+          - "patch"
+      python-dev:
+        patterns:
+          - "tqdm*"
+          - "pyyaml*"
+          - "jsonlines*"
+          - "tabulate*"
+          - "pytest*"
+          - "ruff*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Asia/Kathmandu"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "deps(actions)"
